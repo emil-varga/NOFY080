@@ -1,0 +1,51 @@
+\contentsline {section}{\numberline {1}A quick introduction to basic Python}{4}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Running Python code}{4}{subsection.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.1}A quick note on text editors}{4}{subsubsection.1.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.2}Jupyter Notebooks}{4}{subsubsection.1.1.2}%
+\contentsline {subsection}{\numberline {1.2}Variables and types}{4}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}User input}{5}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Printing and strings}{5}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Functions}{6}{subsection.1.5}%
+\contentsline {subsection}{\numberline {1.6}Compound types}{7}{subsection.1.6}%
+\contentsline {subsubsection}{\numberline {1.6.1}Lists and tuples}{7}{subsubsection.1.6.1}%
+\contentsline {subsubsection}{\numberline {1.6.2}Dictionaries}{8}{subsubsection.1.6.2}%
+\contentsline {subsection}{\numberline {1.7}Control flow}{8}{subsection.1.7}%
+\contentsline {subsubsection}{\numberline {1.7.1}if-elif-else}{8}{subsubsection.1.7.1}%
+\contentsline {subsubsection}{\numberline {1.7.2}match}{8}{subsubsection.1.7.2}%
+\contentsline {subsection}{\numberline {1.8}Loops}{8}{subsection.1.8}%
+\contentsline {subsection}{\numberline {1.9}Using external modules}{9}{subsection.1.9}%
+\contentsline {section}{\numberline {2}NumPy, SciPy, and matplotlib}{11}{section.2}%
+\contentsline {subsection}{\numberline {2.1}numpy}{11}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}Basic measures and operations with the arrays}{12}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}File I/O}{13}{subsubsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.2}matplotlib}{14}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Review of basic plotting commands}{18}{subsubsection.2.2.1}%
+\contentsline {section}{\numberline {3}Least squares fitting and interpolation}{19}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Polynomial fitting.}{19}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Non-linear curve fitting}{20}{subsection.3.2}%
+\contentsline {paragraph}{Parameter error estimation}{22}{section*.4}%
+\contentsline {section}{\numberline {4}Digital signal processing}{26}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Digital representation of a continuous signal}{26}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Spectral analysis}{27}{subsection.4.2}%
+\contentsline {paragraph}{Amplitude, power, and decibel}{34}{section*.5}%
+\contentsline {subsection}{\numberline {4.3}Filters}{34}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Interpolation and smoothing.}{37}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Communication with instruments}{38}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Context Management Protocol}{40}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Troubleshooting common issues}{42}{subsection.5.2}%
+\contentsline {section}{\numberline {6}Parallel Execution}{43}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Multithreading}{43}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Multiprocessing}{47}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Inter-process Communication}{49}{subsection.6.3}%
+\contentsline {subsubsection}{\numberline {6.3.1}Real use case in a lab}{52}{subsubsection.6.3.1}%
+\contentsline {section}{\numberline {7}Solutions of differential equations}{53}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Initial value problems}{53}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Boundary value problems}{56}{subsection.7.2}%
+\contentsline {section}{\numberline {8}What didn't fit}{59}{section.8}%
+\contentsline {subsection}{\numberline {8.1}PID algorithm}{59}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Symbolic mathematics}{59}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Running fast}{59}{subsection.8.3}%
+\contentsline {section}{\numberline {A}Linear Harmonic Oscillator}{60}{appendix.A}%
+\contentsline {section}{\numberline {B}Setting up communication with instruments}{60}{appendix.B}%
+\contentsline {subsection}{\numberline {B.1}Supported commands}{61}{subsection.B.1}%
+\contentsline {subsection}{\numberline {B.2}Hacking the firmware}{61}{subsection.B.2}%
