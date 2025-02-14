@@ -1587,7 +1587,7 @@ ti.init(ti.gpu)
 This will use, in order of precedence, NVIDIA CUDA, Vulkan on AMD GPUs or the CPU.
 
 The Euler stepping kernel looks like this
-\lstinputlisting[linerange={45-55}]{../example_code/taichi/gravity.py}
+\lstinputlisting[linerange={49-59}]{../example_code/taichi/gravity.py}
 We indicate that the function is a kernel using the \ls{ti.kernel} decorator. The function takes four arguments -- the positions of the planets \ls{rs}, the velocities \ls{vel} and accelerations \ls{acc}, which are numpy arrays of 64 bit floats of shape \ls{(N,2)} ($N$ planets and two coordinates) and the time step \ls{dt} which is a simple float.
 
 Inside, the function look rather ordinary, however it does run inside the GPU and the outer-most for loop is in fact not a loop but iterations are executed in parallel as much as possible. There are some restrictions -- for example, you are not allowed to \ls{break} out of the outermost loop. The inner loop (\ls{for k in range(2)}) runs as an ordinary sequential for loop. We do not return anything, but rather modify the input arrays.
