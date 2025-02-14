@@ -1,3 +1,6 @@
+# This code is based on the N-body simulation from the
+# taichi documentation
+
 import matplotlib.pyplot as plt
 import numpy as np
 import taichi as ti

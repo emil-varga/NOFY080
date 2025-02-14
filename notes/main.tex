@@ -1535,11 +1535,87 @@ For the energy, we simply use the ground state energy of a particle in a simple 
 Finally, we have everything we need to call \ls{solve_bvp()}. Physically, the most interesting part is the probability of finding the particle at a position $x$, which is given by $|\psi(x)|^2$, so we plot that. To be exact, we should also normalize the wave function such that $\int |\psi(x)|^2 \dd x = 1$, however, since we are not calculating any quantum mechanical expectation values and are only interested in the shape of the distribution we plot it as it is, together with the potential and found energy.
 \lstinputlisting[linerange={56, 65-74}]{../example_code/bvp_schrodinger.py}
 
-% \section{Image processing}
-% TODO, \ls{opencv}
+\subsection{GPU acceleration}
+Certain types of physical problems can be effeciently calculated on graphics cards (GPUs). These are problems which involve many independent calculations which can be run in parallel. A prototypical example is the gravitational $N$-body problem: calculate the motion of $N$ planets with equal masses $m$ that interact with each other via gravity only.
 
-% \section{Some AI crap?}
-% TODO \ls{scikit-learn}
+We will consider the 2D case for simplicity of plotting. The total force acting on planet $j = 1\dots N$ is
+\begin{equation}
+    \bv F_j = Gm^2\sum_{k\neq j}\frac{\bv r_k - \bv r_j}{|\bv r_k - \bv r_j|^2},
+\end{equation}
+where $G$ is the gravitational constant and $\bv r_k$ are the positions of the planets. The motion of the planet is then given simply by $m\ddot{\bv r_j} = \bv F_j$ and we could use \ls{solve_ivp()} as before. However, this problem becomes more scientifically interesting for large number of planets where \ls{solve_ivp()} would quicktly grind to a halt. Therefore we want to make use of fast GPUs.
+
+The calculation will proceed again in steps: we will keep stored all positions and velocities of the planets. In every step, we will calculate the total force acting on all planets and then update positions and velocities via Euler stepping for simplicity. The calculation involves $N^2$ calculations of forces between planests which are independent of each other. Our goal is to use the GPU tu run these in parallel.
+
+The full code is \verb|example_code/taichi/gravity.py|
+
+\subsubsection{Setting up the environment}
+We will be using the \ls{taichi} library to accelerate the computation from within Python, which has the advantage that it is rather simple, looks very much like standard Python code and allows using either GPU or CPU with the same code, so you can still try the code below even if you do not have a dedicated GPU in your computer. Taichi unfortunately requires Python version 3.10, which is most likely not the version you have installed. We do not want to clutter the system with multiple python versions, therefore we will use a \emph{virtual environment} to have an isolated installation of Python with its own version and packages.
+
+The easiest way to manage virtual environments is with the \ls{uv} tool \url{https://docs.astral.sh/uv/getting-started/installation/}. On Windows, run the installation commands in the Windows Powershell.
+
+Once \ls{uv} is installed, create an empty directory, let's call it "gravity", navigate to it in the command line and run
+\begin{lstlisting}[language=bash]
+uv venv -p 3.10
+\end{lstlisting}
+which will create the virtual environment with Python version 3.10. You shoud see output that looks similar to
+\begin{verbatim}
+Using CPython 3.10.16 interpreter at: /usr/bin/python3.10
+Creating virtual environment at: .venv
+Activate with: source .venv/bin/activate
+\end{verbatim}
+Activate the virual environment with the command from the last line. Your command line prompt shoud now show the virtual environment, e.g., on my linux machine
+\begin{verbatim}
+(gravity) emil@nt202 ~/gravity $
+\end{verbatim}
+This is a blank slate where we need to install all Python libraries we need. We will only need \ls{taichi} and \ls{matplotlib} (and their dependencies), which we can install simply using
+\begin{lstlisting}
+uv pip install taichi matplotlib
+\end{lstlisting}
+and now we have everything we need to start writing and running taichi code. However, we have to have the environment activated, otherwise we are using system-wide python which is not aware of the taichi library.
+
+\subsubsection{Testing the installation}
+TODO
+
+\subsubsection{GPU Kernels}
+Taichi allows us to offload specific functions to run on the GPU. These functions are handled differently from the rest of the Python code and are called \emph{kernels}. We will write two kernels, one for calculating the forces and one for the Euler stepping. We will store the data in numpy arrays -- this is not the fastest way (taichi can use memory more effeciently, see the taichi documentation for a more optimized version), but it is the simplest.
+
+We import taichi and as it to use a GPU is possible using
+\begin{lstlisting}
+import taichi as ti
+ti.init(ti.gpu)
+\end{lstlisting}
+This will use, in order of precedence, NVIDIA CUDA, Vulkan on AMD GPUs or the CPU.
+
+The Euler stepping kernel looks like this
+\lstinputlisting[linerange={45-55}]{../example_code/taichi/gravity.py}
+We indicate that the function is a kernel using the \ls{ti.kernel} decorator. The function takes four arguments -- the positions of the planets \ls{rs}, the velocities \ls{vel} and accelerations \ls{acc}, which are numpy arrays of 64 bit floats of shape \ls{(N,2)} ($N$ planets and two coordinates) and the time step \ls{dt} which is a simple float.
+
+Inside, the function look rather ordinary, however it does run inside the GPU and the outer-most for loop is in fact not a loop but iterations are executed in parallel as much as possible. There are some restrictions -- for example, you are not allowed to \ls{break} out of the outermost loop. The inner loop (\ls{for k in range(2)}) runs as an ordinary sequential for loop. We do not return anything, but rather modify the input arrays.
+
+A more interesting kernel is the calculation of accelerations (or forces), which looks like this
+\lstinputlisting[linerange={14-46}]{../example_code/taichi/gravity.py}
+
+Our problem is relatively simple, so-called \emph{embarrassingly parallel}\footnote{This is an actual term used in the computer science.} because the calculations are entirely independet of each other. GPUs are capable of running many task in parallel quickly because they do not allow for synchronisation (or only in a very limited form). This means, that despite running many things in parallel, we do not have any mechanism similar to \ls{Lock()} from multithreading. Therefore, if the iterations of the loop depend on each other, avoiding race conditions becomes somewhat more complicated. For example, imagine some planets are made of matter and some of anti-matter and if they get too close to each other they annihilate. We could implement this this for example as
+\begin{lstlisting}
+for j in range(N):
+    for k in range(N):
+        if planet_is_alive(j) and planet_is_alive(k):
+            if distance(j,k) < annihilation_distance:
+                annihilate(j,k)
+\end{lstlisting}
+This would be OK if the loops are sequential. However, when the outermost loop runs in parallel, we could get to a situation where we have palents $j=1$ (matter) and $k=2, 3$ (anti-matter) which are all close to each other. Since the check on line 3 might be using old data, we could end up running both \ls{annihilate(1,2)} and \ls{annihilate(1,3)} and thus increasing the ratio of matter to anti-matter in the universe.
+
+\subsubsection{Using the kernels}
+To represent the state of the simulation -- the positions and velocities of the planets and the time we will use a simple class. As an initial condition we will random positions in 2D with normal distribution around origin and solid body rotation for velocities with some initial angular velocity. The class will have only two methods, which call the two kernels we wrote above,
+\lstinputlisting[linerange={61-88}]{../example_code/taichi/gravity.py}
+
+Finally, we create a simulations with 5000 planets, plot a real-time animation using matplotlib and periodically save a picture
+\lstinputlisting[linerange={91-130}]{../example_code/taichi/gravity.py}
+
+After about a minute of runtime on Intel Core i7-7700 CPU (a fairly old CPU) the initial gaussian distribution of the planets develops some interesting structure
+\begin{center}
+    \includegraphics[width=0.5\linewidth]{gravity.png}
+\end{center}
 
 \newpage
 \section{What didn't fit}
@@ -1550,8 +1626,12 @@ TODO
 \subsection{Symbolic mathematics}
 TODO: sympy
 
-\subsection{Running fast}
-TODO: numba, taichi
+
+% \section{Image processing}
+% TODO, \ls{opencv}
+
+% \section{Some AI crap?}
+% TODO \ls{scikit-learn}
 
 \newpage
 \appendix
