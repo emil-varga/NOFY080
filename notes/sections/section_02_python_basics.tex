@@ -1,0 +1,284 @@
+% Section 2: Python basics
+\newpage
+\section{Python basics}
+
+\subsection{Variables and types}
+
+Variables are created by assigning a value to an unused variable name, declarations, such as in C/C++ or Pascal are not necessary
+\begin{lstlisting}[caption=Defining variables]
+    my_integer = 5
+    my_float = 3.14
+    my_string = "double quote string"
+    my_string2 = 'single quote string'
+    my_string3 = "you can use 'single' quote in double quote string"
+    my_bool = False
+\end{lstlisting}
+
+Note that variables generally do not have a fixed type (i.e., an integer or a string), and doing something like \lstinline{my_integer = "a string"} will not result in type error. Python itself does not care about what type the variable is as long as the operations we do with it are supported. However, if we need to know the type of a variable \lstinline{v} we can find it using \lstinline{type(v)}.
+
+Basic arithmetic operations \verb|+,-,*,/| work as expected on numbers. Exponentiation is \verb|**|. Note, however, that \verb|/| automatically \emph{promotes} integers to float. For integer division, we can use \verb|//| and for the remainder \verb|%|. Arithmetic operations are also defined for some non-number types where they "make sense", i.e., strings can be concatenated using \verb|+|. Comparison operators are \verb|==| for equality (\textbf{not to be confused with =, which is the assignment of a value to a variable}), \verb|!=| for inequality and \verb|<,<=,>,>=| for ordering. Boolean operators are \verb|and, or, not|. 
+
+There are also \textbf{bitwise} operators \lstinline{&,|,~,^} (bitwise AND, OR, NOT and XOR, respectively). These operate on individual bits of a number. Careful about the confusion between exponentiation \ls{**} and bitwise exclusive or \ls{^}.
+
+Complex numbers are supported in Python. The syntax to specify a complex number is, e.g., \ls{3 + 5j}, which translates to mathematical $3 + 5i$. Specifically, the imaginary unit is \ls{1j}. Notice that the letter \ls{j} follows the number immediately.
+
+\begin{exercise}
+    Try out the basic arithmetic in REPL. Try multiplying a string by an integer. What happens when you try dividing?
+\end{exercise}
+
+A summary of basic built-in operators
+
+\begin{tabular}{ll}
+     \ls{+,-,*,/, **} & basic arithmetic, exponentiation \\ 
+     \ls{and, or, not} & boolean operations \\
+     \ls{<, <=, ==, >, >=} & comparison\\
+     \ls{&,|, ~, ^} & bitwise operations, bitwise AND, OR, NOT and XOR (exclusive or)
+\end{tabular}
+
+\subsection{User input}
+We will be mostly writing non-interactive scripts, however, to get basic text-based input from the user we can the \verb|input()| function, \textbf{which always returns a string}. We have to convert it to a number (using \verb|int()| or \verb|float()|) ourself if that is what we expect the user to enter, e.g.,
+\begin{lstlisting}
+    age = int(input("How old are you? "))
+    print("You will be 100 in", 100-age, "years.")
+\end{lstlisting}
+
+\subsection{Printing and strings}
+We have already met function \verb|print()|, which prints a text representation of whatever objects pasted to it to standard output. It accepts one or more arguments.
+
+To turn any value to a string we can use the function \verb|str()|. Special characters, such as new line or tab, need to be \emph{escaped}, e.g., \verb|\n| and \verb|\t|, respectively. Backslashes also need to be escaped \verb|\\|. To stop python from trying to interpret backslashes as special characters (useful, e.g., for specifying file paths on Windows) we can use raw strings, e.g.,
+\begin{lstlisting}
+    print("s\tri\ng") #\t and \n are interpreted as tab and new line
+    print(r"s\tri\ng") # raw string, note the r immediately before "
+\end{lstlisting}
+
+For crafting more complicated way of printing our variables we can use \emph{format} strings (or f-strings) by enclosing the variable we wanted inserted into the string in \verb|{}|, e.g.,
+\begin{lstlisting}
+    vari = 5
+    varf = 3.14
+    fstr = f"An interger value {vari:05d}, a float value {varf:010.6f}, exponential form {varf:g}"
+\end{lstlisting}
+The variable substitution is specified as \verb|{expression:format_specifier}|, the format specifiers are optional. Here the format specifier 05d means a decimal integer with total width of at least 5 characters and 010.6f means floating point number with 6 digits after the decimal period and total width of at least 10 characters.
+
+For a full specification of possible format specifiers see \url{https://docs.python.org/3/library/string.html#formatspec}
+
+\subsection{Functions}
+Functions are defined using the \verb|def| keyword. Functions may take argument and return a value.
+\begin{lstlisting}
+    def my_function(my_string):
+        print("Someone wants to know how long \"" + my_string + "\" is!")
+        return len(my_string) #returns the length of a my_string
+\end{lstlisting}
+Note the indentation, which is how blocks of code are identified in Python, i.e. there is no \verb|begin,end| as in Pascal or \verb|{}| as in C/C++.
+
+Multiple arguments are separated with a comma and arguments can have a default value, e.g. the argument $c$ will be 1 unless specified
+\begin{lstlisting}[caption=Function definition]
+    def calculate(a, b, c=1):
+        """
+        A function that calculates c*(a + b)
+
+        Parameters:
+        -----------
+        a, b, c: numbers
+            arguments of the calculation
+
+        Returns:
+        --------
+        result: number
+            The result of calculating c*(a + b)
+        """
+        return c*(a + b)
+
+    >>> calculate(2, 3)
+    5
+    >>> calculate(2, 3, 4)
+    20
+\end{lstlisting}
+Here the long string delimited by triple quotes \lstinline{"""} is the so-called documentation string of the function (or \textbf{docstring} for short). Triple quotes can be used anywhere and indicate only that the string span multiple lines. The docstring then can be accessed using the \lstinline{help()} function or by text editors. The formatting used in the above example is commonly understood by IDEs, e.g., Spyder will display it nicely formatted in the Help pane (upper right corner of the window by default).
+
+Arguments with default values must come after the required arguments. With multiple optional arguments we can call the function using \emph{keyword arguments}:
+\begin{lstlisting}[caption=Optional and keyword arguments.]
+    def calculate2(a, b, c=1, d=1):
+        return c*(a + b)**d
+
+    >>> calculate(2, 3, d=2) # leaves c default, but specifies d
+    25
+\end{lstlisting}
+
+Functions can be passed around in variables and arguments, specifically, functions can accept other functions as arguments, e.g.,
+\begin{lstlisting}[caption=Higher order functions.]
+    def add1(x):
+        return x + 1
+
+    def change_number(x, func):
+        return func(x)
+
+    >>> change_number(1, add1)
+    2
+\end{lstlisting}
+
+Short, simple functions (that fit on one line) can be defined in-line as so-called anonymous, or \emph{lambda}, functions, e.g.
+\begin{lstlisting}[caption=Lambda functions.]
+    >>> changer_number(1, lambda x: 2 + x)
+    3
+\end{lstlisting}
+Lambdas are especially useful for partially filling out argument lists of existing functions, e.g.
+\begin{lstlisting}
+    >>> change_number(1, lambda x: calculate2(x, 4, c=4, d=0.5))
+    8.94427190999916
+\end{lstlisting}
+
+\subsection{Compound types}
+
+\subsubsection{Lists and tuples}
+A \textbf{list} is a collection of any python objects defined using square brackets \verb|[]|,
+\begin{lstlisting}
+    my_list = [1, 2.17, "a string", ['another', 'list']]
+\end{lstlisting}
+The values in the list can be accessed by indexing the list \textbf{starting from 0}, e.g., \verb|my_list[1] == 2.17|. Negative indices count from the back, i.e., \verb|my_list[-1]| is the last element, \verb|my_list[-2]| second-to-last etc.
+
+Lists are an example of an \emph{object}, objects have associated functions called methods, which are called with a dot syntax. Useful methods for lists are
+\begin{itemize}
+    \item \verb|append| and \verb|pop|
+\begin{lstlisting}
+>>> my_list = [1, 2.0, 'three']
+>>> my_list.append('one more')
+>>> my_list.pop() # removes the last element and returns it
+"one more"
+\end{lstlisting}
+    \item \verb|my_list.sort()|, sorts the list in-place if all elements of the list can be compared; to create a new list with sorted elements we can use \verb|sorted(my_list)|
+    \item \verb|my_list.index('a')| finds the index of first occurence of 'a' or returns an error
+\end{itemize}
+
+Apart from simple indexing, subsets of lists can be accessed using \emph{slicing}, e.g.,
+\begin{lstlisting}
+    l = [1,2,3,4,5,6,7,8,9]
+    l[2:5] # [3,4,5]
+    l[-5::2] # [5,7,9]
+\end{lstlisting}
+Generally the syntax is \verb|my_list[start_idx:stop_idx:step]|, \verb|start_idx| is inclusive, \verb|stop_idx| is exclusive. All three are optional, start defaults to 0, stop defaults to -1 and step defaults to 1.
+
+\textbf{Tuples} behave in many ways similarly to lists, with the exception that they are \textbf{immutable}, i.e., the tuple itself or the values in it cannot be changed. Indexing and slicing, however, work the same. Tuples are defined using ordinary brackets \ls{()}. If the tuple contains only one value a comma needs to be included to distinguish it from a bracketed expression, i.e., \ls{single_tuple = (1,)}.
+
+A common use for tuples is to return multiple values from a function, i.e.,
+\begin{lstlisting}
+    def add_and_subtract(x, y):
+        return x+y, x-y #note that the parentheses () are not required in return
+
+    #here we unpack the return value into two variables
+    a, s = add_and_subtract(3, 2) # a==5, s==1
+\end{lstlisting}
+Note that we did not store the return value as a tuple but immediately split it into two separate variables. This is called \textbf{unpacking} and can be used for any compound type.
+
+\subsubsection{Dictionaries}
+Dictionaries are a collection of assignments from a key to a value of any type, often the keys are strings e.g.,
+\begin{lstlisting}
+    my_dict = {
+        'key1': value1
+        'key2': value2
+    }
+\end{lstlisting}
+which can then be accessed as \ls{my_dict['key2']} etc.
+
+
+\subsection{Control flow}
+
+\subsubsection{if-elif-else}
+The \verb|if| statement takes a boolean expression and runs the code in its code block if the condition evaluates to \verb|True|.
+\begin{lstlisting}[language=Python]
+    if condition:
+        do_if_true()
+    elif condition2: #optional
+        do_if_2true() #runs only if condition is False and condition2 is True
+    else: #optional
+        do_if_false() #runs only if both condition and condition2 are False
+        
+\end{lstlisting}
+
+\subsubsection{match}
+Available since Python 3.10
+TODO
+\begin{lstlisting}
+    command = 'yell'
+    match command:
+        case 'talk':
+            print("hello")
+        case 'yell':
+            print("HELLO!!")
+        case _: #default behavior
+            print("unknown command")
+\end{lstlisting}
+
+\subsection{Loops}
+To loop for a given number of iteration we can use the \verb|for| loops with a \verb|range()| function. We can also loop over anything iterative, e.g., a list or dict.
+\begin{lstlisting}
+    for k in range(10):
+        print(k)
+
+    for value in my_list:
+        print(value) 
+\end{lstlisting}
+The general form of \ls{range()} is \ls{range(start, stop, step)}, start is inclusive, stop is exclusive and step is by default 1. \ls{range()} does not return a list but something called an \emph{iterator}. We can turn it into a list using \ls{list(range(start, stop, step))}.
+
+If we want to iterate over a list and we need to work with both the index and the value we can use \lstinline{enumerate}
+\begin{lstlisting}
+    for index, value in enumerate(my_list):
+        print(f"my_list[{index}] = {value}")
+\end{lstlisting}
+
+To loop while a condition is true we can use the \verb|while| loop,
+\begin{lstlisting}
+    while condition:
+        do_stuff()
+\end{lstlisting}
+
+Execution of loops can be modified using \ls{continue}, which skips the rest of the code in the iteration and goes to the next one or \ls{break} which immediately ends the loop. A common usage is with infinite loops, e.g.,
+\begin{lstlisting}
+    while True: # this will never end
+        do_stuff()
+        if should_we_stop: # unless we kill it
+            break
+\end{lstlisting}
+
+Loops are often used to construct lists, which can be simplified using \textbf{list comprehension} such as
+\begin{lstlisting}
+    [expression(k) for k in iterable if condition(k)] # if condition is optional
+\end{lstlisting}
+For example,
+\begin{lstlisting}[caption=List comprehension.]
+    [k**2 for k in range(5)] # list of squares for k < 5
+    [k**2 for k in range(5) if k % 2 == 0] # list of squares of even numbers
+\end{lstlisting}
+
+\begin{exercise}
+    Write a program, which asks a user their name and replies \verb|"Hello <name>!"|.
+    \begin{enumerate}
+        \item Change the program such that if the user's name is "Andrej", the greeting changes to "Ciao Andrej!".
+        \item Separate the logic of constructing the greeting to a separate function.
+    \end{enumerate}
+\end{exercise}
+\begin{exercise}
+    Write a program, which will accept arbitrary number of names from the command line and at the end prints them back in alphabetical order.
+    \begin{enumerate}
+        \item The user will enter beforehand the number of names they want to enter. \emph{Hint}: \verb|range()| and a \verb|for| loop
+        \item The program will stop asking for new names once the user enters an empty string. \emph{Hint:} \verb|break|
+        \item If the user entered the name "Emil", it will be skipped in the final output. \emph{Hint:} \verb|continue|.
+    \end{enumerate}
+\end{exercise}
+
+\subsection{Using external modules}
+Python is famous for having a large number of available libraries to do pretty much everything under the sun.\footnote{And we will learn how to create our own shortly.} To use these, we first need to import the \emph{module} we need, e.g. to use functions that deal with time we can do
+\begin{lstlisting}
+    import time as t #import the time module and gives it a shorthand name t
+    print(t.time()) #we prepend the module name to the function to call it
+\end{lstlisting}
+If there is only a small number of functions we want to use from a given module we can import them specifically and don't have to use the module name to call them, e.g.
+\begin{lstlisting}
+    from module import func1, func2
+    func1()
+    func2()
+\end{lstlisting}
+
+\begin{exercise}
+    Write a program to caluclate the Fibonacci number $F_n$ using both loops and recursion. Measure the time to calculate the first 20 $F_n$ using both methods using \verb|time.time()|.
+    \emph{Hint:} $F_k = F_{k-1} + F_{k-2},\;F_1 = F_2 = 1$
+\end{exercise}

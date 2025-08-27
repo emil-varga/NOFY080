@@ -1,0 +1,156 @@
+\newpage
+\section{Communication with instruments}
+Instrumentation can be connected to a computer through a wide variety of interfaces, including USB, GPIB, RS-232 or Ethernet or emulated serial port over USB. Each of these interfaces require specific OS support, drivers or libraries to use. This was, fortunately, to a large degree solved by the Virtual Instrument Software Architecture (VISA) which abstracts and unifies most of the interfaces into VISA "sessions".
+
+Most of the communication over VISA sessions is text-based. A text command is sent to an instrument, the instrument performs some action and, optionally, replies a text response back. To use VISA we will use the \lstinline|pyvisa| python module. This, however, is only a python interface to the system VISA library. There are several implementations of the VISA library (sometimes called the VISA backend) from multiple vendors, e.g., from National Instruments (NI-VISA, most common) or Keysight companies. We will be using an open-source fully-python VISA backend \lstinline|pyvisa-py|. For our purposes will also need \lstinline|pyserial|. If you want to use USB, Ethernet or GPIB instruments, one of the free-to-download proprietary implementation is probably the best way forward.
+
+In this course we will be using the Raspberry Pi Pico in place of an actual instruments. The Pico is programmed to respond to several commands that roughly follow the SCPI syntax (see Appendix~\ref{sec:pico}). A simple VISA program that communicates with an instrument might look like this
+\lstinputlisting{../example_code/visa_intro.py}
+On the first line we import the \lstinline|pyvisa| module. Creating new sessions is done via the Resource Manager \lstinline|rm|. In the VISA naming convention instruments are called 'resources' and they are identified by a resource address, which will typically indicate the type of interface used, e.g., addressed that begin with \lstinline|ASRL| are serial instruments, \lstinline|GPIB| and \lstinline|USB| etc.
+
+The resource manager provides the \lstinline|list_resources()| method which returns a list of all available resources. For USB and GPIB these are usually the instruments actually connected to the computer. For serial interface, all available ports might be listed regardless of whether something is connected to them or not.
+
+To start a VISA session, we use the \lstinline|open_resource()| method of the resource manager. In addition, here we specify the read and write termination, which are characters that indicate that the transmission is finished (think of army movies when they say "over" to a walkie-talkie). The new line \ls{'\\n'}, carriage return \ls{'\\r'} and their combination \ls{'\\r\\n'} are common. Our pico expects the commands to be terminated by new line \ls{'\\n'} and terminates its responses with a new line as well. For other instruments, this is something you have to find in the manual, but \ls{'\\n'} is the most common.
+
+The open VISA session is represented by the object \ls{pico} returned by \ls{open_resource()}, whose most important methods are \ls{write()}, \ls{read()} and \ls{query()}, which is simply a write immediately followed by a read.
+
+Most scientific instruments will communicate via text strings which usually adhere to the syntax specified by Standard Commands for Programmable Instruments (SCPI), which tries to define a common syntax for instruments of similar type. SCPI commands typically have the format
+\begin{lstlisting}
+    :COMMand:SUBCommand:SUBCommand ARG1 ARG2 ...
+\end{lstlisting}
+where the capitalized substrings can be used as a shorthand. For example, on most digital multimeters (e.g., the venerable Keithley 2000 series), command
+\begin{lstlisting}
+    :MEAS:VOLT:DC?
+\end{lstlisting}
+will measure the DC voltage. The question mark at the end indicates that the command returns a value. Instruments that support SCPI in addition support several basic commands such as \ls{*IDN?}, which returns an identification string, \ls{*STB?}, which returns a single byte with various status bits of the instrument or \ls{*RST}, which resets the instrument. At the end, both the VISA session and the resource manager should be properly closed using the \ls{close()} method.
+
+In most cases, nothing other than the resource address is necessary for the \ls{rm.open_resource()} method to successfully open the session. However, especially for some older instruments connected via RS-232, some additional information is often required. Assuming that a device was opened as \ls{dev = rm.open_resource(address)}, before we can start communicating we might need to set the following:
+\begin{description}
+    \item[baud rate] Number of changes to the communication signal per second (i.e., changes from low to high voltage). Can be set via \ls{dev.baud_rate} to an integer.
+    \item[data bits] Number of actual data bits in a single "packet" of data exchanged between the instrument and computer (usually 8). Can be set via \ls{dev.data_bits} to an integer.
+    \item[stop bits] The number of bits indicating beginning and end of a character transmitted on serial cable (usually 1). Can be set via \ls{dev.stop_bits} to one of \ls{pyvisa.constants.StopBits.SB} where \ls{SB} is \ls{one}, \ls{one_and_a_half} or \ls{two}.
+    \item[parity] A simple check for corrupted transfer. Some instruments send a bit indicating whether the sum of bits in the last character (i.e., its ASCII code) was odd or even. Can be set via \ls{dev.parity} to one of \ls{pyvisa.constants.Parity.P} where \ls{P} is \ls{none} (most common, no parity check), \ls{even} or \ls{odd}.
+\end{description}
+For example, if we had an instrument on address \ls{COM16} and its manual says that it expects baud rate of 19200, 8 data bits, one stop bit and no parity we could open the communication as
+\begin{lstlisting}
+    import pyvisa as vi
+
+    rm = vi.ResourceManager()
+    dev = rm.open_resource('COM16')
+    dev.baud_rate = 19200
+    dev.data_bits = 8
+    dev.stop_bits = vi.constants.StopBits.one
+    dev.parity = vi.constants.Parity.none
+
+    dev.query('*IDN?')
+    ...
+\end{lstlisting}
+
+\begin{exercise}
+    Create a program that automatically finds the pico if it is connected to the computer. Send the \ls{*IDN?} query to every available VISA resource and find the one that responds \ls{'PICO'}. Resources (serial ports) which are not connected to any instrument will raise a timeout exception, which must be handled without crashing the program.
+\end{exercise}
+
+\begin{exercise}
+    Open the communication to the pico and make the white and blue LEDs flash in a "police car"-like pattern (i.e., two quick flashes of white followed by two quick flashes of blue) on repeat. Use the \ls{:LED n x}, where $n=0\dots 4$ is the LED number and $x$ is either 0 or 1, which turns the LED off or on. Make sure that when your program is killed (either by Ctrl-C or the interrupt button in Spyder) all LEDs are turned off.
+\end{exercise}
+
+\begin{exercise}
+    Write a program that will indicate the current temperature (obtained using \ls{:READ:T?} command) using the on-board LEDs. Map the range 20-27$^\circ$C to 0 to 5 LEDs ON. If the temperature exceeds 28$^\circ$C, raise a \ls{RuntimeError}, which ends the program. Make sure none of the LEDs stay on when the program ends.
+\end{exercise}
+
+\begin{exercise}
+    Write a "digital spirit level", i.e., indicate the current tilt along the y-axis (length-wise along the PICO) using the LEDs (you can decide on whatever you think is the best way to use the LEDs). Note that the accelerometer is not soldered to the PCB perfectly level. Assume that when the program is run, the pico is level and use the acceleration vector measured at the beginning as the reference value.
+\end{exercise}
+
+\begin{exercise}
+    Write an object interface to the pico, which should be initialized using only the resource manager instance and should find the correct address on its own, i.e.,
+    \begin{lstlisting}
+        import pyvisa as vi
+
+        class Pico:
+            def __init__(self, rm):
+                ...
+            def led(self, led_id, onoff):
+                #should raise ValueError if led_id > 4
+                ...
+            def getT(self):
+                ...
+            def getP(self):
+                ...
+            def getACC(self):
+                ...
+            def getGYR(self):
+                ...
+            def close(self):
+                "Turn off all LEDs and close the session."
+                ...
+        
+        rm = vi.ResourceManager()
+        pico = Pico(rm)
+        pico.led(2, 1) #turns the middle LED ON
+    \end{lstlisting}
+\end{exercise}
+
+\subsection{Context Management Protocol}
+Particularly with instruments that control actual laboratory hardware, proper shutdown and cleanup, even in the event of a software error, is very important. Imagine an oven, which keeps heating up, or a motor which keeps spinning uncontrollably because of a typo in your program. We saw in Exercises 27 -- 29 that a controlled shutdown can be handled using the \ls{finally} clause after a \ls{try} block. This is suboptimal, because we have to remember to write the \ls{finally} block, which is often does not change much, in every program in which we use a given instrument.
+
+Python has a solution for this, which we already saw, called \emph{context management protocol}, which is what the \ls{with} statement uses. Recall using files,
+\begin{lstlisting}
+    with open("hello.txt", 'w') as file:
+        file.write('Hello Context Management.')
+\end{lstlisting}
+where the \ls{with} statament makes sure that after we are done using the file it is properly \ls{close()}d
+
+To use the context management with our objects we only need to define two special methods, \ls{__enter__()} and \ls{__exit__()}, which are run at the beginning and end of the with statement. The enter method should return the object we want to use (i.e., file in the above example), often it simply returns \ls{self}. The exit method should do all the necessary cleanup. It takes three additional arguments besides \ls{self} which contain information about whether an exception occurred and what type. Most of the time we can ignore the exceptions and simply let it propagate. If we return \ls{False} from the exit method, the exception is supressed.
+
+Take a simple example. Say we want to have file-like object that can be used with \ls{with} as an ordinary file but the method \ls{write()} also supports NumPy arrays. We could do the following
+\lstinputlisting{../example_code/context_management_file.py}
+which prints
+\begin{verbatim}
+    I'm about to open the file.
+    Opening file.
+    Entering with statement
+    Closing.
+    The end
+\end{verbatim}
+
+Notice that the method \ls{__enter__()} simply returns \ls{self}. This is because the context manager and the object representing the file are the same. In the \ls{__exit__()} method we simply lump together all information about any exception that might have occurred in the \ls{*exc} argument list and ignore them, only doing the necessary cleanup. Not returning anything is equivalent to returning \ls{None}, which is not \ls{False}, so if any exception occurred it will simply continue on its merry way to the nearest \ls{except} clause.
+
+\begin{exercise}
+    Extend the Pico class to support the context management protocol.
+\end{exercise}
+
+For completeness, the example with \ls{open()} is essentially equivalent to the following code
+\begin{lstlisting}
+    manager = open("hello.txt", 'w')
+    file = manager.__enter__()
+    try:
+        file.write("Hello Context Management.")
+    except:
+        if not manager.__exit__(exception_info)
+            raise
+    else:
+        manager.__exit__(None, None, None)
+\end{lstlisting}
+
+\subsection{Troubleshooting common issues}
+Communication with external hardware can fail for several reasons. Assuming that the hardware itself and the connecting cables are functioning some common causes of problems are:
+\begin{description}
+    \item[exception in opening VISA session] Depending on the operating system and VISA backend used, \ls{rm.open_resource()} can raise an exception claiming that access to the resource is denied or that the device is busy. This is most commonly caused by previously opened VISA session, which was not closed. Only one VISA session with a given instrument is allowed at any one time.
+    
+    This is a common problem in IDEs such as Spyder, which run files in an interactive console, where variables remain accessible even if the program exits unexpectedly. Either ensure that sessions are closed properly even if the program crashes (i.e., \ls{finally} or context management) or close the console in which the program was run.
+
+    \item[resource opens but communication times out] An attempt to read will time out if the device does not respond in an expected way, most often because of a mistake in the command. If the command sent is definitely correct, timeout exception is usually the symptom of incorrectly set up VISA session configuration, e.g., the read/write termination characters, or some of the serial port configuration options mentioned above.
+    
+    \item[resource opens, and no timeout occurs, but the response is wrong] Consider the following code
+\begin{lstlisting}
+    import pyvisa as vi
+    rm = vi.ResourceManager()
+    pico = rm.open_resource(rm.list_resources()[-1])    
+    pico.read_termination = '\n'
+    pico.write_termination = '\n'
+    pico.write(':READ:T?')
+    print(pico.query('*IDN?'))
+\end{lstlisting}
+    which prints the temperature reading rather than the expected identification string. This is because the response to \verb|:READ:T?| was never read, so it remained in the input buffer until the earliest call to \ls{read} which came in the \ls{query()}. If the backend and resource type supports it, you can call \ls{pico.clear()} to discard the buffers, or you can call \ls{pico.read(timeout=0)} and discard the timeout exception if the buffer happens to be empty
+\end{description}

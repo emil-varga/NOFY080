@@ -1,0 +1,78 @@
+%Appendices
+\section{Linear Harmonic Oscillator}
+\label{sec:lho}
+A linear harmonic oscillator with friction is described by a dynamical equation
+\begin{equation}
+    \label{eq:lho}
+    \ddot x + \omega_0^2 x + \gamma\dot x = F(t)/m,
+\end{equation}
+where $m$ is the oscillator mass, $\omega_0$ is the resonance frequency, $\gamma$ the friction coefficient and $F(t)$ the external force. Assuming that the force has the form $F(t) = \Re(\tilde F e^{i\omega t})$ and that the solution has the form $x(t) = \Re(\tilde x e^{i\omega t})$ (or applying the Fourier transform to both sides of the equation) we get by simple rearranging
+\begin{equation}
+    \tilde x = \frac{1}{m}\frac{\tilde F}{\omega_0^2 - \omega^2 + i\gamma\omega} = \chi(\omega)\tilde F,
+\end{equation}
+where $\chi(\omega)$ is called susceptibility.
+
+Since Eq.~\ref{eq:lho} is a linear equation, the response to a sum of forces will be the sum of responses to each force.
+
+\section{Setting up communication with instruments}
+\label{sec:pico}
+We will use VISA library to talk to instruments. To talk to the Raspberry Pi Pico we will use a Python implementation of the library, for which we need to install at least \ls{pyvisa, pyvisa-py} and \ls{pyusb} using
+\begin{lstlisting}[language=bash]
+    pip install pyvisa pyvisa-py pyusb
+\end{lstlisting}
+which you should run in a command line which is aware of the python installation (e.g., Anaconda Propmt if on Windows with Anaconda Python distribution). On Linux you should also add yourself to the \ls{dialout} group (do not forget the \ls{-a} switch),
+\begin{lstlisting}[language=bash]
+    sudo usermod -a <your username> -G dialout 
+\end{lstlisting}
+and log out and log in.
+
+To test the installation run the \ls{pyvisa-info} from the command line. A bunch of information should be printed out, look for line that looks like
+\begin{lstlisting}
+    USB INSTR: Available via PyUSB (1.2.1). Backend: libusb1
+\end{lstlisting}
+
+Next, create a Python script \ls{list_resources.py} with the following code
+\lstinputlisting{../example_code/list_resources.py}
+and run it. It should list either nothing or a few COM (or tty on Linux) ports. Next connect the Pico and run the program again, a new address should appear, that is the address we will use to communicate with the Pico.
+
+Next, run the following code, replacing \ls{"ASRL/dev/ttyACM0::INSTR"} with the address you found in the previous step.
+\lstinputlisting{../example_code/idn.py}
+The program should print "PICO" and quit without error.
+
+For more full-featured implementation of visa you may consider the implementation from \href{https://www.ni.com/en/support/downloads/drivers/download.ni-visa.html#548367}{National Instruments} (NI). The NI-VISA library is free, but not open source and registration is required. Linux support is also limited to out-of-date kernels.
+
+\subsection{Supported commands}
+\begin{tabular}{p{15cm}}
+    \textbf{*IDN?}\\
+    Query identification string. Should reply PICO.
+    \\\hline
+    \textbf{:LED n m}\\
+    Turns the LED $n$ on (m=1) or off (m=0). The LED number $n = 0 \dots 4$, red LED is 0.
+    \\\hline
+    \textbf{:READ:P?}\\
+    Reads the pressure in Pa.
+    \\\hline
+    \textbf{:READ:T?}\\
+    Returns the temperatures as $100T$ where $T$ is the temperature in $^\circ$C.
+    \\\hline
+    \textbf{:READ:PT?}\\
+    Reads both temperature and pressure
+    \\\hline
+    \textbf{:READ:ACC?}\\
+    Reads the accelerometer. Returns three space-separated values in the range -32768 to 32768 which maps to $-2g$ to $2g$.
+    \\\hline
+    \textbf{:READ:GYR?}\\
+    Reads the gyroscope. Returns three space-space separated values in the range -32768 to 32768 which maps to $-500^\circ$/s to $500^\circ$/s.
+\end{tabular}
+
+\subsection{Hacking the firmware}
+The source code of the program running on the Pico is available \href{https://bitbucket.org/emil_varga/picolab/src/master/}{here}. To compile it, you need to set up Pico SDK, follow the instructions \href{https://www.raspberrypi.com/documentation/microcontrollers/c_sdk.html}{here}.
+
+Alternatively you can use MicroPython to run Python code on the Pico directly, follow the instructions \href{https://www.raspberrypi.com/documentation/microcontrollers/micropython.html#what-is-micropython}{here} for set up. 
+
+LEDs are wired to GP0 -- GP4 pins and the sensors are connected to the I2C0 controller on pins 16 and 17.
+
+\section{Basics of git version control system}
+\label{sec:git}
+TODO
+\end{document}
