@@ -143,7 +143,7 @@ A server is running on computer with IP address \verb|<IP>|, on port \verb|<PORT
 
 \verb|instrument_server.py|:
 The code accepts the connections in a separate thread. For each connection it accepts, it starts a new client handler thread. All client handler threahds share the same pico, so we have to lock it appropriately before attempting communication, because another client can interrupt us at any moment. The server quits when it receives KeyboardInterrupt (Ctrl-C) 
-\lstinputlisting{../example_code/instrument_server.py}
+\lstinputlisting{../example_code/instrument_server.py} %
 
 \subsubsection{Real use case in a lab}
 In Fig.~\ref{fig:networking-usecase} is a photo of a single computer which controls three experiments connected to two different experimental setups. Each experiment belongs to a different student, who might need to run and modify their measurement Python scripts at the same time, so simple remote desktop sharing is not available.

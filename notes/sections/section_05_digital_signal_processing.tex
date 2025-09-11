@@ -71,7 +71,7 @@ Fourier transforms are implemented in NumPy and SciPy using the \textbf{Fast Fou
 
 \lstinputlisting[label=lst:fft-square-wave, caption=Fourier coefficient of a square wave\, calculated using FFT]{../example_code/fourier_series_square_wave_fft.py}
 
-One particularly important Fourier transform is that of the exponentially deacying oscillation, i.e.
+One particularly important Fourier transform is that of the exponentially decaying oscillation, i.e.
 \begin{equation}
     s(t) = e^{-t/\tau}\sin(2\pi f t),
 \end{equation}
@@ -169,7 +169,7 @@ The above expressions are called transfer functions of the filter. Quantity $RC 
 \end{center}
 The figure shows the absolute value of the transfer function for the low-pass and high-pass RC filters, respectively. The vertical line is the corner frequency.
 
-Notice that the transfer functions are functions of frequency and the circuits they represent are linear, i.e. they act on each frequency independently. Therefore, if $s(t)$ is out signal and $\hat s(f)$ is its Fourier transform, the Fourier transform of the signal filtered with a tranfer functino $H(f)$ is simply
+Notice that the transfer functions are functions of frequency and the circuits they represent are linear, i.e. they act on each frequency independently. Therefore, if $s(t)$ is our signal and $\hat s(f)$ is its Fourier transform, the Fourier transform of the signal filtered with a transfer function $H(f)$ is simply
 \begin{equation}
     \hat s'(f) = H(f)\hat s(f),
 \end{equation}
@@ -188,7 +188,7 @@ For the low-pass RC filter it can be proven that
 \end{equation}
 which can also be easily implemented for streaming data, for which it is often called \emph{exponential smoothing}.
 
-Apart from low-pass and high-pass filters there are also band-pass and band-stop filters. Band-pass only lets through a certain frequency badn and band-stop lets through everything except for a certain frequency band. You can imagine band-pass as a high-pass followed by a low-pass in series and band-stop as a low-pass and high-pass in parallel with corner frequencies given by the pass or stop band. 
+Apart from low-pass and high-pass filters there are also band-pass and band-stop filters. Band-pass only lets through a certain frequency band (i.e., an interval) and band-stop lets through everything except for a certain frequency band. You can imagine band-pass as a high-pass followed by a low-pass in series and band-stop as a low-pass and high-pass in parallel with corner frequencies given by the pass or stop band. 
 
 The simple RC filters above are so-called first order. The order of the filter indicates how fast it cuts the signal outside of the \emph{pass band} (i.e., the interval of frequencies which the filter lets through). This is often measured in decibels per octave (dB/oct) which indicates by how many decibel is the signal attenuated if its frequency doubles, for a low-pass filter, or halves for high-pass filter, sufficiently far from the corner frequency. Both of the RC filter are 6 dB/oct, since every doubling of frequency remove 6 dB of transmitted power.
 

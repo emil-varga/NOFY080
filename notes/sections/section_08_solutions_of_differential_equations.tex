@@ -12,7 +12,7 @@ These types of equations are usually solved by \emph{time stepping}: given that 
 
 The fourth-order Runge Kutta (RK4) calculate $y(t + \dd t)$ from $y(t)$ as
 \begin{equation}
-    \label{eq:RK4}
+    \label{eq:RK4} %
     y(t + \dd t) = y(t) + \frac{\dd t}{6}\left(k_1 + 2k_2 + 2k_3 + k_4\right),
 \end{equation}
 where
@@ -24,7 +24,7 @@ where
         k_4 &= f(y_t + k_3 \dd t, t + \dd t).
     \end{aligned}
 \end{equation}
-Notice that for each time step, the function $f$ has to be evaluated 4 times, and the calculation is about 4 times slower than the Euler method. There are also time stepping methods which instead of taking 4 times as long, the take-up 4 times as much space (e.g., Adams-Bashforth family of methods) which use the last four steps in the history of $y(t)$ to estimate the next step.
+Notice that for each time step, the function $f$ has to be evaluated 4 times, and the calculation is about 4 times slower than the Euler method. There are also time stepping methods which instead of taking 4 times as long, they take up 4 times as much space (e.g., Adams-Bashforth family of methods) which use the last four steps in the history of $y(t)$ to estimate the next step.
 
 The RK4 method for a problem of type \eqref{eq:ivp} is implemented in \verb|SciPy| in \ls{scipy.integrate.solve_ivp()}. The \ls{solve_ivp()} expects the function $f(t, y)$, which takes the time and state vector and returns the time derivative of the state vector, the initial condition, and the time range where the evolution should be calculated.
 
@@ -144,7 +144,7 @@ Certain types of physical problems can be effeciently calculated on graphics car
 
 We will consider the 2D case for simplicity of plotting. The total force acting on planet $j = 1\dots N$ is
 \begin{equation}
-    \bv F_j = Gm^2\sum_{k\neq j}\frac{\bv r_k - \bv r_j}{|\bv r_k - \bv r_j|^3},
+    \bv F_j = Gm^2\sum_{k\neq j}\frac{\bv r_k - \bv r_j}{|\bv r_k - \bv r_j|^3}, %
 \end{equation}
 where $G$ is the gravitational constant and $\bv r_k$ are the positions of the planets. The motion of the planet is then given simply by $m\ddot{\bv r_j} = \bv F_j$ and we could use \ls{solve_ivp()} as before. However, this problem becomes more scientifically interesting for large number of planets where \ls{solve_ivp()} would quicktly grind to a halt. Therefore we want to make use of fast GPUs.
 
