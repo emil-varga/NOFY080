@@ -75,4 +75,241 @@ LEDs are wired to GP0 -- GP4 pins and the sensors are connected to the I2C0 cont
 \section{Basics of git version control system}
 \label{sec:git}
 TODO
-\end{document}
+
+\section{Basics of Linux}
+
+Linux is a kernel of an operating system -- the bit that directly handles access to hardware and cannot be directly used by the user. When combined with a commonly used set of programs developed, e.g., by the GNU Project, an actual operating system results sometimes called
+``GNU/Linux'' (although almost everyone just calls it Linux).
+
+Adding extra features on top of that (typically an installer, a package manager and a graphical user interface) results in a \emph{linux distribution} (or \emph{distro}), e.g., Ubuntu, Fedora, OpenSUSE, Mint, Red Hat Enterprise Linux, \ldots{} or Gentoo, in the case of the lab computers.
+
+\subsection{Filesystem structure}
+
+Linux, and generally Unix-like systems, do not use the filesystem structure which might be familiar from Microsoft Windows. Particularly, the filesystem starts at the \textbf{root directory} denoted by a single forward slash \ls{/}, from which all other directories branch. Multiple hard drives, or partitions on a single drive (which would be called something like \ls{C:\\}, \ls{D:\\}, etc. on Windows) look and behave as ordinary directories.
+
+Important directories are \ls{/home}, where users can store their data in their \textbf{home directories} or \ls{/bin} where executable programs are stored.
+
+\subsection{Moving files between lab and personal computer}
+
+All students have accounts for storing their files on the faculty servers. These can be accessed through the web at \url{https://su.mff.cuni.cz/}
+
+You can also access them with file manager on linux by going to\ls{sftp://su.mff.cuni.cz/home/university_username} or \ls{\\\\su.mff.cuni.cz\\home\\university_username} on Windows and logging in with your university credentials. \ls{university_username} is the word based on your name, not the ID number.
+
+\subsection{Command line interface}
+
+The operating system gives us access to its services (e.g., writing stuff to disk, or printing stuff on the screen) through a set of programs called a \textbf{shell}. Shells can either be graphical (graphical user interface, GUI) or a command line interface (CLI). On Linux, many
+graphical shells exist, the most popular being Gnome, KDE (used on lab computers) and (I guess) Xfce. Most commonly used text-based shell is called \textbf{bash}. In order to use the CLI we can use a ``terminal emulator'' from within the GUI. Each GUI provides their own version
+(e.g., \ls{konsole} for KDE, \ls{gnome-terminal} for Gnome). Almost all linux distributions bind the launching of a terminal emulator to a keyboard shortcut Ctrl-Alt-T.
+
+\paragraph{Basic commands}
+
+\begin{itemize}
+\item
+  \textbf{Navigation}
+  For basic navigation, we can use
+  \begin{itemize}
+  \setlength\itemsep{1pt}
+  \item
+    \ls{ls} -- lists the contents of the current directory
+  \item
+    \ls{cd} -- changes the directory
+  \item
+    \ls{pwd} -- prints the current working directory
+  \item
+    \ls{tree} -- prints a tree representation of the current
+    directory and its contents
+  \end{itemize}
+
+  The behavior of commands can be modified with \emph{options}, usually leading with one or two dashes, e.g., \ls{ls -l} lists the current directory in a one-column format with some extra information; \ls{ls -la} also lists hidden files (those whose name begins with a full stop \ls{.}) and \ls{ls\ -lh} lists file sizes in a human-readable format (kilobytes, megabytes\ldots) rather than just bytes. Note that it is quite common that filenames on Linux do not have filename extensions (e.g., .exe, .txt etc). The command \ls{tree} by default prints the full contents of all subdirectories, recursively of the current directory, and is thus not particularly useful for at the root of larger directories (e.g., your  \ls{\~}). The optional argument \ls{-L n}  limits the depth to which subdirectories are printed,  e.g.~\ls{tree -L 2} prints the contents of the current directory, its subdirectories, and their subdirectories.
+
+  While it is often more convenient to work with a GUI file browser, sometimes it is necessary to switch to CLI, for example, to run a program. Most file browsers support this in some way (usually right-click \verb|>| open in the terminal, or something similar).
+
+  Special directory names are \ls{\.} (dot), which means the current directory and \ls{..} (double dot), which refers to the parent directory, and \ls{\~} (tilde, above Tab key), which refers to your home directory (which, for me, would be \ls{/home/vargaem} on my computer).
+
+  E.g., \ls{cd\ ..} changes the directory to one level up.
+
+  Most terminal emulators will help you to save some typing by autocompletion of names of files, folders or commands. Hitting Tab key will complete the current word as much as it can do so uniquely. Hitting the Tab twice will give you a list of possible completions.
+
+  \begin{exercise}
+    Create a file with some text in it in a subdirectory in your home dir using the GUI. Then find this file using the CLI.
+  \end{exercise} 
+\item
+  \textbf{Paths} When moving around the file system we have two options for specifying paths to the exact file or directory we want -- \emph{absolute} or \emph{relative} paths. This is not unique to Linux, all operating systems provide these two options in some way
+
+  \begin{itemize}
+  \item
+    absolute paths -- a path that specifies the absolute position of a file in the file system. On Linux, these paths will always start with \ls{/}, i.e.~\ls{/etc/fstab} (a file that on Linux contains info about the partitioning of the file system). On Windows, these paths start with the drive letter, i.e., \ls{C:\\Windows\\system32}.
+  \item
+    relative paths -- a path relative to the current position as given by the command \ls{pwd}. Files and folders are searched for in the current working directory. If we need to refer to a file in the parent directory, we have to use \ls{..}.
+  \end{itemize}
+\item
+  \textbf{Wildcards}
+  Sometimes we want to work only with names of files or directories that fit a certain pattern. This pattern can be most easily specified using \emph{wildcard} characters - \ls{\*} (star) substitutes any number (including zero) of any characters; \ls{?} substitutes exactly one character. These wildcards can be used with \ls{ls}, e.g.
+\begin{lstlisting}
+ls *.txt
+\end{lstlisting}
+  lists all \ls{.txt} files in the current directory
+\begin{lstlisting}
+ls ab?.pdf    
+\end{lstlisting}
+  lists all three-letter PDF files which begin with \ls{ab}. More complex patterns can be formed by specifying which characters can substituted into the pattern using square brackets \ls{[]},
+  e.g., \ls{data_[1-9].txt} will match \ls{data_1.txt}, \ls{data_2.txt},\ldots\ls{data_9.txt}.
+
+    \begin{exercise}
+    List all files from the directory \ls{/usr/include} which begin with `a' and have a file extension `.h'.
+    \end{exercise}
+\item
+  \textbf{help and man pages}
+  Commands can range from quite simple, like \ls{cd} to quite complicated, like \ls{find} (see below), where one often needs to look at the documentation. Most commands accept an option \ls{-h} or \ls{--help} which will print a short help. For more thorough documentation we can use the \ls{man} command which displays a so-called \emph{man page} of the given command (abbreviated from \textbf{man}ual), e.g.
+    \begin{lstlisting}
+        man ls
+\end{lstlisting}
+  will show the documentation for the \ls{ls} command.
+\item
+  \textbf{Reading files}
+  Text files can be read and displayed directly in the CLI (for editing see next section) using the \ls{cat} command (abbreviated from con\textbf{cat}enate) which prints one or more files, as text, directly on the command line.
+
+  If we want to read a long text file we might need to be able to scroll the view. For that, we can use \ls{less}, which takes one filename and allows to scroll the view using arrows and quit by pressing \emph{q}
+\item
+  \textbf{Copying, moving and deleting}
+
+  We \textbf{copy} files using \ls{cp}. To copy a file called \ls{source} from subdirectory \ls{path/to} to current directory and call it \ls{destination} we use
+  \begin{lstlisting}
+      cp path/to/source destination
+\end{lstlisting}
+  if the destination is a directory, the file is copied into it with the original name. If we want to copy a directory and everything in it, we can use \ls{cp -R} (R for \textbf{R}ecursive).
+
+  Similar pattern is used by the \textbf{move} command \ls{mv} (except \ls{-R} is not used for moving directories). Both \ls{mv} and \ls{cp} support wildcard characters, e.g., \ls{mv *.txt texts/} will move all \ls{*.txt} files to the \ls{texts} directory.
+
+  New directories can be created using \ls{mkdir}.
+
+  Files are deleted using \ls{rm}, which also supports wildcards. \textbf{Only empty directories} can be removed using \ls{rmdir}. Directories with stuff in them can be removed using \ls{rm\ -rf}. \textbf{CAREFUL} \ls{rm} removes files permanently, it does not move them to the trash/recycling bin or something similar. \ls{rm\ -rf} in combination with wildcards can lead to disasters if not careful, e.g.,
+    \begin{lstlisting}
+        rm -rf tmp*
+\end{lstlisting}
+  would remove all files and directories beginning with ``tmp'' (perhaps some temporary files that are not needed anymore), but
+  \begin{lstlisting}
+        rm -rf tmp *
+\end{lstlisting}
+  would remove the file called ``tmp'' and \textbf{everything in the current directory without asking for confirmation}.
+
+    \begin{exercise}
+        Make a directory e.g., ``exercise1'', and copy all .h files from \ls{/usr/include} that begin with a or b. Then delete all files beginning with b in the exercise1; after that, delete the entire exercise1 directory (with some files still in it).
+    \end{exercise}
+\item
+  \textbf{editing text files}
+
+  \begin{itemize}
+  \item
+    \ls{nano}~\\
+    Nano is often installed by default. The bottom row shows keyboard shortcuts for basic operations. Hat \ls{\^} means Ctrl, M means alt, i.e., to exit nano tells us to do \ls{\^X} which means pressing Ctrl-X at the same time. To undo or redo we should do \ls{M-U} or \ls{M-E} respectively, which means pressing Alt-U or Alt-E. \ls{nano} refers to the displayed contents as \emph{buffers} which are then saved to files on disks.
+  \item
+    \ls{emacs}~\\
+    A lot of features, which can be difficult to set up. Better to avoid.
+  \item
+    \ls{vim} -- Vim distinguishes between \emph{edit mode} and \emph{command mode}. By default, it starts in the command mode where the editor expects some commands. To enter the edit mode press \textbf{i} and \textbf{--INSERT--} appears at the bottom, which indicates the edit mode.
+
+    To save a file enter the command mode by pressing Esc (the \textbf{--INSERT--} at the bottom disappears) and type \textbf{:w}+Enter. To quit, use \textbf{:q}. To quit without saving, \textbf{:q!}. To quit and save \textbf{:wq}.
+
+    Files can be searched using Esc-\textbf{/} \emph{search pattern}
+  \end{itemize}
+\item
+  \textbf{searching}
+  the command \ls{find} can be used to accomplish fairly complicated tasks, but for simple searches, one can use
+    \begin{lstlisting}
+      find directory_name -name 'name_pattern'
+\end{lstlisting}
+  e.g., \ls{find . -name '*.pdf'}
+  will list all PDF files in the current directory including subdirectories. The search is case-sensitive. For case-insensitive search replace \ls{-name} with \ls{-iname}.
+
+    \begin{exercise}
+        Find all files that end with `.conf' in /etc and its subdirectories.
+    \end{exercise} 
+\end{itemize}
+
+\paragraph{Composing and extending}
+
+Bash allows redirecting the output of one command somewhere else rather than just the standard print-on-screen. If we want to store the output of a command in a file we can use the
+\textbf{redirection} \ls{>} e.g.,
+\begin{lstlisting}
+    ls -l > directory_contents.txt
+\end{lstlisting}
+will save the output of \ls{ls -l} in a file called ``directory\_contents.txt''. Redirection can be used with command \ls{echo}, which simply prints back its input, for quickly creating
+simple files, e.g.,
+\begin{lstlisting}
+    echo A single line in a simple file > file.txt
+\end{lstlisting}
+will create a file.txt which will contain ``A single line in a simple file''. \emph{Note:} an empty file can be quickly created using \ls{touch empty_file}. If we want to use the output of one command as the input of another, we
+can use the \textbf{pipe} \ls{\|}, e.g.,
+\begin{lstlisting}
+    ls -l | less
+\end{lstlisting}
+will allow us to scroll through the output of \ls{ls -l} with arrows thanks to the \ls{less} command.
+
+Concatenation of multiple files can be done simply using \ls{cat}
+\begin{lstlisting}
+    cat file1.txt file2.txt file3.txt \> concatenated_file.txt
+\end{lstlisting}
+
+For sorting (useful with find) we can use \ls{sort}, e.g.,
+\begin{lstlisting}
+    find . -name '*.pdf' | sort
+\end{lstlisting}
+will print all PDF files in current directory, including subdirectories
+in alphabetical order.
+
+Commonly used commands with pipes are \ls{head} and \ls{tail}, which display first or last 10 lines of their input, respectively. Both accept the option \ls{-n} which changes the default 10 lines, e.g.,
+\begin{lstlisting}
+    cat long_text_file.txt | head -n 50
+\end{lstlisting}
+displays the first 50 lines from the file \ls{long_text_file.txt}.
+
+\begin{exercise}
+    As in Problem 4, but sort the conf files alphabetically and store them in your home directory to a text file.
+\end{exercise}
+
+\subsubsection{Users and permissions}
+
+\paragraph{Users}
+Ordinary users generally do not have permission to make arbitrary changes to the operating system. The user who can do anything to the computer is called \ls{root} (not to be confused with the \emph{root directory} \ls{/}). To find out under what username we are logged in we can use the command \ls{whoami}
+
+\paragraph{Permissions and groups}
+
+The operating system controls who can do what to which files using permissions. The permissions can be any and all of \emph{read},\emph{write} and \emph{execute} (or \emph{list} for directories). The permissions are shown using \ls{ls\ -l} in the first column, e.g., for a random file on my computer
+\begin{lstlisting}
+ls -l /bin/bash
+-rwxr-xr-x. 1 root root 1444200 Feb  6  2023 /bin/bash
+\end{lstlisting}
+
+Notice that the permissions appear to be listed three times. The first dash ``-'' indicates a regular file; following that we have ``rwx'', which means that the owner of the file (in this case the user ``root'') has read, write, and execute permissions; next ``r-x'' means that the users who belong to the group (in this case also called ``root'') can read and execute the file, but not write into it. Finally, the last ``r-x'' means that everyone else can read and execute the file, but not write into it.
+
+\paragraph{sudo}
+
+Even if using your personal computer, for security reasons, it is generally a bad idea to work with the root account for ordinary tasks. When we need to execute a command that only a root is allowed to do (e.g., install a program) we use \ls{sudo}, e.g.,
+\begin{lstlisting}
+    sudo apt-get install vim
+\end{lstlisting}
+will ask you for your password and then install the text editor \ls{vim} on Debian-based Linux distributions (e.g., Ubuntu). Most personal installations of Linux use only one password for the user and \ls{sudo}. Only the administrator has the root password on the lab computers.
+
+\subsection{Accessing remote servers using CLI}
+If we have a regular account on the remote machine we can log into it with
+\begin{lstlisting}
+    ssh username@remote.server.cz
+\end{lstlisting}
+If we can only move files (the case for university student storage), in the CLI, to copy a file from the local machine to a remote server where we have an account we can use \ls{scp}, e.g.
+\begin{lstlisting}
+    scp file username@su.mff.cuni.cz:
+\end{lstlisting}
+will ask you for your password and then copy a file to your student storage. To download a file
+\begin{lstlisting}
+    scp username@su.mff.cuni.cz:path/to/a/file .
+\end{lstlisting}
+will download a file from the server to the current directory (the dot at the end).
+
+Another possibility is to use the \ls{sftp} with which you can log-in to a server which gives you a limited set of commands (\ls{ls}, \ls{mkdir}, \ls{cp}, \ls{mv} etc.) with which you can organize your files on the remote and a possibility to upload files,using the command \ls{put}, or download files, using the command \ls{get}.
+
+\begin{exercise}
+    Try uploading a file and verify that it is present on remote using GUI file explorer. Conversely, create a file on the remote using GUI and download it using CLI.
+\end{exercise}
+
+Alternatively, to student storage, there is also the university OneDrive cloud with web interface (part of Office 365). Windows client works fine, there is also a Linux client, which is a bit more tricky to set up but also works.
