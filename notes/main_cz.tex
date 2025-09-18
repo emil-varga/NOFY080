@@ -1,0 +1,102 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[left=3cm, right=3cm, top=3cm, bottom=3cm]{geometry}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage[titles]{tocloft}
+\usepackage{amsmath}
+\usepackage[czech]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+%\usepackage{amsmath}
+\usepackage{mdframed}
+
+\graphicspath{{figures/}}
+
+\renewcommand{\lstlistlistingname}{Code Snippets}
+
+\newcommand{\dd}{\ensuremath{\mathrm{d}}}
+\newcommand{\diff}[2]{\ensuremath{\frac{\dd {#1}}{\dd {#2}}}}
+\newcommand{\bv}[1]{\ensuremath{\mathbf{#1}}}
+\newcommand{\ls}[1]{\lstinline{#1}}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{exercise}{gray}{0.9}
+\definecolor{SIM}{cmyk}{0.1, 0, 0, 0}
+
+\newcounter{exercise}
+\newenvironment{exercise}[1][]%
+    {\refstepcounter{exercise}%
+    \begin{mdframed}[backgroundcolor=exercise,linecolor=white]%
+    \textbf{Cvičení~\theexercise.} #1 \rmfamily}%
+    {\medskip\end{mdframed}}
+
+\newcommand{\listsyntax}{Python Jazykové Intermezza}
+\newlistof{intermezzos}{synt}{\listsyntax}
+\newcounter{syntax}
+\newenvironment{syntax}[1][Syntax]%
+    {\refstepcounter{syntax}%
+    \addcontentsline{synt}{intermezzos}{#1}
+    \begin{mdframed}[backgroundcolor=SIM,linecolor=white]%
+    \textbf{Intermezzo~\thesyntax:} \textit{#1}}%
+    {\medskip\end{mdframed}}
+
+\lstdefinestyle{py}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    language=Python
+}
+\lstset{style=py}
+
+\title{NOFY080 poznámky k přednášce}
+\author{Emil Varga}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\listofintermezzos
+\lstlistoflistings
+
+\input{sections_cz/section_01_setting_up_the_environment.tex}
+% \input{sections/section_02_python_basics.tex}
+% \input{sections/section_03_numpy_scipy_matplotlib.tex}
+% \input{sections/section_04_least_squares_fitting_and_interpolation.tex}
+% \input{sections/section_05_digital_signal_processing.tex}
+% \input{sections/section_06_communication_with_instruments.tex}
+% \input{sections/section_07_parallel_execution.tex}
+% \input{sections/section_08_solutions_of_differential_equations.tex}
+% \input{sections/section_09_what_didnt_fit.tex}
+
+% \section{Image processing}
+% TODO, \ls{opencv}
+
+% \section{Some AI crap?}
+% TODO \ls{scikit-learn}
+
+\newpage
+\appendix
+% \input{sections/appendix.tex}
+
+\end{document}
