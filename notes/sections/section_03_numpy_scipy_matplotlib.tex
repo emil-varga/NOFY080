@@ -8,7 +8,9 @@ These three libraries form the basis of many (probably most) of scientific Pytho
     \begin{lstlisting}
         pip install lmfit
     \end{lstlisting}
-    To remove the package use \ls{uninstall}, and to upgrade \ls{install -U}. Run \ls{pip help} for a complete list of available commands.
+    To remove the package use \ls{uninstall}, and to upgrade \ls{install -U}. Run \ls{pip help} for a complete list of available commands. If your virtual environment is activated, pip installs packages in this virtual environment.
+
+    If you are using \ls{uv}, the command \ls{uv pip} is compatible with standard \ls{pip}, e.g., you can use \ls{uv pip install lmfit}. Or, if you want to package your project to be used by other people, you can use \ls{uv add lmfit} which also adds \ls{lmfit} as a requirement of your package.
 \end{syntax}
 
 To use numpy we do

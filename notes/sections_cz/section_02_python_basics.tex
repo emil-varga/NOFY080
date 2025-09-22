@@ -57,9 +57,9 @@ Pro vytváření složitějších výpisů našich proměnných můžeme použí
     varf = 3.14
     fstr = f"An interger value {vari:05d}, a float value {varf:010.6f}, exponential form {varf:g}"
 \end{lstlisting}
-Nahrazení textu hodnotou proměnné (tzv. interpolace) se specifikuje jako \verb|{výraz:specifikátor_formátu}|, přičemž specifikátory formátu jsou volitelné. Zde specifikátor formátu \verb|05d| znamená celé číslo s celkovou šířkou alespoň 5 znaků a \verb|010.6f| znamená číslo s plovoucí desetinnou čárkou se 6 číslicemi za desetinnou čárkou a celkovou šířkou alespoň 10 znaků.
+Nahrazení textu hodnotou proměnné (tzv. interpolace) se specifikuje jako\\\verb|{výraz:specifikátor_formátu}|,\\ přičemž specifikátory formátu jsou volitelné. Zde specifikátor formátu \verb|05d| znamená celé číslo s celkovou šířkou alespoň 5 znaků a \verb|010.6f| znamená číslo s plovoucí desetinnou čárkou se 6 číslicemi za desetinnou čárkou a celkovou šířkou alespoň 10 znaků.
 
-Pro úplnou specifikaci možných formátovacích specifikátorů viz \href{dokumentaci}{https://docs.python.org/3/library/string.html\#formatspec}
+Pro úplnou specifikaci možných formátovacích specifikátorů viz \href{https://docs.python.org/3/library/string.html\#formatspec}{dokumentaci}.
 
 \subsection{Funkce}
 Funkce se definují pomocí klíčového slova \verb|def|. Funkce mohou přijímat argumenty a vracet hodnotu.
@@ -134,7 +134,7 @@ Seznam (\textbf{list}) je kolekce jakýchkoli pythonovských objektů definovan�
 \begin{lstlisting}
     my_list = [1, 2.17, "a string", ['another', 'list']]
 \end{lstlisting}
-K hodnotám v seznamu lze přistupovat pomocí indexování seznamu \textbf{začínajícího od 0}, např. \verb|my_list[1] == 2.17|. Záporné indexy se počítají od konce, tj. \verb|my_list[-1]| je poslední prvek, \verb|my_list[-2]| předposlední atd.
+K hodnotám v seznamu lze přistupovat pomocí indexování seznamu \textbf{začínajícího od 0}, např.\\\verb|my_list[1] == 2.17|. Záporné indexy se počítají od konce, tj. \verb|my_list[-1]| je poslední prvek,\\\verb|my_list[-2]| předposlední atd.
 
 Seznamy jsou příkladem \emph{objektu}, objekty mají přidružené funkce zvané metody, které se volají pomocí tečkové notace. Užitečné metody pro seznamy jsou:
 \begin{itemize}
@@ -194,8 +194,7 @@ Příkaz \verb|if| přijímá booleovský výraz a spustí kód ve svém bloku, 
 \end{lstlisting}
 
 \subsubsection{match}
-Dostupné od Pythonu 3.10
-TODO
+Obecnější přiřazení hodnoty k akci je k dispozici pomocí \ls{match}\footnote{Dostupné od Pythonu 3.10}. 
 \begin{lstlisting}
     command = 'yell'
     match command:
@@ -203,8 +202,39 @@ TODO
             print("hello")
         case 'yell':
             print("HELLO!!")
-        case _: #default behavior
-            print("unknown command")
+        case _: # vychozi chovini
+            print("neznamy prikaz")
+\end{lstlisting}
+
+\ls{match} může být obzvláště silný v kombinaci s rozbalováním (unpacking), kde se \ls{match} snaží co nejlépe najít vzoru svého argumentu. To vám umožňuje například zpracovávat příkazy a jejich argumenty, např.:
+\begin{lstlisting}
+def process_command(command):
+    match command:
+        case ('speak', value):
+            print(f"Hello {value}")
+        case 'yell':
+            print('HELLO!!')
+        case ('yell', value):
+            print(f"HELLO!! {value}")
+        case (command, value):
+            print(f"I'm supposed to \"{command}\" with \"{value}\")
+\end{lstlisting}
+což se chová jako
+\begin{lstlisting}
+    >>> process_command(('speak', 1))
+    Hello 1
+    >>> process_command('yell')
+    HELLO!!
+    >>> process_command(('yell', 2))
+    HELLO!! 2
+    >>> process_command(('shout', 20))
+    I'm supposed to \"shout\" with \"20\"
+\end{lstlisting}
+
+Všimněte si však, že pokud argument pro \ls{match} neodpovídá žádnému poskytnutému vzoru, nic se nestane, tj. chová se podobně jako \ls{if} s chybějící klauzulí \ls{else}:
+\begin{lstlisting}
+    >>> process_command('shout')
+    # zadny vystup
 \end{lstlisting}
 
 \subsection{Smyčky (Loops)}
@@ -244,20 +274,18 @@ Cykly se často používají k vytváření seznamů, což lze zjednodušit pomo
 \end{lstlisting}
 For example,
 \begin{lstlisting}[caption=List comprehension.]
-    >>> [k**2 for k in range(5)] # seznam druhych mocnin pro
-    [0, 1, 4, 9, 16]
-
-    >>> [k**2 for k in range(5) if k % 2 == 0] # seznam druhych mocnin pro sude k
-    [0, 4, 16]
+    [k**2 for k in range(5)] # seznam druhych mocnin pro k < 5
+    [k**2 for k in range(5) if k % 2 == 0] # seznam druhych mocnin pro sude k
 \end{lstlisting}
 
 \begin{exercise}
-    Napište program, který se zeptá uživatele na jméno a odpoví \verb|"Hello <jméno>!"|.
-    \begin{enumerate}
-        \item Změňte program tak, aby pokud je jméno uživatele "Andrej", pozdrav se změnil na "Ciao Andrej!".
-        \item Oddělte logiku vytváření pozdravu do samostatné funkce.
-    \end{enumerate}
+Napište program, který se zeptá uživatele na jméno a odpoví \verb|"Hello <jméno>!"|.
+\begin{enumerate}
+    \item Změňte program tak, aby pokud je jméno uživatele "Andrej", pozdrav se změnil na "Ciao Andrej!".
+    \item Oddělte logiku vytváření pozdravu do samostatné funkce.
+\end{enumerate}%
 \end{exercise}
+
 \begin{exercise}
     Napište program, který přijme libovolný počet jmen z příkazového řádku a na konci je vypíše v abecedním pořadí.
     \begin{enumerate}

@@ -59,7 +59,7 @@ For crafting more complicated way of printing our variables we can use \emph{for
 \end{lstlisting}
 The variable substitution is specified as \verb|{expression:format_specifier}|, the format specifiers are optional. Here the format specifier 05d means a decimal integer with total width of at least 5 characters and 010.6f means floating point number with 6 digits after the decimal period and total width of at least 10 characters.
 
-For a full specification of possible format specifiers see \url{https://docs.python.org/3/library/string.html#formatspec}
+For a full specification of possible format specifiers see \href{https://docs.python.org/3/library/string.html#formatspec}{the official documentation}.
 
 \subsection{Functions}
 Functions are defined using the \verb|def| keyword. Functions may take argument and return a value.
@@ -195,8 +195,7 @@ The \verb|if| statement takes a boolean expression and runs the code in its code
 \end{lstlisting}
 
 \subsubsection{match}
-Available since Python 3.10
-TODO
+A more general matching of value to action is available via \ls{match}\footnote{Available since Python 3.10}. 
 \begin{lstlisting}
     command = 'yell'
     match command:
@@ -206,6 +205,37 @@ TODO
             print("HELLO!!")
         case _: #default behavior
             print("unknown command")
+\end{lstlisting}
+
+\ls{match} can be especially powerful with unpacking, where \ls{match} tries to match the pattern of its argument as best as it can. This allows you to, for example, process commands and their arguments, e.g.,
+\begin{lstlisting}
+def process_command(command):
+    match command:
+        case ('speak', value):
+            print(f"Hello {value}")
+        case 'yell':
+            print('HELLO!!')
+        case ('yell', value):
+            print(f"HELLO!! {value}")
+        case (command, value):
+            print(f"I'm supposed to \"{command}\" with \"{value}\"")
+\end{lstlisting}
+which behaves as
+\begin{lstlisting}
+    >>> process_command(('speak', 1))
+    Hello 1
+    >>> process_command('yell')
+    HELLO!!
+    >>> process_command(('yell', 2))
+    HELLO!! 2
+    >>> process_command(('shout', 20))
+    I'm supposed to "shout" with "20"
+\end{lstlisting}
+
+Note, however, that if the argument to \ls{match} does not match any provided pattern nothing happens, i.e., it acts similarly to \ls{if} with a missing \ls{else} clause:
+\begin{lstlisting}
+    >>> process_command('shout')
+    # no output
 \end{lstlisting}
 
 \subsection{Loops}
