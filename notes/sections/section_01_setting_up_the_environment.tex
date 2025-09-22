@@ -21,7 +21,7 @@ uv init NOFY080_2025
 \end{lstlisting}
 which will create a new directory with the same name, with a simple "Hello World" Python file, some additional files that \verb|uv| uses to track dependencies of your project, and set up a git repository in it (you don't have to use git in this course, but those interested can learn some basics in Appendix~\ref{sec:git}).
 
-Now change into the project directory
+Now change to the project directory
 \begin{lstlisting}
 cd NOFY080_2025
 \end{lstlisting}
@@ -57,8 +57,7 @@ import matplotlib.pyplot as plt
 plt.plot([1, 2, 3], [4, 5, 6], '-o')
 plt.show()
 \end{lstlisting}
-To run it, you can either manually activate the virtual environment and run it using
-\verb|python test.py| or use \verb|uv run test.py|. A simple graph should appear. In the rest of these lecture notes, whenever we invoke \verb|python| command from the command line, we mean the one in the virtual environment.
+To run it, you can either manually activate the virtual environment and run it using \verb|python test.py| or use \verb|uv run test.py|. A simple graph should appear. In the rest of these lecture notes, whenever we invoke the \verb|python| command from the command line, we mean the one in the virtual environment.
 
 To run Python code directly without saving it to a file, open a suitable terminal and type in \verb|python| and a prompt like
 \begin{lstlisting}
