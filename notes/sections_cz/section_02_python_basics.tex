@@ -1,0 +1,286 @@
+% Sekce 2: Základy Pythonu
+\newpage
+\section{Základy Pythonu}
+
+\subsection{Proměnné a typy}
+
+Proměnné se vytvářejí přiřazením hodnoty k dosud nepoužitému jménu proměnné, deklarace, jako v C/C++ nebo Pascalu, nejsou nutné.
+\begin{lstlisting}[caption=Definování proměnných]
+    my_integer = 5
+    my_float = 3.14
+    my_string = "double quote string"
+    my_string2 = 'single quote string'
+    my_string3 = "you can use 'single' quote in double quote string"
+    my_bool = False
+\end{lstlisting}
+
+Všimněte si, že proměnné obecně nemají pevný typ (tj. celé číslo nebo řetězec) a provedení něčeho jako \lstinline{my_integer = "a string"} nezpůsobí typovou chybu. Samotný Python se nestará o to, jakého typu proměnná je, pokud jsou operace, které s ní provádíme, podporovány. Pokud však potřebujeme znát typ proměnné \lstinline{v}, můžeme jej zjistit pomocí \lstinline{type(v)}.
+
+Základní aritmetické operace \verb|+,-,*,/| fungují na číslech podle očekávání. Umocňování je \verb|**|. Všimněte si však, že \verb|/| automaticky \emph{povýší (promotion)} celá čísla na desetinná (float). Pro celočíselné dělení můžeme použít \verb|//| a pro zbytek po dělení \verb|%|. Aritmetické operace jsou také definovány pro některé nečíselné typy, kde "dávají smysl", tj. řetězce lze spojovat pomocí \verb|+|. Porovnávací operátory jsou \verb|==| pro rovnost (\textbf{nezaměňovat s =, což je přiřazení hodnoty proměnné}), \verb|!=| pro nerovnost a \verb|<,<=,>,>=| pro uspořádání. Booleovské operátory jsou \verb|and, or, not|.
+
+Existují také \textbf{bitové} operátory \lstinline{&,|,~,^} (bitové AND, OR, NOT a XOR). Tyto operují na jednotlivých bitech čísla. Dejte si pozor na záměnu mezi umocňováním \ls{**} a bitovým exkluzivním \emph{or} (XOR) \ls{^}.
+
+Komplexní čísla jsou v Pythonu podporována. Syntaxe pro zadání komplexního čísla je např. \ls{3 + 5j}, což se překládá do matematického zápisu $3 + 5i$. Konkrétně imaginární jednotka je \ls{1j}. Všimněte si, že písmeno \ls{j} následuje bezprostředně za číslem.
+
+\begin{exercise}
+    Vyzkoušejte si základní aritmetiku v REPL. Zkuste vynásobit řetězec celým číslem. Co se stane, když se ho pokusíte vydělit?
+\end{exercise}
+
+Shrnutí základních vestavěných operátorů
+
+\begin{tabular}{ll}
+     \ls{+,-,*,/, **} & základní aritmetika, umocňování \\ 
+     \ls{and, or, not} & booleovské operace \\
+     \ls{<, <=, ==, >, >=} & porovnávání\\
+     \ls{&,|, ~, ^} & bitové operace, bitové AND, OR, NOT a XOR (exkluzivní nebo)
+\end{tabular}
+
+\subsection{Uživatelský vstup}
+Většinou budeme psát neinteraktivní skripty, nicméně pro získání základního textového vstupu od uživatele můžeme použít funkci \verb|input()|, \textbf{která vždy vrací řetězec}. Musíme jej sami převést na číslo (pomocí \verb|int()| nebo \verb|float()|), pokud očekáváme, že uživatel zadá číslo, např.:
+\begin{lstlisting}
+    age = int(input("How old are you? "))
+    print("You will be 100 in", 100-age, "years.")
+\end{lstlisting}
+
+\subsection{Výpis a řetězce}
+Již jsme se setkali s funkcí \verb|print()|, která na standardní výstup vypíše textovou reprezentaci objektů, které jí předáme. Přijímá jeden nebo více argumentů.
+
+Pro převod jakékoli hodnoty na řetězec můžeme použít funkci \verb|str()|. Speciální znaky, jako je nový řádek nebo tabulátor, je třeba \emph{escapovat}, např. \verb|\n| a \verb|\t|. Zpětná lomítka je také třeba escapovat \verb|\\|. Abychom zabránili Pythonu v interpretaci zpětných lomítek jako speciálních znaků (užitečné např. pro zadávání cest k souborům ve Windows), můžeme použít tzv. raw řetězce, např.:
+\begin{lstlisting}
+    print("s\tri\ng") #\t and \n are interpreted as tab and new line
+    print(r"s\tri\ng") # raw string, note the r immediately before "
+\end{lstlisting}
+
+Pro vytváření složitějších výpisů našich proměnných můžeme použít \emph{formátovací} řetězce (nebo f-stringy) tak, že proměnnou, kterou chceme vložit do řetězce, uzavřeme do \verb|{}|, např.:
+\begin{lstlisting}
+    vari = 5
+    varf = 3.14
+    fstr = f"An interger value {vari:05d}, a float value {varf:010.6f}, exponential form {varf:g}"
+\end{lstlisting}
+Nahrazení textu hodnotou proměnné (tzv. interpolace) se specifikuje jako \verb|{výraz:specifikátor_formátu}|, přičemž specifikátory formátu jsou volitelné. Zde specifikátor formátu \verb|05d| znamená celé číslo s celkovou šířkou alespoň 5 znaků a \verb|010.6f| znamená číslo s plovoucí desetinnou čárkou se 6 číslicemi za desetinnou čárkou a celkovou šířkou alespoň 10 znaků.
+
+Pro úplnou specifikaci možných formátovacích specifikátorů viz \href{dokumentaci}{https://docs.python.org/3/library/string.html\#formatspec}
+
+\subsection{Funkce}
+Funkce se definují pomocí klíčového slova \verb|def|. Funkce mohou přijímat argumenty a vracet hodnotu.
+\begin{lstlisting}
+    def my_function(my_string):
+        print("Someone wants to know how long \"" + my_string + "\" is!")
+        return len(my_string) #returns the length of a my_string
+\end{lstlisting}
+Všimněte si odsazení, kterým se v Pythonu identifikují bloky kódu, tj. neexistuje zde \verb|begin,end| jako v Pascalu nebo \verb|{}| jako v C/C++.
+
+Více argumentů se odděluje čárkou a argumenty mohou mít výchozí hodnotu, např. argument $c$ bude 1, pokud není uvedeno jinak.
+\begin{lstlisting}[caption=Function definition]
+    def calculate(a, b, c=1):
+        """
+        A function that calculates c*(a + b)
+
+        Parameters:
+        -----------
+        a, b, c: numbers
+            arguments of the calculation
+
+        Returns:
+        --------
+        result: number
+            The result of calculating c*(a + b)
+        """
+        return c*(a + b)
+
+    >>> calculate(2, 3)
+    5
+    >>> calculate(2, 3, 4)
+    20
+\end{lstlisting}
+Zde je dlouhý řetězec ohraničený trojitými uvozovkami \lstinline{"""} takzvaný dokumentační řetězec funkce (nebo zkráceně \textbf{docstring}). Trojité uvozovky lze použít kdekoli a znamenají pouze to, že řetězec se rozkládá na více řádků. K docstringu lze poté přistupovat pomocí funkce \lstinline{help()} nebo pomocí textových editorů. Formátování použité ve výše uvedeném příkladu je běžně srozumitelné pro IDE, např. Spyder jej zobrazí pěkně naformátovaný v panelu Nápověda (standardně v pravém horním rohu okna).
+
+Argumenty s výchozími hodnotami musí následovat za povinnými argumenty. S více volitelnými argumenty můžeme funkci volat pomocí \emph{pojmenovaných argumentů} (keyword arguments):
+\begin{lstlisting}[caption=Volitelné a pojmenované argumenty.]
+    def calculate2(a, b, c=1, d=1):
+        return c*(a + b)**d
+
+    >>> calculate(2, 3, d=2) # necha vychozi hodnotu c, ale nastavi d
+    25
+\end{lstlisting}
+
+Funkce lze předávat v proměnných a argumentech, konkrétně funkce mohou přijímat jiné funkce jako argumenty, např.:
+\begin{lstlisting}[caption=Funkce vyššího řádu.]
+    def add1(x):
+        return x + 1
+
+    def change_number(x, func):
+        return func(x)
+
+    >>> change_number(1, add1)
+    2
+\end{lstlisting}
+
+Krátké, jednoduché funkce (které se vejdou na jeden řádek) lze definovat přímo jako takzvané anonymní neboli \emph{lambda} funkce, např.
+\begin{lstlisting}[caption=Lambda funkce.]
+    >>> change_number(1, lambda x: 2 + x)
+    3
+\end{lstlisting}
+Lambda funkce jsou obzvláště užitečné pro částečné vyplnění seznamů argumentů existujících funkcí, např.
+\begin{lstlisting}
+    >>> change_number(1, lambda x: calculate2(x, 4, c=4, d=0.5))
+    8.94427190999916
+\end{lstlisting}
+
+\subsection{Složené typy}
+
+\subsubsection{Seznami a n-tice (Lists and tuples)}
+Seznam (\textbf{list}) je kolekce jakýchkoli pythonovských objektů definovaná pomocí hranatých závorek \verb|[]|,
+\begin{lstlisting}
+    my_list = [1, 2.17, "a string", ['another', 'list']]
+\end{lstlisting}
+K hodnotám v seznamu lze přistupovat pomocí indexování seznamu \textbf{začínajícího od 0}, např. \verb|my_list[1] == 2.17|. Záporné indexy se počítají od konce, tj. \verb|my_list[-1]| je poslední prvek, \verb|my_list[-2]| předposlední atd.
+
+Seznamy jsou příkladem \emph{objektu}, objekty mají přidružené funkce zvané metody, které se volají pomocí tečkové notace. Užitečné metody pro seznamy jsou:
+\begin{itemize}
+    \item \verb|append| and \verb|pop|
+\begin{lstlisting}
+>>> my_list = [1, 2.0, 'three']
+>>> my_list.append('one more')
+>>> my_list.pop() # odstrani posledni prvek a vrati ho
+"one more"
+\end{lstlisting}
+    \item \verb|my_list.sort()|, seřadí seznam na místě, pokud lze všechny prvky seznamu porovnat; pro vytvoření nového seznamu s seřazenými prvky můžeme použít \verb|sorted(my_list)|
+    \item \verb|my_list.index('a')| najde index prvního výskytu 'a' nebo vrátí chybu
+\end{itemize}
+
+Kromě jednoduchého indexování lze k podmnožinám seznamů přistupovat pomocí \emph{řezů} (slicing), např.:
+\begin{lstlisting}
+    l = [1,2,3,4,5,6,7,8,9]
+    l[2:5] # [3,4,5]
+    l[-5::2] # [5,7,9]
+\end{lstlisting}
+Obecně je syntaxe \verb|my_list[start_idx:stop_idx:step]|, \verb|start_idx| je včetně, \verb|stop_idx| je vyjma. Všechny tři jsou volitelné, výchozí hodnota start je 0, výchozí hodnota stop je -1 a výchozí hodnota step je 1.
+
+N-tice (\textbf{Tuples}) se v mnoha ohledech chovají podobně jako seznamy, s výjimkou, že jsou \textbf{neměnné} (immutable), tj. samotnou n-tici ani hodnoty v ní nelze měnit. Indexování a řezy však fungují stejně. N-tice se definují pomocí kulatých závorek \ls{()}. Pokud n-tice obsahuje pouze jednu hodnotu, je třeba přidat čárku, aby se odlišila od výrazu v závorkách, tj. \ls{single_tuple = (1,)}.
+
+Běžným použitím n-tic je vracení více hodnot z funkce, tj.:
+\begin{lstlisting}
+    def add_and_subtract(x, y):
+        return x+y, x-y # Vsimnete si, ze zavorky () nejsou potreba v nekterych pripadech
+
+    # tu rozbalime vracenou dvojici do dvou promennych
+    a, s = add_and_subtract(3, 2) # a==5, s==1
+\end{lstlisting}
+Všimněte si, že jsme neuložili návratovou hodnotu jako n-tici, ale okamžitě jsme ji rozdělili do dvou samostatných proměnných. Tomu se říká \textbf{rozbalování} (unpacking) a lze jej použít pro jakýkoli složený typ.
+
+\subsubsection{Slovníky (Dictionaries)}
+Slovníky (Dictionaries) jsou kolekce přiřazení klíče k hodnotě libovolného typu, často jsou klíče řetězce, např.:
+\begin{lstlisting}
+    my_dict = {
+        'key1': value1
+        'key2': value2
+    }
+\end{lstlisting}
+which can then be accessed as \ls{my_dict['key2']} etc.
+
+\subsection{Kontrola toku programu}
+
+\subsubsection{if-elif-else}
+Příkaz \verb|if| přijímá booleovský výraz a spustí kód ve svém bloku, pokud se podmínka vyhodnotí jako \verb|True|.
+\begin{lstlisting}[language=Python]
+    if condition:
+        do_if_true()
+    elif condition2: # nepovinne
+        do_if_2true() # spusti se jenom kdyz condition je False a condition2 je True
+    else: # nepovinne
+        do_if_false() # spusti se jenom kdyz oboje condition and condition2 jsou False
+        
+\end{lstlisting}
+
+\subsubsection{match}
+Dostupné od Pythonu 3.10
+TODO
+\begin{lstlisting}
+    command = 'yell'
+    match command:
+        case 'talk':
+            print("hello")
+        case 'yell':
+            print("HELLO!!")
+        case _: #default behavior
+            print("unknown command")
+\end{lstlisting}
+
+\subsection{Smyčky (Loops)}
+Pro cyklení s daným počtem iterací můžeme použít cykly \verb|for| s funkcí \verb|range()|. Můžeme také cyklit přes cokoli iterovatelného, např. seznam nebo slovník.
+\begin{lstlisting}
+    for k in range(10):
+        print(k)
+
+    for value in my_list:
+        print(value) 
+\end{lstlisting}
+Obecný tvar \ls{range()} je \ls{range(start, stop, step)}, start je včetně, stop je vyjma a krok je standardně 1. \ls{range()} nevrací seznam, ale něco, co se nazývá \emph{iterátor}. Můžeme jej převést na seznam pomocí \ls{list(range(start, stop, step))}.
+
+Jestliže potřebujeme iterovat přes nějaké hodnoty a zároveň pracovat s indexem můžeme použít \lstinline{enumerate}.
+\begin{lstlisting}
+    for index, value in enumerate(my_list):
+        print(f"my_list[{index}] = {value}")
+\end{lstlisting}
+
+Pro cyklení, dokud je podmínka pravdivá, můžeme použít cyklus \verb|while|,
+\begin{lstlisting}
+    while condition:
+        do_stuff()
+\end{lstlisting}
+
+Běh cyklů lze upravit pomocí \ls{continue}, které přeskočí zbytek kódu v iteraci a přejde na další, nebo \ls{break}, které cyklus okamžitě ukončí. Běžné použití je s nekonečnými cykly, např.:
+\begin{lstlisting}
+    while True: # bude bezet do nekonecna
+        do_stuff()
+        if should_we_stop: # pokud to neukoncime
+            break
+\end{lstlisting}
+
+Cykly se často používají k vytváření seznamů, což lze zjednodušit pomocí \textbf{list comprehension} (generování seznamu), jako je
+\begin{lstlisting}
+    [expression(k) for k in iterable if condition(k)] # if podminka je nepovinna
+\end{lstlisting}
+For example,
+\begin{lstlisting}[caption=List comprehension.]
+    >>> [k**2 for k in range(5)] # seznam druhych mocnin pro
+    [0, 1, 4, 9, 16]
+
+    >>> [k**2 for k in range(5) if k % 2 == 0] # seznam druhych mocnin pro sude k
+    [0, 4, 16]
+\end{lstlisting}
+
+\begin{exercise}
+    Napište program, který se zeptá uživatele na jméno a odpoví \verb|"Hello <jméno>!"|.
+    \begin{enumerate}
+        \item Změňte program tak, aby pokud je jméno uživatele "Andrej", pozdrav se změnil na "Ciao Andrej!".
+        \item Oddělte logiku vytváření pozdravu do samostatné funkce.
+    \end{enumerate}
+\end{exercise}
+\begin{exercise}
+    Napište program, který přijme libovolný počet jmen z příkazového řádku a na konci je vypíše v abecedním pořadí.
+    \begin{enumerate}
+        \item Uživatel předem zadá počet jmen, která chce zadat. \emph{Nápověda}: \verb|range()| a cyklus \verb|for|
+        \item Program přestane žádat o nová jména, jakmile uživatel zadá prázdný řetězec. \emph{Nápověda:} \verb|break|
+        \item Pokud uživatel zadal jméno "Emil", bude ve výsledném výpisu přeskočeno. \emph{Nápověda:} \verb|continue|.
+    \end{enumerate}
+\end{exercise}
+
+\subsection{Používaní externích modulů}
+Python je známý tím, že má velké množství dostupných knihoven pro téměř cokoli pod sluncem.\footnote{A brzy se naučíme, jak si vytvořit vlastní.} Abychom je mohli použít, musíme nejprve importovat \emph{modul}, který potřebujeme, např. pro použití funkcí, které pracují s časem, můžeme udělat
+\begin{lstlisting}
+    import time as t #importuj modul time a dej mu skraceny nazev t
+    print(t.time()) #nazev modulu pripajime z leva ke jmenu funkce
+\end{lstlisting}
+Pokud chceme z daného modulu použít jen malý počet funkcí, můžeme je importovat konkrétně a nemusíme pro jejich volání používat název modulu, např.
+\begin{lstlisting}
+    from module import func1, func2
+    func1()
+    func2()
+\end{lstlisting}
+
+\begin{exercise}
+    Napište program pro výpočet Fibonacciho čísla $F_n$ pomocí cyklů i rekurze. Změřte čas potřebný k výpočtu prvních 20 $F_n$ oběma metodami pomocí \verb|time.time()|.
+    \emph{Nápověda:} $F_k = F_{k-1} + F_{k-2},\;F_1 = F_2 = 1$
+\end{exercise}
