@@ -1,23 +1,23 @@
 \newpage
 \section{NumPy, SciPy a matplotlib}
-\subsection{numpy}
-Tyto tři knihovny tvoří základ mnoha (pravděpodobně většiny) vědeckých skriptů v Pythonu. NumPy poskytuje pole numpy, rychlý způsob ukládání numerických dat v paměti, a funkce pro práci s nimi. SciPy poskytuje velké množství algoritmů včetně fitování metodou nejmenších čtverců, zpracování signálu nebo prostorového shlukování a matplotlib umožňuje vytváření vysoce kvalitních a přizpůsobitelných grafů. Obě jsou navrženy pro práci s poli numpy.
+\subsection{NumPy}
+Tyto tři knihovny tvoří základ mnoha (pravděpodobně většiny) vědeckých skriptů v Pythonu. NumPy poskytuje numpy pole (\emph{numpy arrays}), rychlý způsob ukládání numerických dat v paměti, a funkce pro práci s nimi. SciPy poskytuje velké množství algoritmů včetně fitování metodou nejmenších čtverců, zpracování signálu nebo prostorového shlukování (\emph{clustering}) a matplotlib umožňuje vytváření vysoce kvalitních a přizpůsobitelných grafů. Všechny tři jsou navrženy pro práci s poli NumPy.
 
 \begin{syntax}[Instalace balíčků -- pip]
     Balíčky, které nejsou standardně nainstalovány, lze nainstalovat pomocí nástroje příkazového řádku \ls{pip}, který stahuje balíčky registrované v Python Package Index (PyPI, \url{https://pypi.org/}). Například pro instalaci balíčku \ls{lmfit} spusťte v příkazovém řádku následující příkaz (funguje také v ipython REPL, např. ve Spyderu)
-    \begin{lstlisting}
-        pip install lmfit
-    \end{lstlisting}
+\begin{lstlisting}
+    pip install lmfit 
+\end{lstlisting}
     Pro odstranění balíčku použijte \ls{uninstall} a pro upgrade \ls{install -U}. Spusťte \ls{pip help} pro úplný seznam dostupných příkazů. Pokud je vaše virtuální prostředí aktivováno, pip instaluje balíčky do tohoto virtuálního prostředí.
 
     Pokud používáte \ls{uv}, příkaz \ls{uv pip} je kompatibilní se standardním \ls{pip}, např. můžete použít \ls{uv pip install lmfit}. Nebo, pokud chcete svůj projekt zabalit pro použití jinými lidmi, můžete použít \ls{uv add lmfit}, což také přidá \ls{lmfit} jako závislost vašeho balíčku.
 \end{syntax}
 
-To use numpy we do
+Abychom mohli NumPy používat, musíme ho importovat pomocí
 \begin{lstlisting}
     import numpy as np
 \end{lstlisting}
-there are several ways to create an array, e.g.
+Existuje více způsobů vytváření polí
 \begin{lstlisting}[caption=Tvorba polí.]
     #přímo ze seznamů
     arr = np.array([1,2,3,4])
@@ -29,13 +29,13 @@ there are several ways to create an array, e.g.
     arr = np.arange(start, stop, step)
     #lineárně rozložené hodnoty
     arr = np.linspace(start, stop, count)
-    #vyplněné nulami
+    # vyplněné nulami
     np.zeros(length)
-    #vyplněné jedničkami
+    # vyplněné jedničkami
     np.ones(length)
 \end{lstlisting}
 
-Standardně pole np ukládají typ float. Pro jedničky a nuly je často užitečné použít booleovské hodnoty (True a False), jelikož \lstinline{np.ones(10, dtype=bool)} vytvoří pole o délce 10 vyplněné hodnotami True. Aritmetika funguje po prvcích, proto při sčítání/násobení/dělení/porovnávání musí mít pole stejnou délku, např.
+Standardně numpy pole ukládají typ float. Pro jedničky a nuly je často užitečné použít booleovské hodnoty (True a False) explicitním specifikovaním datového typu pomocí \ls{dtype}, t.j., \ls{np.ones(10, dtype=bool)} vytvoří pole o délce 10 vyplněné hodnotami True. Aritmetika funguje po prvcích, proto při sčítání/násobení/dělení/porovnávání musí mít pole stejnou délku, např.
 \begin{lstlisting}
     >>> np.array([1,2,3]) + np.array([4,5,6])
     array([5,6,7])
@@ -46,7 +46,7 @@ Pokud je však jeden z operandů skalární číslo, operace se \emph{rozesílá
     array([11, 12, 13])
 \end{lstlisting}
 
-Řezání polí (slicing) funguje podobně jako řezání seznamů, např. \lstinline{arr[start:stop:step]}. Navíc můžeme také indexovat do pole pomocí seznamu indexů, např. \lstinline{arr[[0, 2, 4]]} vrátí pole obsahující 1., 3. a 5. prvek pole \lstinline{arr}. Nakonec, pomocí booleovských polí můžeme vytvořit podmnožinu prvků pole, kde je indexovací pole pravdivé, např.
+Řezání polí (slicing) funguje podobně jako řezání seznamů, např. \lstinline{arr[start:stop:step]}. Navíc můžeme také indexovat do pole pomocí seznamu indexů, např. \lstinline{arr[[0, 2, 4]]} vrátí pole obsahující 1., 3. a 5. prvek pole \lstinline{arr}. Pomocí booleovských polí můžeme taky vytvořit podmnožinu prvků pole, kde je indexovací pole pravdivé, např.
 \begin{lstlisting}
     arr1 = np.linspace(0, 10, 50)
     b = np.sqrt(arr1) > 3 # pole booleovských hodnot True, kde np.sqrt(arr1) > 3
@@ -71,7 +71,7 @@ Jelikož jsou pole numpy určena především pro numerická data, mají v sobě
 \ls{arr.argmax(), arr.argmin()} & index maxima a minima\\
 \end{tabular}
 
-Jako u každého kontejnerového typu vrací \ls{len(arr)} délku pole. Tyto metody existují také ve formě funkcí (např. můžeme volat \ls{np.mean(arr)}). Dále existují užitečné funkce, které pracují s poli v samotném modulu: \ls{np.diff(arr)} vrací pole rozdílů mezi nejbližšími sousedy o jeden prvek kratší než \ls{arr}; pro obecnější vážené průměrování lze použít \ls{np.average(arr, weights)}. Většina těchto funkcí má své odpovídající nan- verze, které ignorují hodnoty NaN v polích (např. \ls{np.nansum, np.nanmax} atd.). \ls{np.isnan(arr)} vrací pole stejné délky jako \ls{arr} s hodnotou True všude tam, kde \ls{arr} bylo NaN. Pro pole s booleovskými hodnotami jsou rozšířením \ls{and} a \ls{or} funkce \ls{np.logical_and(arr1, arr2)} a \ls{np.logical_or(arr1, arr2)} a podobně \ls{np.logical_not(arr)}, které vytvářejí nové pole s logickou operací aplikovanou na každý prvek vstupních polí. Logické operátory samy o sobě s poli nefungují.
+Jako u každého kontejnerového typu vrací \ls{len(arr)} délku pole. Tyto metody existují také ve formě funkcí (např. můžeme volat \ls{np.mean(arr)}). Dále existují užitečné funkce, které pracují s poli v samotném modulu: \ls{np.diff(arr)} vrací pole rozdílů mezi nejbližšími sousedy (výsledek je o jeden prvek kratší než \ls{arr}); pro obecnější vážené průměrování lze použít \ls{np.average(arr, weights)}. Většina těchto funkcí má své odpovídající nan-verze, které ignorují hodnoty NaN v polích (např. \ls{np.nansum, np.nanmax} atd.). \ls{np.isnan(arr)} vrací pole stejné délky jako \ls{arr} s hodnotou True všude tam, kde \ls{arr} obsahovalo NaN. Pro pole s booleovskými hodnotami slouží místo operátorů \ls{and} a \ls{or} funkce \ls{np.logical_and(arr1, arr2)} a \ls{np.logical_or(arr1, arr2)} a podobně \ls{np.logical_not(arr)}, které vytvářejí nové pole s logickou operací aplikovanou na každý prvek vstupních polí. Logické operátory samy o sobě s poli nefungují.
 
 \begin{syntax}[NaNs and Infs.]
      Matematické operace mohou vést buď k Not-a-Number (NaN) nebo nekonečnům, které jsou v numpy reprezentovány jako \ls{np.nan} a \ls{np.inf}. Jsou to speciální hodnoty indikující, pro NaN, že byla provedena nedefinovaná operace, např. \ls{np.log(-1)} (Python a Numpy podporují komplexní čísla, ale předpokládá se, že operace s reálnými čísly vedou také k reálným číslům -- pokud bychom chtěli použít komplexní logaritmus, museli bychom mu dát komplexní -1, tj. \ls{np.log(-1 + 0j)}).
@@ -89,15 +89,15 @@ Pole lze seřadit na místě pomocí \ls{arr.sort()} nebo lze vytvořit nové se
 
     sort_ix = np.argsort(prices)
     print("Items sorted according to prices:")
-    print(items[sort_ix]) # V českém kontextu: print(items[sort_ix])
+    print(items[sort_ix])
 \end{lstlisting}
 
-\subsubsection{Vstup/výstup souborů}
+\subsubsection{Vstup/výstup se soubory}
 Budeme používat numpy a matplotlib k analýze experimentálních dat. Nejprve musíme data získat, obvykle z nějakého souboru na disku. Za předpokladu, že máme data uložena jako textový soubor v \verb|data.txt| ve dvou sloupcích čísel oddělených tabulátory, můžeme je načíst do 2D pole numpy pomocí
 \begin{lstlisting}
     arr = np.loadtxt("data.txt", comments='%', skiplines=3)
 \end{lstlisting}
-což načte \verb|data.txt| do 2D pole \verb|arr|, ignoruje všechny řádky začínající \% a přeskočí první tři datové řádky. Pokud jsou naše data oddělena čárkami (tj. soubor \verb|.csv|) místo tabulátorů, můžeme přidat klíčový argument \verb|delimiter=','| nebo použít \lstinline{np.genfromtxt(..., delimiter=',')}.
+což načte \verb|data.txt| do 2D pole \verb|arr|, ignoruje všechny řádky začínající \% a přeskočí první tři datové řádky. Pokud jsou naše data oddělena čárkami (tj. soubor \verb|.csv|) místo tabulátorů, můžeme přidat klíčový argument \verb|delimiter=','|.
 
 \begin{syntax}[Paths]
     Cesty k souborům nebo adresářům mohou být absolutní nebo relativní. Absolutní cesta specifikuje absolutní pozici souboru v souborovém systému, na Windows bude typicky začínat něčím jako \verb|C:\| a na Linuxu nebo Macu kořenovým adresářem \verb|/|.
@@ -106,10 +106,10 @@ což načte \verb|data.txt| do 2D pole \verb|arr|, ignoruje všechny řádky za�
 
     Různé operační systémy používají různé oddělovače adresářů, tj. Windows používá \verb|\|, Linux a Mac \verb|/| a japonské počítače s Windows používají \verb|¥|. Pro spojení názvů adresářů způsobem, který bude fungovat všude, můžeme použít \ls{os.path.join('dir1', 'dir2', 'dir3', ...)}.
 
-    Pro nalezení více souborů, jejichž název odpovídá vzoru, můžeme použít funkci \ls{glob()} z modulu \ls{glob()}. Například \ls{glob(os.path.join("photos", "photo*.png"))} vrátí seznam všech souborů, které odpovídají vzoru \ls{\"photos/photo<libovolný počet libovolných znaků>.png\"}.
+    Pro nalezení více souborů, jejichž název odpovídá vzoru, můžeme použít funkci \ls{glob()} z modulu \ls{glob}. Například \ls{glob(os.path.join("photos", "photo*.png"))} vrátí seznam všech souborů, které odpovídají vzoru \ls{\"photos/photo<libovolný počet libovolných znaků>.png\"}.
 \end{syntax}
 
-Použití funkcí pro vstup/výstup souborů ze standardní knihovny Pythonu je také možné. Funkce \lstinline{file = open(filename, mode)} otevře soubor v daném režimu, nejběžnější jsou \lstinline{'r'} pro čtení, \lstinline{'w'} pro (pře)psaní a \lstinline{'a'} pro připojení. Veškerý obsah souboru lze přečíst najednou pomocí \lstinline{file.readlines()} nebo můžeme iterovat přes řádky souboru pomocí cyklu for (viz příklad níže). Inverzně existuje \lstinline{file.write(some_string)} (pokud je soubor otevřen v režimu 'r', toto selže). Zvláště pro zápis je důležité zavolat \lstinline{file.close()} poté, co jsme se souborem hotovi, jinak se změny nemusí zapsat na disk kvůli cachování.
+Použití funkcí pro vstup/výstup souborů ze standardní knihovny Pythonu je také možné. Funkce \lstinline{file = open(filename, mode)} otevře soubor v režimu daným \ls{mode}, nejběžnější jsou \lstinline{'r'} pro čtení, \lstinline{'w'} pro (pře)psaní a \lstinline{'a'} pro připojení obsahu na konec souboru. Veškerý obsah souboru lze přečíst najednou pomocí \lstinline{file.readlines()} nebo můžeme iterovat přes řádky souboru pomocí cyklu for (viz příklad níže). Inverzně existuje \lstinline{file.write(some_string)} (pokud je soubor otevřen v režimu 'r', toto selže). Zvláště pro zápis je důležité zavolat \lstinline{file.close()} poté, co jsme se souborem hotovi, jinak se změny nemusí zapsat na disk kvůli cachování.
 
 Funkce \lstinline{np.loadtxt()} s výchozími argumenty je zhruba ekvivalentní
 \begin{lstlisting}
@@ -118,12 +118,12 @@ Funkce \lstinline{np.loadtxt()} s výchozími argumenty je zhruba ekvivalentní
         with open(fn, 'r') as file:
             rows = []
             for line in file:
+                # řádek po řádku proměníme všechny hodnoty oddělené mezerami na čísla
                 row = [float(s) for s in line.strip().split()]
                 rows.append(row)
         return np.array(rows)
 \end{lstlisting}
 \begin{syntax}[with statement (basic)]
-\lstinline{with} is an example of so-called context management which ensures that resources (in this case a file) are properly cleaned up after we are done using them. We will learn how to create our own context managers later, for now, the code
 \lstinline{with} je příkladem tzv. správy kontextu, která zajišťuje, že zdroje (v tomto případě soubor) jsou po dokončení práce s nimi řádně uvolněny. Později se naučíme vytvářet vlastní správce kontextu, prozatím je kód
 \begin{lstlisting}
     with open(fn, 'r') as file:
@@ -152,11 +152,12 @@ matplotlib umožňuje vykreslování dat. Data vykreslujeme do os (axes), které
 Pokud máme data v polích \lstinline{x} a \lstinline{y} stejné délky, můžeme je vykreslit například pomocí:
 \begin{lstlisting}[caption=Základní vykreslování.]
     ax.plot(x, y, '-') # spojí dvojice bodů dané x a y plnými čarami
-    ax.semilogy(x, y, '--s') # logaritmická osa y, čárkovaná čára se čtvercovými značkami
+    # logaritmická osa y, čárkovaná čára se čtvercovými značkami
+    ax.semilogy(x, y, '--s')
     ax.loglog(x, y, ':') # logaritmická osa x a y, tečkovaná čára
     ax.scatter(x, y) # bodový graf, nespojuje body čarami
 \end{lstlisting}
-Formát vykreslování je specifikován pomocí formátovacího řetězce bezprostředně za daty, který má formát \ls{fmt = [marker][line][color]}.\footnote{Viz \url{https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html} pro úplný seznam možných formátů} Šířku čáry můžeme specifikovat pomocí klíčového slova \ls{lw=}, velikost značky pomocí \ls{ms=} a barvu pomocí \ls{color=} \footnote{Viz \url{https://matplotlib.org/stable/users/explain/colors/colors.html}} Všimněte si, že matplotlib nezajímá, zda dvojice polí x a y představuje matematickou funkci, jednoduše spojí body postupně čarami.
+Formát vykreslování je specifikován pomocí formátovacího řetězce bezprostředně za daty, který má formát \ls{fmt = [marker][line][color]}.\footnote{Viz \href{https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html}{dokumentaci} pro úplný seznam možných formátů.} Sílu čáry můžeme specifikovat pomocí klíčového slova \ls{lw=}, velikost značky pomocí \ls{ms=} a barvu pomocí \ls{color=}. \footnote{Viz \href{https://matplotlib.org/stable/users/explain/colors/colors.html}{dokumentaci} pro všechny pojmenované barvy.} Všimněte si, že matplotlib nezajímá, zda dvojice polí x a y představuje matematickou funkci; jednoduše spojí body v pořadí čarami.
 
 Pro popis os můžeme použít \ls{ax.set_xlabel()} a \ls{ax.set_ylabel()}. Data lze označit předáním klíčového argumentu \ls{label=} s řetězcem kterémukoli z vykreslovacích příkazů a následným zavoláním \ls{ax.legend()}. Obrázek můžeme uložit pomocí \ls{fig.savefig(filename)}.
 
@@ -171,7 +172,10 @@ ys = np.exp(-(xs - 5)**2)
 plt.close('all') #zavře všechny dosud otevřené obrázky
 fig, ax = plt.subplots()
 
+#velikost bodu (marker size, ms) 5
 ax.plot(xs, ys, '--s', ms=5, lw=2, color='magenta', label=r'ax.plot($e^{-x^2}$)')
+#scatter umožňuje proměnnou velikost bodú pomocí argumentu s
+#Všimněte si, že na vrcholu peaku jsou azurové body větší, než na okrajích
 ax.scatter(xs, ys, s=ys*10, marker='o', color='cyan', zorder=3,
            label=r'ax.scatter($e^{-x^2}$)')
 
@@ -186,10 +190,10 @@ fig.savefig('gaussian.pdf') #formát souboru obrázku je odvozen z přípony
 \begin{center}
     \includegraphics[width=0.5\linewidth]{gaussian.pdf}
 \end{center}
-Všimněte si, že můžeme ovládat, které objekty se kreslí nad kterými, pomocí klíčového argumentu \ls{zorder=} a že je podporována základní sazba matematiky \LaTeX, ale příkazy latexu začínající zpětným lomítkem je třeba buď escapovat (tj. \verb|"$\\frac{}{}$"|) nebo použít v raw řetězcích (tj. \verb|r"$\frac{}{}$"|).
+Všimněte si, že můžeme ovládat, které objekty se kreslí nad kterými, pomocí klíčového argumentu \ls{zorder=} a že je podporována základní sazba matematiky pomocí \LaTeX, ale příkazy latexu začínající zpětným lomítkem je třeba buď escapovat (tj. \verb|"$\\frac{a}{b}$"|) nebo použít v raw řetězcích (tj. \verb|r"$\frac{a}{b}$"|).
 
 \begin{exercise}
-    Napište program, který pomocí NumPy a Matplotlib vykreslí výrazy $y=x$, $y=x^2$ a $y=\sqrt{x}$ od $x=0$ do $x=5$ s různými styly čar (např. plná, čárkovaná, tečkovaná) a uživatelem zadaným počtem bodů. Vyzkoušejte lineární, semilogaritmické a logaritmické osy. Popište osy a křivky.
+    Napište program, který pomocí NumPy a Matplotlib vykreslí výrazy $y=x$, $y=x^2$ a $y=\sqrt{x}$ od $x=0$ do $x=5$ s různými styly čar (např. plná, čárkovaná, tečkovaná) a uživatelem zadaným počtem bodů. Vyzkoušejte lineární, semilogaritmické a logaritmické osy. Dejte osám popisky a křivkám legendu.
 \end{exercise}
 
 Jeden obrázek může obsahovat více os vytvořených předáním volitelných argumentů rows a columns funkci \ls{plt.subplots()}. Více os je vytvořeno v pravidelné mřížce se zadaným počtem řádků a sloupců. Pro osy nerovných velikostí můžeme specifikovat poměry jejich šířek a výšek pomocí \ls{width_ratios} a \ls{height_ratios} (viz \ls{gridspec} \footnote{\url{https://matplotlib.org/3.5.0/tutorials/intermediate/gridspec.html}} pro složitější rozvržení obrázků). Osy mohou sdílet rozsahy x a y specifikováním booleovských klíčových argumentů \ls{sharex} a \ls{sharey}, například
@@ -199,15 +203,15 @@ Jeden obrázek může obsahovat více os vytvořených předáním volitelných 
 \end{center}
 \begin{exercise}
     \label{ex:peak}
-    Write a program that will read the data from "data.txt" which contains three columns of numbers separated by tabs. Let's call these columns frequency, $X$ and $Y$. Plot the frequency dependence of $X$ and $Y$ 
+    Napište program, který načte data ze souboru \verb|data.txt|, který obsahuje tři sloupce čísel oddělené tabulátory. Nazveme tyto sloupce frekvence, $X$ a $Y$. Nakreslete frekvenční závislosti $X$ a $Y$
     \begin{enumerate}
         \item ve stejných osách ($X$ plná čára, $Y$ čárkovaná čára)
         \item v oddělených osách ve stejném obrázku se sdíleným rozsahem x a y
     \end{enumerate}
-    Vykreslete také $X$ vs. $Y$ v samostatném grafu. Popište osy vhodně.
+    Vykreslete také $X$ vs. $Y$ v samostatném grafu. Osám dejte vhodné popisky.
 \end{exercise}
-\begin{syntax}[Writing modules.]
-    Jakýkoli python soubor může být importován jiným python souborem jako modul pomocí klíčového slova \ls{import}, název modulu je název souboru (bez koncovky .py). Při \ls{import}u je soubor nejprve spuštěn, tj. jakýkoli kód, který se nachází mimo definice funkcí, se spustí, například vezměme dva soubory ve stejném adresáři
+\begin{syntax}[Vytváření vlastních modulů.]
+    Jakýkoli Python soubor může být importován jiným Python souborem jako modul pomocí klíčového slova \ls{import}; název modulu je název souboru (bez koncovky .py). Při \ls{import}u se soubor nejprve spustí, tj. jakýkoli kód, který se nachází mimo definice funkcí, se vykoná. Například vezměme dva soubory ve stejném adresáři
 
     \verb|module.py|:
     \begin{lstlisting}
@@ -228,13 +232,13 @@ Jeden obrázek může obsahovat více os vytvořených předáním volitelných 
     if __name__ == '__main__':
         print("Hello modules.")
 \end{lstlisting}
-    Here, \ls{__name__} is a special variable defined by Python itself that contains the name of the module associated with the current file. Its value is \ls{'__main__'} if and only if it was directly.
+    Zde je \ls{__name__} speciální proměnná definovaná v Pythonu, která obsahuje název modulu přiřazený současnému souboru. Má speciální hodnotu \ls{'__main__'} pouze tehdy, když byl soubor spuštěn přímo.
 
-    Aby bylo možné soubor importovat jako modul, Python ho musí být schopen najít. Standardně Python hledá v aktuálním pracovním adresáři \ls{os.getcwd()} a v adresářích uvedených v seznamu \ls{sys.path} v balíčku \ls{sys}. Pokud chceme načíst balíček odjinud, můžeme jednoduše přidat jeho adresář do proměnné path pomocí \ls{sys.path.append()}.
+    Aby bylo možné soubor importovat jako modul, Python ho musí být schopen najít. Standardně Python hledá v aktuálním pracovním adresáři (\ls{os.getcwd()}) a v adresářích uvedených v seznamu \ls{sys.path} v modulu \ls{sys}. Pokud chceme načíst balíček z jiného umístění, můžeme přidat jeho adresář do proměnné \ls{sys.path} pomocí \ls{sys.path.append(cesta)}.
 \end{syntax}
 \begin{exercise}
     \label{ex:peaks}
-    Najděte maximum a minimum absolutní hodnoty $R = \sqrt{X^2 + Y^2}$ a vyznačte jejich pozice svislými čarami v grafu frekvenční závislosti $X$ a $Y$ z předchozího cvičení. Odhadněte plnou šířku v polovině maxima (FWHM) píku a činitel jakosti $f_0$/FWHM, kde $f_0$ je frekvence maximální odezvy. 
+    Najděte maximum a minimum absolutní hodnoty $R = \sqrt{X^2 + Y^2}$ a vyznačte jejich pozice svislými čarami v grafu frekvenční závislosti $X$ a $Y$ z předchozího cvičení. Odhadněte plnou šířku v polovině maxima (full width at half maximum, FWHM) píku a činitel jakosti $f_0$/FWHM, kde $f_0$ je frekvence maximální odezvy. 
     
     \emph{Hint:} \ls{np.argmin, np.argmax}, \ls{ax.axvline, ax.axhline}
 \end{exercise}
@@ -255,11 +259,11 @@ import matplotlib.pyplot as plt
 #x and y axis
 _xs = np.linspace(0, 10, 100)
 _ys = np.linspace(0, 10, 100)
-#but we need 100 x 100 points for both x and y that sample the 
-#celý interval (0, 10) x (0, 10), to lze provést pomocí
+# my ale potřebujeme 100 x 100 bodů pro x i y které vzorkují
+# celý interval (0, 10) x (0, 10), to lze provést pomocí
 #meshgrid
-xs, ys = np.meshgrid(_xs, _ys)
-zs = np.exp(-(xs - 5)**2 - (ys - 5)**2)
+xs, ys = np.meshgrid(_xs, _ys) #xs, ys jsou 2D pole
+zs = np.exp(-(xs - 5)**2 - (ys - 5)**2) # a zs taky
 
 plt.close('all') #zavře všechny dosud otevřené obrázky
 fig, ax = plt.subplots()
@@ -267,7 +271,7 @@ fig, ax = plt.subplots()
 plot = ax.imshow(zs, cmap='inferno_r', origin='lower')
 #podobně
 #plot = ax.pcolormesh(xs, ys, zs, cmap='inferno_r') 
-cbar = fig.colorbar(plot) #the color axis scaling
+cbar = fig.colorbar(plot) # barevná škála (colorbar)
 cbar.set_label('$z$')
 ax.set_xlabel('$x$')
 ax.set_ylabel('$y$')
