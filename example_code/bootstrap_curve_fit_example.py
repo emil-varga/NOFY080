@@ -28,7 +28,8 @@ parameter_N = 3
 data_N = len(xs)
 ps = np.empty((bootstrap_N, parameter_N)) # here we will save all fit parameters
 for k in range(bootstrap_N):
-    ix = rng.choice(range(data_N), data_N) # some data will be omitted, some will occur more than once
+    # some data will be omitted, some will occur more than once
+    ix = rng.choice(range(data_N), data_N)
     ix.sort()
     popt, _ = curve_fit(lorentzian, xs[ix], ys[ix], p0=[1, 1, 1])
     ps[k,:] = popt
@@ -39,7 +40,7 @@ for k in range(bootstrap_N):
 ps = abs(ps)
 # do the statistics on the set of parameters ps, which is a 2D array. 
 # work only along one axis, we don't want to average everything together
-popt_bootstrap = np.mean(ps, axis=0) #1st axis (0th) averages the rows
+popt_bootstrap = np.mean(ps, axis=0) #1st axis (0th) averages over the rows
 perr_bootstrap = np.std(ps, axis=0) #the same for standard deviation
 ax.plot(xs, lorentzian(xs, *popt_bootstrap), color='r', label='fit')
 

@@ -214,23 +214,23 @@ Jeden obrázek může obsahovat více os vytvořených předáním volitelných 
     Jakýkoli Python soubor může být importován jiným Python souborem jako modul pomocí klíčového slova \ls{import}; název modulu je název souboru (bez koncovky .py). Při \ls{import}u se soubor nejprve spustí, tj. jakýkoli kód, který se nachází mimo definice funkcí, se vykoná. Například vezměme dva soubory ve stejném adresáři
 
     \verb|module.py|:
-    \begin{lstlisting}
-        def my_module_function(x):
-            return 1 + x
+\begin{lstlisting}
+def my_module_function(x):
+    return 1 + x
 
-        print("Ahoj moduly!")
-    \end{lstlisting}
+print("Ahoj moduly!")
+\end{lstlisting}
 
     \verb|module_user.py|:
-    \begin{lstlisting}
-        import module as m
-        print(m.my_module_function(1))
-    \end{lstlisting}
+\begin{lstlisting}
+import module as m
+print(m.my_module_function(1))
+\end{lstlisting}
 
     Po spuštění \verb|module_user.py| se vytiskne "Ahoj moduly!". To obvykle není žádoucí. Abychom zabránili spuštění jakéhokoli kódu při importu a povolili jeho spuštění pouze tehdy, když je soubor spuštěn přímo, můžeme udělat
 \begin{lstlisting}
-    if __name__ == '__main__':
-        print("Hello modules.")
+if __name__ == '__main__':
+    print("Hello modules.")
 \end{lstlisting}
     Zde je \ls{__name__} speciální proměnná definovaná v Pythonu, která obsahuje název modulu přiřazený současnému souboru. Má speciální hodnotu \ls{'__main__'} pouze tehdy, když byl soubor spuštěn přímo.
 

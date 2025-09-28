@@ -312,3 +312,44 @@ Pokud chceme z daného modulu použít jen malý počet funkcí, můžeme je imp
     Napište program pro výpočet Fibonacciho čísla $F_n$ pomocí cyklů i rekurze. Změřte čas potřebný k výpočtu prvních 20 $F_n$ oběma metodami pomocí \verb|time.time()|.
     \emph{Nápověda:} $F_k = F_{k-1} + F_{k-2},\;F_1 = F_2 = 1$
 \end{exercise}
+
+\subsection{Objektově orientované programování}
+    (OOP) je programovací technika pro spojování dat s funkcemi a oddělování implementačních detailů dílčích problémů od zbytku kódu. Při správném použití může pomoci psát snadno čitelný, rozšiřitelný a znovupoužitelný kód.
+
+    V jazyce OOP jsou objekty instancemi tříd. Všechno v Pythonu je objekt. Například číslo 5 je instance třídy \ls{int}. V moderním Pythonu (tj. verze 3 a vyšší) mají pojmy typ a třída stejný význam. Vestavěná funkce \ls{type()} vrací třídu (nebo typ) objektu, např.
+\begin{lstlisting}
+    >>> type(2)
+    <class 'int'>
+\end{lstlisting}
+
+    Pro vytvoření nových tříd používáme klíčové slovo \ls{class}, např. pro vytvoření třídy, která reprezentuje rozdíly
+\begin{lstlisting}
+class Difference:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        
+    def __str__(self):
+        return f"{self.x} - {self.y}"
+    
+    def value(self):
+        return self.x - self.y
+\end{lstlisting}
+    Funkce definované uvnitř tříd se nazývají \textbf{metody}. První argument, konvenčně nazývaný \ls{self}, odkazuje na objekt, který metodu volá. \ls{__init__} je speciální metoda, která vytváří objekt, \ls{__str__} je speciální funkce, která by měla vytvořit čitelnou textovou reprezentaci objektu (používá se s \ls{print}).
+
+    Používání tříd a objektů je přímočaré, např.
+\begin{lstlisting}
+    #__self__() se zavolá s x=3, y=5 a self odkazuje na d1
+    d1 = Difference(3, 5)
+    d2 = Difference(30, 50) 
+
+    print(d1.value()) # -2
+    print(d2) # "30 - 50"
+\end{lstlisting}
+
+    Existuje několik dalších speciálních názvů metod (více viz \href{https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types}{dokumentace}),
+    např. \ls{__add__(self, other)}, která se volá pro \ls{x + y}, kde \ls{x} je \ls{self} a \ls{y} je \ls{other}. Podobně existují \ls{__sub__}, \ls{__mul__} a \ls{__truediv__} pro \verb|-, *, /|.
+
+\begin{exercise}
+    Implementujte třídu \ls{Fraction}, která reprezentuje zlomek, který je inicializován dvěma čísly -- čitatelem a jmenovatelem. Třída by měla podporovat základní aritmetiku (\ls{+,-,*,/}) s čísly a dalšími \ls{Fraction}.
+\end{exercise}

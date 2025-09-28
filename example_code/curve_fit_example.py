@@ -25,7 +25,8 @@ popt, pcov = curve_fit(lorentzian, xs, ys, p0=[1, 1, 1])
 # curve_fit returns the optimized parameters (popt) and the covariance matric (pcov)
 # the diagonal of the covariance matrix can be used as simple error estimates of the parameters
 ax.plot(xs, lorentzian(xs, *popt), color='r', label='fit')
-#                          ^ this substitutes (positionally) elements of the iterable into the function call
+#                          ^ 
+# this substitutes (positionally) elements of the iterable into the function call
 
 print(f"Estimated height: {popt[0]:.3f} +/- {np.sqrt(pcov[0,0]):.3f}")
 print(f"Estimated center: {popt[1]:.3f} +/- {np.sqrt(pcov[1,1]):.3f}")
