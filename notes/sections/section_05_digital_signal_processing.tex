@@ -5,7 +5,7 @@ Assume a signal $y(t)$ (e.g., a voltage) which varies continuously in time. To s
 
 Any information about the original signal $y(t)$ that varies in time faster than $\Delta t$ is lost. However, if $y(t)$ oscillates at a frequency $f$ it is insufficient to have $f_s \geq f$. Signal frequencies $f > f_s/2$ will appear shifted to $f - f_s/2$, see the output of Lst.~\ref{ls:label}. The sampled signal contains fictitious frequencies which are not present in the original signal. 
 
-This distortion of called \textbf{aliasing} and the \emph{Nyquist theorem} states that in order to avoid aliasing, the highest frequency contained in the signal $f$ must not be higher than one half of the sampling frequency $f_s/2$, which is called the \textbf{Nyquist frequency} 
+This distortion is called \textbf{aliasing} and the \emph{Nyquist theorem} states that in order to avoid aliasing, the highest frequency contained in the signal $f$ must not be higher than one half of the sampling frequency $f_s/2$, which is called the \textbf{Nyquist frequency} 
 \begin{equation}
     \label{eq:nqyust}
     f_N = f_s/2.
