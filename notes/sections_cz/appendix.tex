@@ -1,0 +1,313 @@
+%TODO: check after AI translation
+\newpage
+%Appendices
+\section{Lineární harmonický oscilátor}
+\label{sec:lho}
+Lineární harmonický oscilátor s třením je popsán dynamickou rovnicí
+\begin{equation}
+    \label{eq:lho}
+    \ddot x + \omega_0^2 x + \gamma\dot x = F(t)/m,
+\end{equation}
+kde $m$ je hmotnost oscilátoru, $\omega_0$ je rezonanční frekvence, $\gamma$ koeficient tření a $F(t)$ vnější síla. Za předpokladu, že síla má tvar $F(t) = \Re(\tilde F e^{i\omega t})$ a že řešení má tvar $x(t) = \Re(\tilde x e^{i\omega t})$ (nebo aplikací Fourierovy transformace na obě strany rovnice), dostaneme jednoduchým přeuspořádáním
+\begin{equation}
+    \tilde x = \frac{1}{m}\frac{\tilde F}{\omega_0^2 - \omega^2 + i\gamma\omega} = \chi(\omega)\tilde F,
+\end{equation}
+kde $\chi(\omega)$ se nazývá susceptibilita.
+
+Protože rovnice~\ref{eq:lho} je lineární rovnice, odezva na součet sil bude součtem odezev na každou sílu.
+
+\section{Nastavení komunikace s přístroji}
+\label{sec:pico}
+K komunikaci s přístroji budeme používat knihovnu VISA. Pro komunikaci s Raspberry Pi Pico použijeme pythonovou implementaci této knihovny, pro kterou potřebujeme nainstalovat alespoň \verb|pyvisa, pyvisa-py| a \verb|pyusb| pomocí
+\begin{verbatim}
+    pip install pyvisa pyvisa-py pyusb
+\end{verbatim}
+který byste měli spustit v příkazovém řádku, který zná vaši instalaci pythonu (např. Anaconda Prompt, pokud jste na Windows s distribucí Anaconda Python). Na Linuxu byste se také měli přidat do skupiny \verb|dialout| (nezapomeňte na přepínač \verb|-a|),
+\begin{verbatim}[language=bash]
+    sudo usermod -a <your username> -G dialout 
+\end{verbatim}
+a odhlásit se a znovu přihlásit.
+
+Pro otestování instalace spusťte z příkazového řádku \verb|pyvisa-info|. Mělo by se vypsat množství informací, hledejte řádek, který vypadá jako
+\begin{verbatim}
+    USB INSTR: Available via PyUSB (1.2.1). Backend: libusb1
+\end{verbatim}
+
+Dále vytvořte Python skript \verb|list_resources.py| s následujícím kódem
+\lstinputlisting{../example_code/list_resources.py}
+a spusťte ho. Měl by vypsat buď nic, nebo několik portů COM (nebo tty na Linuxu). Poté připojte Pico a spusťte program znovu, měla by se objevit nová adresa, to je adresa, kterou budeme používat pro komunikaci s Pico.
+
+Dále spusťte následující kód a nahraďte \verb|"ASRL/dev/ttyACM0::INSTR"| adresou, kterou jste našli v předchozím kroku.
+\lstinputlisting{../example_code/idn.py}
+Program by měl vypsat "PICO" a ukončit se bez chyby.
+
+Pro plnohodnotnější implementaci VISA můžete zvážit implementaci od \href{https://www.ni.com/en/support/downloads/drivers/download.ni-visa.html#548367}{National Instruments} (NI). Knihovna NI-VISA je zdarma, ale není open source a vyžaduje registraci. Podpora Linuxu je také omezena na zastaralá jádra.
+
+\subsection{Podporované příkazy}
+\begin{tabular}{p{15cm}}
+    \textbf{*IDN?}\\
+    Dotaz na identifikační řetězec. Měl by odpovědět PICO.
+    \\\hline
+    \textbf{:LED n m}\\
+    Zapne (m=1) nebo vypne (m=0) LED diodu $n$. Číslo LED $n = 0 \dots 4$, červená LED je 0.
+    \\\hline
+    \textbf{:READ:P?}\\
+    Přečte tlak v Pa.
+    \\\hline
+    \textbf{:READ:T?}\\
+    Vrací teploty jako $100T$, kde $T$ je teplota v $^\circ$C.
+    \\\hline
+    \textbf{:READ:PT?}\\
+    Přečte teplotu i tlak.
+    \\\hline
+    \textbf{:READ:ACC?}\\
+    Přečte akcelerometr. Vrací tři hodnoty oddělené mezerou v rozsahu -32768 až 32768, což odpovídá $-2g$ až $2g$.
+    \\\hline
+    \textbf{:READ:GYR?}\\
+    Přečte gyroskop. Vrací tři hodnoty oddělené mezerou v rozsahu -32768 až 32768, což odpovídá $-500^\circ$/s až $500^\circ$/s.
+\end{tabular}
+
+\subsection{Hackování firmwaru}
+Zdrojový kód programu běžícího na Pico je dostupný \href{https://bitbucket.org/emil_varga/picolab/src/master/}{zde}. Pro jeho kompilaci je třeba nastavit Pico SDK, postupujte podle pokynů \href{https://www.raspberrypi.com/documentation/microcontrollers/c_sdk.html}{zde}.
+
+Alternativně můžete použít MicroPython pro spouštění Python kódu přímo na Pico, postupujte podle pokynů pro nastavení \href{https://www.raspberrypi.com/documentation/microcontrollers/micropython.html#what-is-micropython}{zde}.
+
+LED diody jsou připojeny k pinům GP0 -- GP4 a senzory jsou připojeny k řadiči I2C0 na pinech 16 a 17.
+
+% \section{Základy systému pro správu verzí git}
+% \label{sec:git}
+% TODO
+
+\section{Základy Linuxu}
+
+Linux je jádro operačního systému -- část, která přímo spravuje přístup k hardwaru a nemůže být přímo použita uživatelem. V kombinaci s běžně používanou sadou programů vyvinutých např. projektem GNU vzniká skutečný operační systém, někdy nazývaný
+``GNU/Linux'' (ačkoli téměř každý ho nazývá prostě Linux).
+
+Přidáním dalších funkcí (typicky instalátor, správce balíčků a grafické uživatelské rozhraní) vzniká \emph{linuxová distribuce} (nebo \emph{distro}), např. Ubuntu, Fedora, OpenSUSE, Mint, Red Hat Enterprise Linux, \ldots{} nebo Gentoo, v případě laboratorních počítačů.
+
+\subsection{Struktura souborového systému}
+
+Linux a obecně systémy podobné Unixu nepoužívají strukturu souborového systému, která může být známá z Microsoft Windows. Konkrétně, souborový systém začíná v \textbf{kořenovém adresáři} označeném jediným lomítkem \verb|/|, ze kterého se větví všechny ostatní adresáře. Více pevných disků nebo oddílů na jednom disku (které by se ve Windows jmenovaly něco jako \verb|C:\| atd.) vypadají a chovají se jako běžné adresáře.
+
+Důležité adresáře jsou \verb|/home|, kde si uživatelé mohou ukládat svá data ve svých \textbf{domovských adresářích}, nebo \verb|/bin|, kde jsou uloženy spustitelné programy.
+
+\subsection{Přesun souborů mezi laboratoří a osobním počítačem}
+
+Všichni studenti mají účty pro ukládání svých souborů na fakultních serverech. K nim lze přistupovat přes web na adrese \url{https://su.mff.cuni.cz/}
+
+Můžete k nim také přistupovat pomocí správce souborů v Linuxu přechodem na \ls{sftp://su.mff.cuni.cz/home/university_username} nebo \ls{\\\\su.mff.cuni.cz\\home\\university_username} ve Windows a přihlášením se svými univerzitními přihlašovacími údaji. \ls{university_username} je slovo založené na vašem jméně, nikoli ID číslo.
+
+\subsection{Rozhraní příkazového řádku}
+
+Operační systém nám poskytuje přístup ke svým službám (např. zápis na disk nebo tisk na obrazovku) prostřednictvím sady programů nazývaných \textbf{shell}. Shelly mohou být buď grafické (grafické uživatelské rozhraní, GUI) nebo rozhraní příkazového řádku (CLI). V Linuxu existuje mnoho
+grafických shellů, nejoblíbenější jsou Gnome, KDE (používané na laboratorních počítačích) a (hádám) Xfce. Nejčastěji používaný textový shell se nazývá \textbf{bash}. Pro použití CLI můžeme použít ,,emulátor terminálu'' z GUI. Každé GUI poskytuje svou vlastní verzi
+(např. \verb|konsole| pro KDE, \verb|gnome-terminal| pro Gnome). Téměř všechny linuxové distribuce přiřazují spuštění emulátoru terminálu klávesové zkratce Ctrl-Alt-T.
+
+\paragraph{Základní příkazy - Navigace}
+
+Pro základní navigaci můžeme použít
+
+\begin{itemize}
+  \item
+    \verb|ls| -- vypíše obsah aktuálního adresáře
+  \item
+    \verb|cd| -- změní adresář
+  \item
+    \verb|pwd| -- vypíše aktuální pracovní adresář
+  \item
+    \verb|tree| -- vypíše stromovou reprezentaci aktuálního
+    adresáře a jeho obsahu
+\end{itemize}
+
+%
+Chování příkazů lze upravit pomocí \emph{voleb}, obvykle začínajících jedním nebo dvěma pomlčkami, např. \verb|ls -l| vypíše aktuální adresář v jednosloupcovém formátu s některými dalšími informacemi; \verb|ls -la| také vypíše skryté soubory (ty, jejichž název začíná tečkou \verb|.|) a \verb|ls -lh| vypíše velikosti souborů v lidsky čitelném formátu (kilobajty, megabajty\ldots) místo pouhých bajtů. Všimněte si, že je poměrně běžné, že názvy souborů v Linuxu nemají přípony (např. .exe, .txt atd.). Příkaz \verb|tree| ve výchozím nastavení vypíše celý obsah všech podadresářů, rekurzivně od aktuálního adresáře, a není tedy příliš užitečný v kořeni větších adresářů (např. vašeho \verb|~|). Volitelný argument \verb|-L n| omezuje hloubku, do které se podadresáře vypisují, např. \verb|tree -L 2| vypíše obsah aktuálního adresáře, jeho podadresářů a jejich podadresářů.
+
+I když je často pohodlnější pracovat s grafickým správcem souborů, někdy je nutné přejít do CLI, například pro spuštění programu. Většina správců souborů to nějakým způsobem podporuje (obvykle pravým kliknutím \verb|>| otevřít v terminálu nebo něco podobného).
+
+Speciální názvy adresářů jsou \verb|.| (tečka), což znamená aktuální adresář, a \verb|..| (dvě tečky), což odkazuje na nadřazený adresář, a \verb|~| (tilda, nad klávesou Tab), což odkazuje na váš domovský adresář (což by pro mě na mém počítači bylo \verb|/home/vargaem|).
+
+Např. \verb|cd ..| změní adresář o jednu úroveň výš.
+
+Většina emulátorů terminálu vám pomůže ušetřit psaní pomocí automatického doplňování názvů souborů, složek nebo příkazů. Stisknutím klávesy Tab se doplní aktuální slovo, jak jen to je možné jednoznačně. Dvojitým stisknutím klávesy Tab získáte seznam možných doplnění.
+
+\begin{exercise}
+  Vytvořte soubor s nějakým textem v podadresáři ve vašem domovském adresáři pomocí GUI. Poté tento soubor najděte pomocí CLI.
+\end{exercise} 
+
+\paragraph{Cesty} Při pohybu v souborovém systému máme dvě možnosti, jak specifikovat cesty k přesnému souboru nebo adresáři, který chceme -- \emph{absolutní} nebo \emph{relativní} cesty. To není specifické pro Linux, všechny operační systémy poskytují tyto dvě možnosti nějakým způsobem.
+
+\begin{itemize}
+  \item
+    absolutní cesty -- cesta, která specifikuje absolutní pozici souboru v souborovém systému. V Linuxu tyto cesty vždy začínají \verb|/|, tj. \verb|/etc/fstab| (soubor, který v Linuxu obsahuje informace o rozdělení souborového systému). Ve Windows tyto cesty začínají písmenem jednotky, tj. \verb|C:\Windows\system32|.
+  \item
+    relativní cesty -- cesta relativní k aktuální pozici, jak je dána příkazem \verb|pwd|. Soubory a složky se hledají v aktuálním pracovním adresáři. Pokud potřebujeme odkazovat na soubor v nadřazeném adresáři, musíme použít \verb|..|.
+  \end{itemize}
+
+\paragraph{Zástupné znaky}
+Někdy chceme pracovat pouze s názvy souborů nebo adresářů, které odpovídají určitému vzoru. Tento vzor lze nejsnadněji specifikovat pomocí \emph{zástupných znaků} - \verb|*| (hvězdička) nahrazuje libovolný počet (včetně nuly) libovolných znaků; \verb|?| nahrazuje přesně jeden znak. Tyto zástupné znaky lze použít s \verb|ls|, např.
+\begin{verbatim}
+ls *.txt
+\end{verbatim}
+  vypíše všechny soubory \ls{.txt} v aktuálním adresáři
+\begin{verbatim}
+ls ab?.pdf    
+\end{verbatim}
+  vypíše všechny třípísmenné PDF soubory, které začínají na \verb|ab|. Složitější vzory lze vytvořit specifikací, které znaky mohou být do vzoru dosazeny, pomocí hranatých závorek \verb|[]|,
+  např. \verb|data_[1-9].txt| bude odpovídat \verb|data_1.txt|, \verb|data_2.txt|,\ldots\verb|data_9.txt|.
+
+    \begin{exercise}
+    Vypište všechny soubory z adresáře \verb|/usr/include|, které začínají na 'a' a mají příponu '.h'.
+    \end{exercise}
+
+\paragraph{nápověda a manuálové stránky}
+ Příkazy mohou být od poměrně jednoduchých, jako je \verb|cd|, až po poměrně složité, jako je \verb|find| (viz níže), kde je často třeba nahlédnout do dokumentace. Většina příkazů přijímá volbu \verb|-h| nebo \verb|--help|, která vypíše krátkou nápovědu. Pro podrobnější dokumentaci můžeme použít příkaz \verb|man|, který zobrazí tzv. \emph{manuálovou stránku} daného příkazu (zkratka z \textbf{man}uál), např.
+    \begin{verbatim}
+        man ls
+\end{verbatim}
+zobrazí dokumentaci pro příkaz \verb|ls|.
+
+\paragraph{Čtení souborů}
+Textové soubory lze číst a zobrazovat přímo v CLI (pro úpravy viz další sekce) pomocí příkazu \verb|cat| (zkratka z con\textbf{cat}enate), který vypíše jeden nebo více souborů jako text přímo na příkazový řádek.
+
+Pokud chceme číst dlouhý textový soubor, možná budeme potřebovat možnost posouvat zobrazení. K tomu můžeme použít \verb|less|, který přijímá jeden název souboru a umožňuje posouvat zobrazení pomocí šipek a ukončit stisknutím \emph{q}.
+
+\paragraph{Kopírování, přesouvání a mazání}
+Soubory \textbf{kopírujeme} pomocí \verb|cp|. Pro zkopírování souboru s názvem \verb|source| z podadresáře \verb|path/to| do aktuálního adresáře a jeho pojmenování \verb|destination| použijeme
+\begin{verbatim}
+      cp path/to/source destination
+\end{verbatim}
+pokud je cíl adresář, soubor se do něj zkopíruje s původním názvem. Pokud chceme zkopírovat adresář a vše v něm, můžeme použít \ls{cp -R} (R pro \textbf{R}ekurzivní).
+
+Podobný vzor používá příkaz pro \textbf{přesun} \ls{mv} (kromě toho, že \ls{-R} se nepoužívá pro přesun adresářů). Jak \ls{mv}, tak \ls{cp} podporují zástupné znaky, např. \ls{mv *.txt texts/} přesune všechny soubory \ls{*.txt} do adresáře \ls{texts}.
+
+Nové adresáře lze vytvořit pomocí \verb|mkdir|.
+
+Soubory se mažou pomocí \verb|rm|, který také podporuje zástupné znaky. \textbf{Pouze prázdné adresáře} lze odstranit pomocí \verb|rmdir|. Adresáře s obsahem lze odstranit pomocí \verb|rm -rf|. \textbf{POZOR} \verb|rm| maže soubory trvale, nepřesouvá je do koše nebo něčeho podobného. \verb|rm -rf| v kombinaci se zástupnými znaky může vést k katastrofám, pokud nejste opatrní, např.
+\begin{verbatim}
+  rm -rf tmp*
+\end{verbatim}
+  by odstranil všechny soubory a adresáře začínající na ,,tmp'' (možná nějaké dočasné soubory, které již nejsou potřeba), ale
+\begin{verbatim}
+  rm -rf tmp *
+\end{verbatim}
+  by odstranil soubor s názvem \verb|tmp| a \textbf{vše v aktuálním adresáři bez žádosti o potvrzení}.
+
+    \begin{exercise}
+        Vytvořte adresář, např. ,,exercise1'', a zkopírujte do něj všechny \verb|.h| soubory z \verb|/usr/include|, které začínají na a nebo b. Poté smažte všechny soubory začínající na b v exercise1; poté smažte celý adresář exercise1 (s některými soubory stále uvnitř).
+    \end{exercise}
+
+\paragraph{editace textových souborů}
+  
+\begin{itemize}
+  \item
+    \verb|nano|~\\
+    Nano je často nainstalován ve výchozím nastavení. Spodní řádek zobrazuje klávesové zkratky pro základní operace. Stříška \verb|^| znamená Ctrl, M znamená Alt, tj. pro ukončení nám nano říká, abychom udělali \verb|^X|, což znamená stisknutí Ctrl-X současně. Pro vrácení zpět nebo opakování bychom měli udělat \verb|M-U| nebo \verb|M-E|, což znamená stisknutí Alt-U nebo Alt-E. \verb|nano| odkazuje na zobrazený obsah jako na \emph{buffery}, které se pak ukládají do souborů na disku.
+  \item
+    \verb|emacs|~\\
+    Mnoho funkcí, které mohou být obtížně nastavitelné. Lepší se vyhnout.
+  \item
+    \verb|vim| -- Vim rozlišuje mezi \emph{editačním režimem} a \emph{příkazovým režimem}. Ve výchozím nastavení se spouští v příkazovém režimu, kde editor očekává nějaké příkazy. Pro vstup do editačního režimu stiskněte \textbf{i} a dole se objeví \textbf{--INSERT--}, což indikuje editační režim.
+
+    Pro uložení souboru vstupte do příkazového režimu stisknutím Esc (\textbf{--INSERT--} dole zmizí) a napište \textbf{:w}+Enter. Pro ukončení použijte \textbf{:q}. Pro ukončení bez uložení \textbf{:q!}. Pro ukončení a uložení \textbf{:wq}.
+
+    Soubory lze prohledávat pomocí Esc-\textbf{/} \emph{vyhledávací vzor}
+\end{itemize}
+
+\paragraph{vyhledávání}
+ příkaz \verb|find| lze použít k provádění poměrně složitých úkolů, ale pro jednoduché vyhledávání lze použít
+\begin{verbatim}
+  find directory_name -name 'name_pattern'
+\end{verbatim}
+např. \verb|find . -name '*.pdf'|
+vypíše všechny PDF soubory v aktuálním adresáři včetně podadresářů. Vyhledávání je citlivé na velikost písmen. Pro vyhledávání bez ohledu na velikost písmen nahraďte \verb|-name| za \verb|-iname|.
+
+\begin{exercise}
+    Najděte všechny soubory, které končí na `.conf` v /etc a jeho podadresářích.
+\end{exercise} 
+
+\paragraph{Skládání a rozšiřování}
+
+Bash umožňuje přesměrovat výstup jednoho příkazu někam jinam než jen na standardní výpis na obrazovku. Pokud chceme uložit výstup příkazu do souboru, můžeme použít
+\textbf{přesměrování} \verb|>| např.
+\begin{verbatim}
+    ls -l > directory_contents.txt
+\end{verbatim}
+uloží výstup \verb|ls -l| do souboru s názvem \verb|directory\_contents.txt|. Přesměrování lze použít s příkazem \verb|echo|, který jednoduše vypíše zpět svůj vstup, pro rychlé vytváření
+jednoduchých souborů, např.
+\begin{verbatim}
+    echo A single line in a simple file > file.txt
+\end{verbatim}
+vytvoří soubor file.txt, který bude obsahovat ,,A single line in a simple file''. \emph{Poznámka:} prázdný soubor lze rychle vytvořit pomocí \verb|touch empty_file|. Pokud chceme použít výstup jednoho příkazu jako vstup jiného, můžeme
+použít \textbf{rouru (pipe)} \verb|\||, např.
+\begin{verbatim}
+    ls -l | less
+\end{verbatim}
+nám umožní procházet výstup \verb|ls -l| šipkami díky příkazu \verb|less|.
+
+Spojení více souborů lze provést jednoduše pomocí \verb|cat|
+\begin{verbatim}
+    cat file1.txt file2.txt file3.txt \> concatenated_file.txt
+\end{verbatim}
+
+Pro třídění (užitečné s find) můžeme použít \verb|sort|, např.
+\begin{verbatim}
+    find . -name '*.pdf' | sort
+\end{verbatim}
+vypíše všechny PDF soubory v aktuálním adresáři, včetně podadresářů,
+v abecedním pořadí.
+
+Běžně používané příkazy s rourami jsou \verb|head| a \verb|tail|, které zobrazují prvních nebo posledních 10 řádků svého vstupu. Oba přijímají volbu \verb|-n|, která mění výchozích 10 řádků, např.
+\begin{verbatim}
+    cat long_text_file.txt | head -n 50
+\end{verbatim}
+zobrazí prvních 50 řádků ze souboru \verb|long_text_file.txt|.
+
+\begin{exercise}
+    Jako v Úloze 4, ale seřaďte conf soubory abecedně a uložte je do textového souboru ve vašem domovském adresáři.
+\end{exercise}
+
+\subsubsection{Uživatelé a oprávnění}
+
+\paragraph{Uživatelé}
+Běžní uživatelé obecně nemají oprávnění provádět libovolné změny v operačním systému. Uživatel, který může s počítačem dělat cokoli, se nazývá \verb|root|(nezaměňovat s \emph{kořenovým adresářem} \verb|/|). Pro zjištění, pod jakým uživatelským jménem jsme přihlášeni, můžeme použít příkaz \verb|whoami|.
+
+\paragraph{Oprávnění a skupiny}
+
+Operační systém řídí, kdo co může dělat s kterými soubory, pomocí oprávnění. Oprávnění mohou být jakákoli a všechna z \emph{čtení}, \emph{zápisu} a \emph{spuštění} (nebo \emph{výpisu} pro adresáře). Oprávnění se zobrazují pomocí \verb|ls -l| v prvním sloupci, např. pro náhodný soubor na mém počítači
+\begin{verbatim}
+ls -l /bin/bash
+-rwxr-xr-x. 1 root root 1444200 Feb  6  2023 /bin/bash
+\end{verbatim}
+
+Všimněte si, že oprávnění se zdají být uvedena třikrát. První pomlčka ,,-'' označuje běžný soubor; následuje ,,rwx'', což znamená, že vlastník souboru (v tomto případě uživatel ,,root'') má oprávnění ke čtení, zápisu a spuštění; další ,,r-x'' znamená, že uživatelé, kteří patří do skupiny (v tomto případě také nazývané ,,root''), mohou soubor číst a spouštět, ale ne do něj zapisovat. Nakonec poslední ,,r-x'' znamená, že všichni ostatní mohou soubor číst a spouštět, ale ne do něj zapisovat.
+
+\paragraph{sudo}
+
+I když používáte svůj osobní počítač, z bezpečnostních důvodů je obecně špatný nápad pracovat s účtem root pro běžné úkoly. Když potřebujeme spustit příkaz, který smí provést pouze root (např. instalovat program), použijeme \verb|sudo|, např.
+\begin{verbatim}
+ls sudo apt-get install vim
+\end{verbatim}
+vás požádá o heslo a poté nainstaluje textový editor \verb|vim| na distribucích Linuxu založených na Debianu (např. Ubuntu). Většina osobních instalací Linuxu používá pouze jedno heslo pro uživatele a \verb|sudo|. Pouze administrátor má heslo roota na laboratorních počítačích.
+
+\subsection{Přístup ke vzdáleným serverům pomocí CLI}
+Pokud máme na vzdáleném stroji běžný účet, můžeme se na něj přihlásit pomocí
+\begin{verbatim}
+    ssh username@remote.server.cz
+\end{verbatim}
+Pokud můžeme pouze přesouvat soubory (případ univerzitního studentského úložiště), v CLI, pro zkopírování souboru z lokálního počítače na vzdálený server, kde máme účet, můžeme použít \ls{scp}, např.
+\begin{verbatim}
+    scp file username@su.mff.cuni.cz:
+\end{verbatim}
+vás požádá o heslo a poté zkopíruje soubor do vašeho studentského úložiště. Pro stažení souboru
+\begin{verbatim}
+    scp username@su.mff.cuni.cz:path/to/a/file .
+\end{verbatim}
+stáhne soubor ze serveru do aktuálního adresáře (tečka na konci).
+
+Další možností je použít \verb|sftp|, pomocí kterého se můžete přihlásit na server, což vám poskytne omezenou sadu příkazů (\verb|ls|, \verb|mkdir|, \verb|cp|, \verb|mv| atd.), pomocí kterých můžete organizovat své soubory na vzdáleném serveru a možnost nahrávat soubory pomocí příkazu \verb|put| nebo stahovat soubory pomocí příkazu \verb|get|.
+
+\begin{exercise}
+    Zkuste nahrát soubor a ověřte, že je přítomen na vzdáleném serveru pomocí grafického průzkumníka souborů. Naopak, vytvořte soubor na vzdáleném serveru pomocí GUI a stáhněte ho pomocí CLI.
+\end{exercise}
+
+Alternativou ke studentskému úložišti je také univerzitní cloud OneDrive s webovým rozhraním (součást Office 365). Klient pro Windows funguje dobře, existuje také klient pro Linux, který je trochu složitější na nastavení, ale také funguje.

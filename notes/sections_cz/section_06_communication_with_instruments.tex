@@ -1,0 +1,157 @@
+%TODO: double check after AI translation
+\newpage
+\section{Komunikace s přístroji}
+Přístroje lze k počítači připojit pomocí široké škály rozhraní, včetně USB, GPIB, RS-232, Ethernetu nebo emulovaného sériového portu přes USB. Každé z těchto rozhraní vyžaduje specifickou podporu operačního systému, ovladače nebo knihovny. To naštěstí do značné míry vyřešila architektura VISA (Virtual Instrument Software Architecture), která abstrahuje a sjednocuje většinu rozhraní do tzv. VISA ,,sezení'' (sessions).
+
+Většina komunikace přes VISA sezení je textová. Přístroji se pošle textový příkaz, přístroj provede nějakou akci a volitelně odpoví textovou odpovědí. Pro použití VISA budeme používat python modul \lstinline|pyvisa|. Ten je však pouze python rozhraním k systémové knihovně VISA. Existuje několik implementací knihovny VISA (někdy nazývaných VISA backend) od různých výrobců, např. od společností National Instruments (NI-VISA, nejběžnější) nebo Keysight. My budeme používat open-source, plně pythonový VISA backend \lstinline|pyvisa-py|. Pro naše účely budeme také potřebovat \lstinline|pyserial|. Pokud chcete používat přístroje s rozhraním USB, Ethernet nebo GPIB, je pravděpodobně nejlepší cestou jedna z volně stažitelných proprietárních implementací.
+
+V tomto kurzu budeme místo skutečných přístrojů používat Raspberry Pi Pico. Pico je naprogramováno tak, aby reagovalo na několik příkazů, které zhruba odpovídají syntaxi SCPI (viz Dodatek~\ref{sec:pico}). Jednoduchý VISA program, který komunikuje s přístrojem, může vypadat takto:
+\lstinputlisting{../example_code/visa_intro.py}
+Na prvním řádku importujeme modul \lstinline|pyvisa|. Vytváření nových sezení se provádí pomocí Správce zdrojů (Resource Manager) \lstinline|rm|. V názvosloví VISA se přístroje nazývají ,,zdroje'' (resources) a jsou identifikovány adresou zdroje, která obvykle udává typ použitého rozhraní, např. adresy začínající \lstinline|ASRL| jsou sériové přístroje, \lstinline|GPIB| a \lstinline|USB| atd.
+
+Správce zdrojů poskytuje metodu \lstinline|list_resources()|, která vrací seznam všech dostupných zdrojů. Pro USB a GPIB to jsou obvykle přístroje skutečně připojené k počítači. Pro sériové rozhraní mohou být uvedeny všechny dostupné porty bez ohledu na to, zda je k nim něco připojeno.
+
+Pro spuštění VISA sezení použijeme metodu \lstinline|open_resource()| správce zdrojů. Zde navíc specifikujeme ukončovací znaky pro čtení a zápis, což jsou znaky, které indikují, že přenos je ukončen (představte si vojenské filmy, kde říkají ,,přepínám'' do vysílačky). Běžné jsou nový řádek \ls{'\\n'}, návrat vozíku \ls{'\\r'} a jejich kombinace \ls{'\\r\\n'}. Naše Pico očekává, že příkazy budou ukončeny novým řádkem \ls{'\\n'} a své odpovědi také ukončuje novým řádkem. U jiných přístrojů je to něco, co musíte najít v manuálu, ale \ls{'\\n'} je nejběžnější.
+
+Otevřené VISA sezení je reprezentováno objektem \ls{pico} vráceným metodou \ls{open_resource()}, jehož nejdůležitější metody jsou \ls{write()}, \ls{read()} a \ls{query()}, což je jednoduše zápis okamžitě následovaný čtením.
+
+Většina vědeckých přístrojů komunikuje pomocí textových řetězců, které obvykle dodržují syntaxi specifikovanou Standardními příkazy pro programovatelné přístroje (SCPI), která se snaží definovat společnou syntaxi pro přístroje podobného typu. Příkazy SCPI mají typicky formát
+\begin{lstlisting}
+    :COMMand:SUBCommand:SUBCommand ARG1 ARG2 ...
+\end{lstlisting}
+kde velkými písmeny psané podřetězce lze použít jako zkratku. Například na většině digitálních multimetrů (např. ctihodná řada Keithley 2000) příkaz
+\begin{lstlisting}
+    :MEAS:VOLT:DC?
+\end{lstlisting}
+změří stejnosměrné napětí. Otazník na konci značí, že příkaz vrací hodnotu. Přístroje, které podporují SCPI, navíc podporují několik základních příkazů, jako je \ls{*IDN?}, který vrací identifikační řetězec, \ls{*STB?}, který vrací jeden bajt s různými stavovými bity přístroje, nebo \ls{*RST}, který přístroj resetuje. Na konci by mělo být jak VISA sezení, tak správce zdrojů řádně uzavřeno pomocí metody \ls{close()}.
+
+Ve většině případů není pro úspěšné otevření sezení metodou \ls{rm.open_resource()} potřeba nic jiného než adresa zdroje. Nicméně, zejména u některých starších přístrojů připojených přes RS-232, jsou často vyžadovány další informace. Za předpokladu, že zařízení bylo otevřeno jako \ls{dev = rm.open_resource(address)}, můžeme před zahájením komunikace potřebovat nastavit následující:
+\begin{description}
+    \item[přenosová rychlost (baud rate)] Počet změn komunikačního signálu za sekundu (tj. změny z nízkého na vysoké napětí). Lze nastavit pomocí \ls{dev.baud_rate} na celé číslo.
+    \item[datové bity (data bits)] Počet skutečných datových bitů v jednom ,,paketu'' dat vyměňovaných mezi přístrojem a počítačem (obvykle 8). Lze nastavit pomocí \ls{dev.data_bits} na celé číslo.
+    \item[stop bity (stop bits)] Počet bitů označujících začátek a konec znaku přenášeného po sériovém kabelu (obvykle 1). Lze nastavit pomocí \ls{dev.stop_bits} na jednu z hodnot \ls{pyvisa.constants.StopBits.SB}, kde \ls{SB} je \ls{one}, \ls{one_and_a_half} nebo \ls{two}.
+    \item[parita (parity)] Jednoduchá kontrola poškozeného přenosu. Některé přístroje posílají bit indikující, zda součet bitů v posledním znaku (tj. jeho ASCII kód) byl lichý nebo sudý. Lze nastavit pomocí \ls{dev.parity} na jednu z hodnot \ls{pyvisa.constants.Parity.P}, kde \ls{P} je \ls{none} (nejběžnější, žádná kontrola parity), \ls{even} nebo \ls{odd}.
+\end{description}
+Například, pokud bychom měli přístroj na adrese \ls{COM16} a jeho manuál říká, že očekává přenosovou rychlost 19200, 8 datových bitů, jeden stop bit a žádnou paritu, mohli bychom komunikaci otevřít takto:
+\begin{lstlisting}
+    import pyvisa as vi
+
+    rm = vi.ResourceManager()
+    dev = rm.open_resource('COM16')
+    dev.baud_rate = 19200
+    dev.data_bits = 8
+    dev.stop_bits = vi.constants.StopBits.one
+    dev.parity = vi.constants.Parity.none
+
+    dev.query('*IDN?')
+    ...
+\end{lstlisting}
+
+\begin{exercise}
+    Vytvořte program, který automaticky najde Pico, pokud je připojeno k počítači. Pošlete dotaz \ls{*IDN?} každému dostupnému VISA zdroji a najděte ten, který odpoví \ls{'PICO'}. Zdroje (sériové porty), které nejsou připojeny k žádnému přístroji, vyvolají výjimku časového limitu (timeout), která musí být ošetřena bez pádu programu.
+\end{exercise}
+
+\begin{exercise}
+    Otevřete komunikaci s Pico a nechte bílé a modré LED diody blikat ve stylu ,,policejního auta'' (tj. dvě rychlá bliknutí bílé následovaná dvěma rychlými bliknutími modré) v opakující se smyčce. Použijte příkaz \ls{:LED n x}, kde $n=0\dots 4$ je číslo LED a $x$ je buď 0 nebo 1, což LED vypne nebo zapne. Ujistěte se, že když je váš program ukončen (buď pomocí Ctrl-C nebo tlačítkem pro přerušení v Spyderu), všechny LED diody jsou zhasnuté.
+\end{exercise}
+
+\begin{exercise}
+    Napište program, který bude indikovat aktuální teplotu (získanou pomocí příkazu \ls{:READ:T?}) pomocí vestavěných LED diod. Namapujte rozsah 20-27$^\circ$C na 0 až 5 rozsvícených LED. Pokud teplota překročí 28$^\circ$C, vyvolejte \ls{RuntimeError}, což ukončí program. Ujistěte se, že žádná z LED diod nezůstane svítit po ukončení programu.
+\end{exercise}
+
+\begin{exercise}
+    Napište ,,digitální vodováhu'', tj. indikujte aktuální náklon podél osy y (podélně s PICO) pomocí LED diod (můžete se rozhodnout, jaký způsob použití LED považujete za nejlepší). Všimněte si, že akcelerometr není na desce plošných spojů připájen dokonale vodorovně. Předpokládejte, že při spuštění programu je Pico ve vodorovné poloze a použijte vektor zrychlení změřený na začátku jako referenční hodnotu.
+\end{exercise}
+
+\begin{exercise}
+    Napište objektové rozhraní pro Pico, které by mělo být inicializováno pouze pomocí instance správce zdrojů a mělo by si samo najít správnou adresu, tj.:
+    \begin{lstlisting}
+        import pyvisa as vi
+
+        class Pico:
+            def __init__(self, rm):
+                ...
+            def led(self, led_id, onoff):
+                #should raise ValueError if led_id > 4
+                ...
+            def getT(self):
+                ...
+            def getP(self):
+                ...
+            def getACC(self):
+                ...
+            def getGYR(self):
+                ...
+            def close(self):
+                "Turn off all LEDs and close the session."
+                ...
+        
+        rm = vi.ResourceManager()
+        pico = Pico(rm)
+        pico.led(2, 1) #turns the middle LED ON
+    \end{lstlisting}
+\end{exercise}
+
+\subsection{Context Management Protocol}
+Zejména u přístrojů, které ovládají skutečný laboratorní hardware, je velmi důležité správné vypnutí a úklid, a to i v případě softwarové chyby. Představte si pec, která se stále zahřívá, nebo motor, který se nekontrolovatelně točí kvůli překlepu ve vašem programu. Ve cvičeních 27 -- 29 jsme viděli, že řízené vypnutí lze řešit pomocí klauzule \ls{finally} za blokem \ls{try}. To je neoptimální, protože si musíme pamatovat, že v každém programu, ve kterém daný přístroj používáme, musíme napsat blok \ls{finally}, který se často příliš nemění.
+
+Python na to má řešení, které jsme již viděli, nazývané \emph{protokol pro správu kontextu} (context management protocol), který používá příkaz \ls{with}. Vzpomeňte si na použití souborů:
+\begin{lstlisting}
+    with open("hello.txt", 'w') as file:
+        file.write('Hello Context Management.')
+\end{lstlisting}
+kde příkaz \ls{with} zajišťuje, že po dokončení práce se souborem je řádně \ls{close()}d (uzavřen).
+
+Abychom mohli správu kontextu používat s našimi objekty, stačí definovat dvě speciální metody, \ls{__enter__()} a \ls{__exit__()}, které se spouštějí na začátku a na konci příkazu \ls{with}. Metoda enter by měla vrátit objekt, který chceme použít (tj. \ls{file} v příkladu výše), často jednoduše vrací \ls{self}. Metoda exit by měla provést veškerý potřebný úklid. Kromě \ls{self} přijímá tři další argumenty, které obsahují informace o tom, zda došlo k výjimce a jakého typu. Většinou můžeme výjimky ignorovat a jednoduše je nechat propagovat dál. Pokud z metody exit vrátíme \ls{False}, výjimka je potlačena.
+
+Vezměme si jednoduchý příklad. Řekněme, že chceme mít objekt podobný souboru, který lze použít s \ls{with} jako běžný soubor, ale metoda \ls{write()} také podporuje pole NumPy. Mohli bychom to udělat následovně:
+\lstinputlisting{../example_code/context_management_file.py}
+což vypíše:
+\begin{verbatim}
+    I'm about to open the file.
+    Opening file.
+    Entering with statement
+    Closing.
+    The end
+\end{verbatim}
+
+Všimněte si, že metoda \ls{__enter__()} jednoduše vrací \ls{self}. Je to proto, že správce kontextu a objekt reprezentující soubor jsou stejné. V metodě \ls{__exit__()} jednoduše shromáždíme všechny informace o jakékoli výjimce, která mohla nastat, do seznamu argumentů \ls{*exc} a ignorujeme je, provádíme pouze nezbytný úklid. Nevrácení ničeho je ekvivalentní vrácení \ls{None}, což není \ls{False}, takže pokud dojde k jakékoli výjimce, bude jednoduše pokračovat ve své cestě k nejbližší klauzuli \ls{except}.
+
+\begin{exercise}
+    Rozšiřte třídu Pico tak, aby podporovala protokol pro správu kontextu.
+\end{exercise}
+
+Pro úplnost, příklad s \ls{open()} je v podstatě ekvivalentní následujícímu kódu:
+\begin{lstlisting}
+    manager = open("hello.txt", 'w')
+    file = manager.__enter__()
+    try:
+        file.write("Hello Context Management.")
+    except:
+        if not manager.__exit__(exception_info)
+            raise
+    else:
+        manager.__exit__(None, None, None)
+\end{lstlisting}
+
+\subsection{Troubleshooting common issues}
+Komunikace s externím hardwarem může selhat z několika důvodů. Za předpokladu, že samotný hardware a propojovací kabely fungují, jsou některé běžné příčiny problémů:
+\begin{description}
+    \item[výjimka při otevírání VISA sezení] V závislosti na operačním systému a použitém VISA backendu může \ls{rm.open_resource()} vyvolat výjimku s tvrzením, že přístup ke zdroji byl odepřen nebo že zařízení je zaneprázdněno. To je nejčastěji způsobeno dříve otevřeným VISA sezením, které nebylo uzavřeno. V jednom okamžiku je povoleno pouze jedno VISA sezení s daným přístrojem.
+    
+    Toto je běžný problém v IDE, jako je Spyder, které spouštějí soubory v interaktivní konzoli, kde proměnné zůstávají dostupné i po neočekávaném ukončení programu. Buď zajistěte, aby se sezení správně uzavírala i v případě pádu programu (tj. pomocí \ls{finally} nebo správy kontextu), nebo zavřete konzoli, ve které byl program spuštěn.
+
+    \item[zdroj se otevře, ale komunikace vyprší (timeout)] Pokus o čtení vyprší, pokud zařízení neodpoví očekávaným způsobem, nejčastěji kvůli chybě v příkazu. Pokud je odeslaný příkaz určitě správný, je výjimka časového limitu obvykle příznakem nesprávně nastavené konfigurace VISA sezení, např. ukončovacích znaků pro čtení/zápis nebo některých z výše uvedených možností konfigurace sériového portu.
+    
+    \item[zdroj se otevře, nedojde k timeoutu, ale odpověď je špatná] Zvažte následující kód:
+\begin{lstlisting}
+    import pyvisa as vi
+    rm = vi.ResourceManager()
+    pico = rm.open_resource(rm.list_resources()[-1])    
+    pico.read_termination = '\n'
+    pico.write_termination = '\n'
+    pico.write(':READ:T?') # v češtině :CTI:T?
+    print(pico.query('*IDN?'))
+\end{lstlisting}
+    který vypíše naměřenou teplotu místo očekávaného identifikačního řetězce. Je to proto, že odpověď na \verb|:READ:T?| nebyla nikdy přečtena, takže zůstala ve vstupní vyrovnávací paměti (buffer) až do prvního volání \ls{read}, které přišlo v rámci \ls{query()}. Pokud to backend a typ zdroje podporují, můžete zavolat \ls{pico.clear()} pro vyprázdnění bufferů, nebo můžete zavolat \ls{pico.read(timeout=0)} a zahodit výjimku časového limitu, pokud je buffer náhodou prázdný.
+\end{description}
