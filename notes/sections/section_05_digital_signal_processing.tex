@@ -112,7 +112,7 @@ which yields the complex lorentzian which is the response of the linear harmonic
 \end{syntax}
 
 \begin{exercise}
-    Plot the time series and spectral density of the pulse used to drive the resonance in the \ls{data/timeseries_data} binary data files (see Storing and loading binary files \ref{syn:npy}) using \ls{scipy.signal.periodogram} and using the (r)FFT functions from \ls{scipy.fft}. The pulse can be loaded as \ls{d['pulse']}, the number of points can be obtained as \ls{d['samples']} (same as \ls{len(d['pulse'])} and the sampling rate as \ls{d['samples']}. Plot only one file (the pulse is the same for all).
+    Plot the time series and spectral density of the pulse used to drive the resonance in the \ls{data/timeseries_data} binary data files (see Storing and loading binary files \ref{syn:npy}) using \ls{scipy.signal.periodogram} and using the (r)FFT functions from \ls{scipy.fft}. The pulse can be loaded as \ls{d['pulse']}, the number of points can be obtained as \ls{d['samples']} (same as \ls{len(d['pulse'])} and the sampling rate as \ls{d['rate']}. Plot only one file (the pulse is the same for all).
 \end{exercise}
 
 \begin{exercise}

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# create a square pulse from t=0.125 to t=0.625
 ts = np.linspace(0, 1, 1000)
 dt = ts[1] - ts[0]
 ys = np.zeros_like(ts)
@@ -18,11 +19,12 @@ ax.plot(ts, ys, 'k')
 #the signal with the the appropriate sine or cosine term
 def Ak(ts, ys, k):
     sint = np.sin(2*np.pi*k*ts)
+    # we multiply by 2 because sin(...)^2 averaged over a period is 1/2
     return 2*np.sum(ys*sint)*dt
 
 def Bk(ts, ys, k):
-    cost = np.cos(2*np.pi*k*ts)
     if abs(k) > 0:
+        cost = np.cos(2*np.pi*k*ts)
         return 2*np.sum(ys*cost)*dt
     else:
         #if k==0 (cos(...) == 1) the factor 2 is not needed
@@ -41,7 +43,7 @@ cmap = plt.get_cmap('viridis')
 norm = plt.Normalize(vmin=0, vmax=K)
 
 #iterate over all coefficients and frequencies
-for A, B, k in zip(As, Bs, range(K)):
+for k, (A, B) in enumerate(zip(As, Bs)):
     sint = A*np.sin(2*np.pi*k*ts)
     cost = B*np.cos(2*np.pi*k*ts)
     
@@ -63,3 +65,4 @@ ax_spec.plot(range(K), As, '-o', label='sine terms, $A$')
 ax_spec.plot(range(K), Bs, '-o', label='cosine terms, $B$')
 ax_spec.plot(range(K), np.abs(As + 1j*np.array(Bs)), '-s', label='$|A + iB|$')
 ax_spec.legend(loc='best')
+plt.show()

@@ -11,17 +11,23 @@ ys = np.sin(2*np.pi*xs + 7*np.pi/3)
 signal = intp.interp1d(xs, ys)
 
 def sample(signal, dx, T=T):
-    """Samples the quasi-continuous signal with total length T with sample spacing dx"""
+    """
+    Samples the quasi-continuous signal with 
+    total length T with sample spacing dx
+    """
     xs = np.arange(0, T, dx)
     return xs, signal(xs)
 
 fig, ax = plt.subplots()
 ax.plot(xs, ys, '-', label='true data ($f = 1$)')
 
-ax.plot(*sample(signal, 0.13), '--o', label=r'sufficiently sampled ($f_s\approx 7.69$)')
-ax.plot(*sample(signal, 0.5), ':s', label=r'sampled at $f_N$ ($f_s = 2$)')
+ax.plot(*sample(signal, 0.13), '--o', 
+        label=r'sufficiently sampled ($f_s\approx 7.69$)')
+ax.plot(*sample(signal, 0.5), ':s',
+        label=r'sampled at $f_N$ ($f_s = 2$)')
 #this signal will be aliased
-ax.plot(*sample(signal, 0.9), '-x', label=r'undersampled ($f_s \approx 1.11$)')
+ax.plot(*sample(signal, 0.9), '-x',
+        label=r'undersampled ($f_s \approx 1.11$)')
 
 ax.set_xlabel('time')
 ax.set_ylabel('signal')

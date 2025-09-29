@@ -1,7 +1,7 @@
 \newpage
 \section{Digitální zpracování signálu}
 \subsection{Digitální reprezentace spojitého signálu}
-Předpokládejme signál $y(t)$ (např. napětí), který se spojitě mění v čase. Pro uložení a zpracování tohoto signálu na počítači ho měříme v sadě časových okamžiků $t_i$, což nám dává hodnoty signálu $y_i$, a výsledkem je diskrétní reprezentace signálu jako série párů $(t_i, y_i)$. Signál je vzorkován rovnoměrně, pokud $t_i = i\Delta t$, kde $\Delta t$ je \textbf{vzorkovací perioda} a $f_s = 1/\Delta t$ je \textbf{vzorkovací frekvence}.
+Předpokládejme signál $y(t)$ (např. napětí), který se spojitě mění v čase. Pro uložení a zpracování tohoto signálu na počítači ho měříme v sadě časových okamžiků $t_i$, což nám dává hodnoty signálu $y_i$. Výsledkem je diskrétní reprezentace signálu jako série párů $(t_i, y_i)$. Signál je vzorkován rovnoměrně, pokud $t_i = i\Delta t$, kde $\Delta t$ je \textbf{vzorkovací (\emph{sampling}) perioda} a $f_s = 1/\Delta t$ je \textbf{vzorkovací (\textbf{sampling}) frekvence}.
 
 Jakákoli informace o původním signálu $y(t)$, která se mění v čase rychleji než $\Delta t$, je ztracena. Pokud však $y(t)$ osciluje na frekvenci $f$, nestačí mít $f_s \geq f$. Frekvence signálu $f > f_s/2$ se objeví posunuté na $f - f_s/2$, viz výstup Lst.~\ref{ls:label}. Vzorkovaný signál obsahuje fiktivní frekvence, které v původním signálu nejsou přítomny.
 
@@ -19,13 +19,13 @@ Toto zkreslení se nazývá \textbf{aliasing} a \emph{Nyquistův teorém} řík�
 \subsection{Spektrální analýza}
 Jakýkoli periodický signál $y(t)$ (který může být komplexní) s periodou $T$, tj. $y(t + T) = y(t)$, může být reprezentován jako součet sinových a kosinových členů oscilujících na úhlových frekvencích $2\pi n/T$, kde $n$ je celé číslo,
 \begin{equation}
-    y(t) = \frac{1}{T} \sum_{k=0}^{\infty} A'_k\sin\left(\frac{2\pi k}{T}t\right) + B'_k\cos\left(\frac{2\pi k}{T}t\right),
+    y(t) = \frac{1}{T} \sum_{k=0}^{\infty} \left[ A'_k\sin\left(\frac{2\pi k}{T}t\right) + B'_k\cos\left(\frac{2\pi k}{T}t\right)\right],
 \end{equation}
 což se nazývá \textbf{Fourierova řada}. Ekvivalentně lze Fourierovu řadu vyjádřit pomocí komplexních exponenciál
 \begin{equation}
     y(t) = \frac{1}{T} \sum_{k=-\infty}^\infty A_k e^{2\pi ikt/T},
 \end{equation}
-kde pro reálný signál $y$ jsou kladné a záporné členy komplexně sdružené, $A_k = A_{-k}^*$ (faktor $1/T$ a znaménko uvnitř exponenciální funkce jsou konvenční).
+kde pro reálný signál $y$ jsou kladné a záporné členy komplexně sdružené, $A_k = A_{-k}^*$ (faktor $1/T$ a znaménko uvnitř exponenciální funkce jsou dány konvencí).
 
 Fourierovy koeficienty $A_k$ lze vypočítat jako
 \begin{equation}
@@ -53,7 +53,7 @@ Pro digitální signály mluvíme o \emph{diskrétních} Fourierových transform
 \begin{equation}
     \tilde y[k] = \sum_{n=0}^{N-1}y[n]e^{-2\pi i kn/N},
 \end{equation}
-kde $y[n]$ je hodnota signálu $y$ měřená v čase $t_n = n\Delta t$ a $N$ je celkový počet vzorků. Bezrozměrné celočíselné frekvence $k$ probíhají od 0 do $N-1$ -- to znamená, že Fourierova transformace má stejnou délku jako původní signál.
+kde $y[n]$ je hodnota signálu $y$ měřená v čase $t_n = n\Delta t$ a $N$ je celkový počet vzorků. Bezrozměrné celočíselné frekvence $k$ běží od 0 do $N-1$ -- to znamená, že Fourierova transformace má stejnou délku jako původní signál.
 
 Inverzní diskrétní Fourierova transformace je definována podobně,
 \begin{equation}
@@ -75,7 +75,7 @@ Jedna obzvláště důležitá Fourierova transformace je transformace exponenci
 \begin{equation}
     s(t) = e^{-t/\tau}\sin(2\pi f t),
 \end{equation}
-což dává komplexní lorentzián, který je odezvou lineárního harmonického oscilátoru, viz sekce~\ref{sec:lho}. Tlumená oscilace je samozřejmě pohyb tlumeného netlumeného lineárního harmonického oscilátoru. Příklad:
+což dává komplexní lorentzián, který je odezvou lineárního harmonického oscilátoru, viz sekce~\ref{sec:lho}. Tlumená oscilace je samozřejmě pohyb tlumeného lineárního harmonického oscilátoru. Příklad:
 \lstinputlisting{../example_code/decaying_exponential.py}
 \begin{center}
     \includegraphics{decaying_exponential.pdf}
@@ -83,7 +83,7 @@ což dává komplexní lorentzián, který je odezvou lineárního harmonického
 
 \begin{syntax}[Ukládání dat a metadat do binárních souborů numpy.]
     \label{syn:npy}
-    Doposud jsme při načítání dat z disku narazili pouze na jednoduché, člověkem čitelné textové soubory. To je velmi omezující způsob ukládání dat: data musí mít formu obdélníkové tabulky, soubory zabírají více místa, než je nutné (např. text \ls{1.234567890} vyžaduje 11 bajtů paměti, ale \ls{float} reprezentující stejné číslo potřebuje pouze 8), a je nepohodlné ukládat metadata.
+    Doposud jsme při načítání dat z disku narazili pouze na jednoduché, čitelné textové soubory. To je ale velmi omezující způsob ukládání dat: data musí mít formu obdélníkové tabulky, soubory zabírají více místa, než je nutné (např. text \ls{1.234567890} vyžaduje 11 bajtů paměti, ale \ls{float} reprezentující stejné číslo potřebuje pouze 8), a je nepohodlné ukládat metadata.
 
     Mnoho formátů souborů tyto problémy řeší (např. HDF5 je populární). Zde použijeme řešení, které nevyžaduje žádné další externí knihovny -- ukládání slovníků do komprimovaných binárních souborů \ls{.npy}, např. uložení
 \begin{lstlisting}
@@ -95,7 +95,6 @@ což dává komplexní lorentzián, který je odezvou lineárního harmonického
     }
     np.save("my_data.npy", my_data)
 \end{lstlisting}
-    and loading
     a načtení
 \begin{lstlisting}
     my_data = np.load("my_data.npy", allow_pickle=True).item()
@@ -106,18 +105,18 @@ což dává komplexní lorentzián, který je odezvou lineárního harmonického
     \textbf{Pickling} je pythonovský termín pro ukládání téměř jakéhokoli objektu Pythonu na disk jako binární data. Načítání ,,picklovaného'' objektu může být za určitých okolností bezpečnostním rizikem (tj. vyhněte se čtení ,,picklovaných'' dat, která jste stáhli z podivných míst na internetu), proto to musíme explicitně povolit. Funkce \ls{np.load} a \ls{np.save} pracují s poli, proto \ls{np.load()} vrací pole délky 1, kde náš slovník je jediným prvkem. Metoda \ls{array.item()} vrací \ls{array[0]}, pokud má \ls{array} délku 1, jinak vyvolá výjimku \ls{ValueError}. Jejím účelem je sémanticky naznačit, že očekáváme, že pole bude mít pouze jeden prvek, a pokud ne, něco je špatně.
     
     \begin{exercise}
-    Načtěte data z adresáře \ls{timeseries_data} a vykreslete časovou závislost přibližné střední teploty během měření. Načtěte soubory pomocí \ls{d = np.load(filename, allow_pickle=True).item()}. Teplota na začátku a na konci měřicího období je \ls{d['Ti']} a \ls{d['Tf']}.
+    Načtěte data z adresáře \ls{timeseries_data} a vykreslete časovou závislost přibližné střední teploty během měření. Načtěte soubory pomocí \ls{d = np.load(filename, allow_pickle=True).item()}. Teplota na začátku a na konci měření je \ls{d['Ti']} a \ls{d['Tf']}.
     
-    \emph{Nápověda:} Pro získání časového razítka (počet sekund od 00:00 1.1.1970) můžete použít \ls{time.mktime(time.strptime(fn, 'DM_\%Y\%m\%d-\%H\%M\%S.npy'))}, kde \ls{fn} je název souboru.
+    \emph{Nápověda:} Pro získání časového znaku (\emph{timestamp}, počet sekund od 00:00 1.1.1970) můžete použít \ls{time.mktime(time.strptime(fn, 'DM_\%Y\%m\%d-\%H\%M\%S.npy'))}, kde \ls{fn} je název souboru.
 \end{exercise}
 \end{syntax}
 
 \begin{exercise}
-    Vykreslete časovou řadu a spektrální hustotu pulzu použitého k buzení rezonance v binárních datových souborech \ls{data/timeseries_data} (viz Ukládání a načítání binárních souborů \ref{syn:npy}) pomocí \ls{scipy.signal.periodogram} a pomocí funkcí (r)FFT z \ls{scipy.fft}. Pulz lze načíst jako \ls{d['pulse']}, počet bodů lze získat jako \ls{d['samples']} (stejné jako \ls{len(d['pulse'])}) a vzorkovací frekvenci jako \ls{d['samples']}. Vykreslete pouze jeden soubor (pulz je pro všechny stejný).
+    Vykreslete časovou řadu a spektrální hustotu pulzu použitého k buzení rezonance v binárních datových souborech \ls{data/timeseries_data} (viz Ukládání a načítání binárních souborů \ref{syn:npy}) pomocí \ls{scipy.signal.periodogram} a pomocí funkcí (r)FFT z \ls{scipy.fft}. Pulz lze načíst jako \ls{d['pulse']}, počet bodů lze získat jako \ls{d['samples']} (stejné jako \ls{len(d['pulse'])}) a vzorkovací frekvenci jako \ls{d['rate']}. Vykreslete pouze jeden soubor (pulz je pro všechny stejný).
 \end{exercise}
 
 \begin{exercise}
-    Vykreslete časovou řadu (jako funkci skutečného času) odezvy rezonátoru (\ls{d['timeseries']}) a její frekvenční závislost (reálnou i imaginární složku) pro soubor odpovídající nejnižší teplotě v adresáři \ls{timeseries_data}. Vypočítejte frekvenční odezvu jako poměr Fourierových transformací odezvy rezonátoru a budícího pulzu. Vykreslete pouze frekvence $|f| < 3000$, rezonance je v rozsahu přibližně 2000 - 2400 Hz.
+    Vykreslete časovou řadu (jako funkci skutečného času) odezvy rezonátoru (\ls{d['timeseries']}) a frekvenční závislost její Fourierove transformace (reálnou i imaginární složku) pro soubor odpovídající nejnižší teplotě v adresáři \ls{timeseries_data}. Vypočítejte frekvenční odezvu jako poměr Fourierových transformací odezvy rezonátoru a budícího pulzu. Vykreslete pouze frekvence $|f| < 3000$, hledaná rezonance je v rozsahu přibližně 2000 - 2400 Hz.
 \end{exercise}
 
 \begin{exercise}
@@ -129,9 +128,9 @@ což dává komplexní lorentzián, který je odezvou lineárního harmonického
     Jako cvičení~\ref{ex:response-heat-map}, ale zprůměrujte všechna spektra, jejichž teplota je bližší než 50 mK (tato technika vyhlazování se nazývá klouzavý průměr nebo sousední průměrování).
 \end{exercise}
 
-\paragraph{Amplitude, power, and decibel}
+\paragraph{Amplituda, výkon, a decibel}
 
-Při zpracování signálu často mluvíme o útlumu nebo zisku (nebo zesílení) systému, např. kabeláže, zesilovačů nebo atenuátorů. Zisk je definován jako poměr výstupního a vstupního signálu a často se měří v decibelech, definovaných jako
+Při zpracování signálu často mluvíme o útlumu nebo zisku (nebo zesílení, \emph{gain}) systému, např. kabeláže, zesilovačů nebo atenuátorů. Zisk je definován jako poměr výstupního a vstupního signálu a často se měří v decibelech, definovaných jako
 \begin{equation}
     g = 10\log_{10}\frac{s_\mathrm{out}}{s_\mathrm{in}} \mathrm{[dB]}
 \end{equation}
@@ -140,13 +139,13 @@ nebo pro výkon, tj. $s = V^2$,
     g = 20\log_{10}\frac{V_\mathrm{out}}{V_\mathrm{in}}
 \end{equation}
 
-Pro ,,absolutní'' veličiny měřené v dB (např. amplituda zvuku je běžná) je měření definováno vzhledem k nějaké dohodnuté referenční hodnotě. Pro zvuk se akustický výkon (tj. druhá mocnina tlaku) měří relativně k 20 \textmu P ve vzduchu. V elektronice, zejména v radiofrekvenčním (RF) inženýrství, je běžnou jednotkou dBm, kde 0 dBm odpovídá 1 mW výkonu, tj. pro zátěž 50 \textohm asi 0.224 V$_\mathrm{RMS}$.
+Pro ,,absolutní'' veličiny měřené v dB (např. amplituda zvuku je běžná) je měření definováno vzhledem k nějaké dohodnuté referenční hodnotě. Pro zvuk se akustický výkon (tj. druhá mocnina tlaku) měří relativně k 20 \textmu Pa ve vzduchu. V elektronice, zejména v radiofrekvenčním (RF) inženýrství, je běžnou jednotkou dBm, kde 0 dBm odpovídá 1 mW výkonu, tj. pro zátěž 50 \textohm~asi 0.224 V$_\mathrm{RMS}$.
 
 Pro amplitudy odpovídá zdvojnásobení signálu +3 dB a poloviční signál -3 dB a pro výkon je to +6 dB a -6 dB.
 
-\subsection{Filters}
+\subsection{Filtrování}
 
-Filtrování je postup, kterým odstraňujeme určité frekvenční rozsahy ze vstupního signálu. Tyto postupy jsou obecné, ale nejjednodušší jsou založeny na analogii s jednoduchými elektronickými RC filtry, viz Obr.~\ref{fig:RC-lowpass}. V závislosti na uspořádání rezistoru a kondenzátoru vytvoříme obvod, který buď zeslabuje nízké, nebo vysoké frekvence.
+Filtrování je postup, kterým odstraňujeme určité frekvenční rozsahy ze vstupního signálu. Tyto postupy jsou obecné, ale nejjednodušší příklady jsou založeny na analogii s jednoduchými elektronickými RC filtry, viz Obr.~\ref{fig:RC-lowpass}. V závislosti na uspořádání rezistoru a kondenzátoru vytvoříme obvod, který buď zeslabuje nízké, nebo vysoké frekvence.
 \begin{figure}
     \centering
     \includegraphics[width=0.49\linewidth]{low-pass-RC.png}%
@@ -178,7 +177,7 @@ tj. filtry ve frekvenční doméně jednoduše násobí spektrum. V časové dom
 \begin{equation}
     s'(t) = (h*s)(t) \equiv \int_{-\infty}^t s(t')h(t - t')\dd t,
 \end{equation}
-kde $h$ je inverzní Fourierova transformace $H$ a nazývá se konvoluční jádro. Všimněte si, že FFT je často nejrychlejší způsob výpočtu konvoluce, ačkoli ji nemusíme implementovat sami, protože existuje \ls{scipy.signal.convolve(a, b)}, která počítá konvoluci signálů \ls{a} a \ls{b}.
+kde $h$ je inverzní Fourierova transformace $H$ a nazývá se konvoluční jádro. FFT je často nejrychlejší způsob výpočtu konvoluce. Nemusíme ji implementovat sami, protože existuje \ls{scipy.signal.convolve(a, b)}, která počítá konvoluci signálů \ls{a} a \ls{b}.
 
 Pro dolní propust RC filtru lze dokázat, že
 \begin{equation}
@@ -187,13 +186,13 @@ Pro dolní propust RC filtru lze dokázat, že
         0 & \mathrm{for}\; t < 0
     \end{matrix}\right.
 \end{equation}
-což lze také snadno implementovat pro proudová data, pro která se často nazývá \emph{exponenciální vyhlazování}.
+což lze také snadno implementovat pro data která přichází v reálném čase (streaming data), pro která se často nazývá \emph{exponenciální vyhlazování}.
 
-Kromě dolní a horní propusti existují také pásmové propusti a pásmové zádrže. Pásmová propust propouští pouze určité frekvenční pásmo (tj. interval) a pásmová zádrž propouští vše kromě určitého frekvenčního pásma. Pásmovou propust si můžete představit jako horní propust následovanou dolní propustí v sérii a pásmovou zádrž jako dolní a horní propust paralelně s mezními frekvencemi danými propustným nebo zadržovaným pásmem.
+Kromě dolní a horní propusti existují také pásmové propusti a pásmové zádrže (\emph{band pass} a \emph{band stop}). Pásmová propust propouští pouze určité frekvenční pásmo (tj. interval) a pásmová zádrž propouští vše kromě určitého frekvenčního pásma. Pásmovou propust i zádrž si můžete představit jako horní propust následovanou dolní propustí v sérii s mezními frekvencemi danými propustným nebo zadržovaným pásmem.
 
-Jednoduché RC filtry výše jsou tzv. prvního řádu. Řád filtru udává, jak rychle ořezává signál mimo \emph{propustné pásmo} (tj. interval frekvencí, které filtr propouští). To se často měří v decibelech na oktávu (dB/okt), což udává, o kolik decibelů je signál zeslaben, pokud se jeho frekvence zdvojnásobí, pro dolní propust, nebo zmenší na polovinu pro horní propust, dostatečně daleko od mezní frekvence. Oba RC filtry jsou 6 dB/okt, protože každé zdvojnásobení frekvence odstraní 6 dB přenášeného výkonu.
+Jednoduché RC filtry jsou tzv. prvního řádu. Řád filtru udává, jak rychle ořezává signál mimo \emph{propustné pásmo} (tj. interval frekvencí, které filtr propouští). To se často měří v decibelech na oktávu (dB/okt), což udává, o kolik decibelů je signál zeslaben, pokud se jeho frekvence zdvojnásobí, pro dolní propust, nebo zmenší na polovinu pro horní propust, dostatečně daleko od mezní frekvence. Oba RC filtry jsou 6 dB/okt, protože každé zdvojnásobení (nebo půlení) frekvence odstraní 6 dB přenášeného výkonu.
 
-Rychlejší filtry lze konstruovat jak elektronicky, tak digitálně, ale jak jste viděli v příkladech s krokovou funkcí, ostrý přechod ve spektru vede k oscilacím, které jsou obvykle nežádoucí. Filtry, které jsou maximálně ploché v propustném pásmu, jsou Butterworthovy filtry, pojmenované po Stephenu Butterworthovi, které mají amplitudový zisk
+Rychlejší filtry lze konstruovat jak elektronicky, tak digitálně, ale jak jste viděli v příkladech s krokovou funkcí, ostrý přechod ve spektru vede k oscilacím, které jsou obvykle nežádoucí. Filtry, které jsou maximálně ploché v propustném pásmu jsou tzv. Butterworthovy filtry, pojmenované po Stephenu Butterworthovi, které mají amplitudový zisk
 \begin{equation*}
     G_n(\omega) = \frac{1}{\sqrt{1 + \frac{\omega^{2n}}{\omega_c^{2n}}}},
 \end{equation*}
@@ -207,9 +206,9 @@ kde $\omega_c$ je mezní (úhlová) frekvence. Tyto filtry můžeme zkonstruovat
     \label{ex:filter}
     Napište funkci, která bude filtrovat vstupní signál pomocí
     \begin{enumerate}
-        \item dolní propusti RC filtru s nastavitelnou mezní frekvencí
-        \item horní propusti RC filtru podobně jako v bodě 1.
-        \item Butterworthova pásmová propust zkonstruovaná pomocí \ls{scipy.signal.iirfilter()} a aplikovaná pomocí \ls{scipy.signal.lfilter()}
+        \item dolně propustního RC filtru s nastavitelnou mezní frekvencí
+        \item horně propustního RC filtru podobně jako v bodě 1.
+        \item Butterworthova pásmové propusti zkonstruovaného pomocí \ls{scipy.signal.iirfilter()} a aplikovaného pomocí \ls{scipy.signal.lfilter()}
     \end{enumerate}
 
     Pro 1. a 2. vykreslete přenosovou funkci filtru. Otestujte filtrování na přiloženém \ls{noisy_data.npy} a vykreslete signál v časové i frekvenční doméně před a po filtrování. Pro dolní propust odfiltrujte vše nad 100 Hz. Pro horní propust vše pod 1000 Hz a pro pásmovou propust ponechte pouze rozsah (4310, 4330) Hz.
