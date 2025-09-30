@@ -1,4 +1,4 @@
-# exercises 30 and 31
+# exercises 6.5 and 6.6
 
 import pyvisa as vi
 import numpy as np

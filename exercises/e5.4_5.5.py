@@ -27,7 +27,7 @@ for file in files:
     temperatures.append(T)
     img.append(Pxx)
 
-# exercise 22
+# exercise 5.5
 avg_window = 0.05 # average with sliding window of 50 mK
 img = np.array(img)
 temperatures = np.array(temperatures)

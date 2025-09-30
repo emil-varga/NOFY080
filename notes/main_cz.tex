@@ -32,10 +32,13 @@
 \newcounter{exercise}
 \newenvironment{exercise}[1][]%
     {\refstepcounter{exercise}%
+    \counterwithin*{exercise}{section}%
     \begin{mdframed}[backgroundcolor=exercise,linecolor=white]%
-    \textbf{Cvičení~\theexercise.} #1 \rmfamily}%
+    \textbf{Cvičení~\thesection.\theexercise.} #1 \rmfamily}%
     {\medskip\end{mdframed}}
 
+
+    
 \newcommand{\listsyntax}{Python Jazykové Intermezza}
 \newlistof{intermezzos}{synt}{\listsyntax}
 \newcounter{syntax}

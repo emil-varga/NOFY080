@@ -1,5 +1,5 @@
 """
-Solution to excercises 15 and 16 using classes.
+Solution to excercises 4.2 and 4.3 using classes.
 
 Note that classes in this example are perhaps a bit overused
 (but that depends on your taste), the goal is to illustrate how

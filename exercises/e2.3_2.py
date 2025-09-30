@@ -11,10 +11,10 @@ while True:
 
 names.sort()
 
-#and now we can pring
+#and now we can print
 for name in names:
-    #<e4_2>
+    #<e2.3_3>
     if name.upper() == 'EMIL':
         continue
-    #</e4_2>
+    #</e2.3_3>
     print(name)
