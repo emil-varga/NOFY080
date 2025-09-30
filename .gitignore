@@ -4,6 +4,12 @@
 notes/main.pdf
 notes/main_cz.pdf
 
+exercises.tex
+exercises_cz.tex
+
+exercises.pdf
+exercises_cz.pdf
+
 example_code/taichi/pictures
 example_code/taichi/*.avi
 
