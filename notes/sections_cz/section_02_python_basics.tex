@@ -32,7 +32,7 @@ Shrnutí základních vestavěných operátorů
      \ls{+,-,*,/, **} & základní aritmetika, umocňování \\ 
      \ls{and, or, not} & booleovské operace \\
      \ls{<, <=, ==, >, >=} & porovnávání\\
-     \ls{&,|, ~, ^} & bitové operace, bitové AND, OR, NOT a XOR (exkluzivní nebo)
+     \ls{\&,|, ~, ^} & bitové operace, bitové AND, OR, NOT a XOR (exkluzivní nebo)
 \end{tabular}
 
 \subsection{Uživatelský vstup}
@@ -71,7 +71,7 @@ Funkce se definují pomocí klíčového slova \verb|def|. Funkce mohou přijím
 Všimněte si odsazení, kterým se v Pythonu identifikují bloky kódu, tj. neexistuje zde \verb|begin,end| jako v Pascalu nebo \verb|{}| jako v C/C++.
 
 Více argumentů se odděluje čárkou a argumenty mohou mít výchozí hodnotu, např. argument $c$ bude 1, pokud není uvedeno jinak.
-\begin{lstlisting}[caption=Function definition]
+\begin{lstlisting}[caption=Definice funkce]
     def calculate(a, b, c=1):
         """
         A function that calculates c*(a + b)
