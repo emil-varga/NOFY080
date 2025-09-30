@@ -20,7 +20,7 @@ a
 pip --version
 \end{verbatim}
 
-Oba příkazy by měly vypsat verzi programu a ne žádnou chybovou hlášku. Pokud používáte Linux, Python již pravděpodobně máte nainstalovaný. Pokud ne, použijte balíčkovací systém vaší distribuce, např. na Fedoře:
+Oba příkazy by měly vypsat verzi programu a žádnou chybovou hlášku. Pokud používáte Linux, Python již pravděpodobně máte nainstalovaný. Pokud ne, použijte balíčkovací systém vaší distribuce, např. na Fedoře:
 \begin{verbatim}
 sudo dnf install python3
 \end{verbatim}
@@ -55,7 +55,7 @@ uv add numpy scipy matplotlib
 \end{lstlisting}
 což vytvoří virtuální prostředí a nainstaluje zadané balíčky (v adresáři projektu by se měl objevit adresář \verb|.venv|).
 
-Pokud byste chtěli vytvořit virtuální prostředí bez instalace jakýchkoli balíčků, mohli byste použít příkaz
+Pokud byste chtěli vytvořit virtuální prostředí bez instalace jakýchkoli balíčků, dá se použít příkaz
 \begin{lstlisting}
 uv venv <name of the virtual environment>
 \end{lstlisting}
@@ -69,7 +69,7 @@ a ve Windows
 .venv\Scripts\activate
 \end{lstlisting}
 
-Nyní, když spustíte \verb|python|, spustí se verze z virtuálního prostředí, nikoli vaše systémová verze. Pro deaktivaci virtuálního prostředí jednoduše spusťte \verb|deactivate|.
+Když nyní spustíte \verb|python|, spustí se verze z virtuálního prostředí, nikoli vaše systémová verze. Pro deaktivaci virtuálního prostředí jednoduše spusťte \verb|deactivate|.
 
 \subsection{Spouštění kódu v Pythonu}
 Python je interpretovaný jazyk, který není třeba před spuštěním kompilovat. Kód v Pythonu ukládáme do textových souborů s příponou \verb|.py| nebo do takzvaných Jupyter notebooků (přípona souboru \verb|.ipynb|).
