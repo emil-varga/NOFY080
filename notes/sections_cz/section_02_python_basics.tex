@@ -237,6 +237,11 @@ Všimněte si však, že pokud argument pro \ls{match} neodpovídá žádnému p
     # zadny vystup
 \end{lstlisting}
 
+\begin{exercise}
+Napište funkci, která na vstupu pťíjme koeficienty $a$, $b$, $c$ kvadratické rovnice $ax^2 + bx + c = 0$ a vypíšse řesení $x_1$, $x_2$. 
+Pokud reálné řešení neexistuje, funkce do příkazové řádky vypíše chybu.
+\end{exercise}
+
 \subsection{Smyčky (Loops)}
 Pro cyklení s daným počtem iterací můžeme použít cykly \verb|for| s funkcí \verb|range()|. Můžeme také cyklit přes cokoli iterovatelného, např. seznam nebo slovník.
 \begin{lstlisting}
@@ -339,7 +344,7 @@ class Difference:
 
     Používání tříd a objektů je přímočaré, např.
 \begin{lstlisting}
-    #__self__() se zavolá s x=3, y=5 a self odkazuje na d1
+    #__init__() se zavolá s x=3, y=5 a self odkazuje na d1
     d1 = Difference(3, 5)
     d2 = Difference(30, 50) 
 
@@ -347,8 +352,8 @@ class Difference:
     print(d2) # "30 - 50"
 \end{lstlisting}
 
-    Existuje několik dalších speciálních názvů metod (více viz \href{https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types}{dokumentace}),
-    např. \ls{__add__(self, other)}, která se volá pro \ls{x + y}, kde \ls{x} je \ls{self} a \ls{y} je \ls{other}. Podobně existují \ls{__sub__}, \ls{__mul__} a \ls{__truediv__} pro \verb|-, *, /|.
+Existuje několik dalších speciálních názvů metod (více viz \href{https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types}{dokumentace}),
+např. \ls{__add__(self, other)}, která se volá pro \ls{x + y}, kde \ls{x} je \ls{self} a \ls{y} je \ls{other}. Podobně existují \ls{__sub__}, \ls{__mul__} a \ls{__truediv__} pro \verb|-, *, /|.
 
 \begin{exercise}
     Implementujte třídu \ls{Fraction}, která reprezentuje zlomek, který je inicializován dvěma čísly -- čitatelem a jmenovatelem. Třída by měla podporovat základní aritmetiku (\ls{+,-,*,/}) s čísly a dalšími \ls{Fraction}.

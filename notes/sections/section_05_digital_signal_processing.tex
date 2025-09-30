@@ -76,7 +76,7 @@ One particularly important Fourier transform is that of the exponentially decayi
     s(t) = e^{-t/\tau}\sin(2\pi f t),
 \end{equation}
 which yields the complex lorentzian which is the response of the linear harmonic oscillator, see Sec.~\ref{sec:lho}. The decaying oscillation is, of course, the motion of the damped unforced linear harmonic oscillator. Example:
-\lstinputlisting{../example_code/decaying_exponential.py}
+\lstinputlisting[caption={Fourier transform of a decaying sine wave.}]{../example_code/decaying_exponential.py}
 \begin{center}
     \includegraphics{decaying_exponential.pdf}
 \end{center}
@@ -163,7 +163,7 @@ and for the high pass
     \frac{V_\mathrm{out}}{V_\mathrm{in}} = \frac{i\omega RC}{1 + i\omega RC}.
 \end{equation}
 The above expressions are called transfer functions of the filter. Quantity $RC = \tau$ is called the time constant. The corner frequency $f_c = 1/(2\pi\tau)$ is the frequency when the filter starts acting. We can plot the response of the filters with the following code
-\lstinputlisting[firstline=4,lastline=12]{../example_code/RC_filters_response.py}
+\lstinputlisting[firstline=4,lastline=12,caption={RC filter response}]{../example_code/RC_filters_response.py}
 \begin{center}
     \includegraphics{RC_filters.pdf}
 \end{center}
@@ -197,7 +197,7 @@ Faster filters can be constructed both electronically and digitally, but as you 
     G_n(\omega) = \frac{1}{\sqrt{1 + \frac{\omega^{2n}}{\omega_c^{2n}}}},
 \end{equation*}
 where $\omega_c$ is the corner (angular) frequency. We can construct these filters using \ls{scipy.signal.iirfilter} and apply it to our signal using \ls{scipy.signal.sosfilter}
-\lstinputlisting[firstline=7, lastline=25]{../example_code/sig_iirfilter.py}:
+\lstinputlisting[firstline=7, lastline=25, caption={Using IIR filter.}]{../example_code/sig_iirfilter.py}:
 \begin{center}
     \includegraphics[width=0.5\linewidth]{butter.pdf}
 \end{center}
