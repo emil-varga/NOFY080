@@ -1,13 +1,37 @@
 % Section 1: Setting up the environment
 \newpage
 \section{Nastavení prostředí}
+
+Pokud nemáte nainstalovaný Python, můžete si jej stáhnout z \url{https://www.python.org/downloads/} (konkrétně nejnovější
+verzi pro Windows \href{https://www.python.org/ftp/python/3.13.7/python-3.13.7-amd64.exe}{zde}).
+
+Po spuštění instalátoru povolte volbu "Add python.exe to PATH" (a také doporučuji povolit administrátorská oprávnění), viz screenshot
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{python_install.png}
+\end{center}
+
+Instalaci proklikejte, otevřete Windows PowerShell a ověřte funkčnost následujícími dvěma příkazy.
+
+\begin{verbatim}
+python --version
+\end{verbatim}
+a
+\begin{verbatim}
+pip --version
+\end{verbatim}
+
+Oba příkazy by měly vypsat verzi programu a ne žádnou chybovou hlášku. Pokud používáte Linux, Python již pravděpodobně máte nainstalovaný. Pokud ne, použijte balíčkovací systém vaší distribuce, např. na Fedoře:
+\begin{verbatim}
+sudo dnf install python3
+\end{verbatim}
+
 Běžné programování v Pythonu silně spoléhá na externí balíčky, které mohou mít různé verze a závislosti. Aby se předešlo konfliktům mezi různými projekty, doporučuje se pro každý projekt používat virtuální prostředí (\emph{virtual environment}, alebo ve zkratce venv). V tomto kurzu budeme takové virtuální prostředí používat, abychom zajistili konzistentní vývojové prostředí pro všechny. Virtuální prostředí jsou doporučeným způsobem správy závislostí v projektech v Pythonu.
 
 Pro správu těchto virtuálních prostředí budeme používat open-source nástroj \verb|uv|, dostupný na \url{https://github.com/astral-sh/uv}. Pokud již máte nainstalovanou jakoukoli verzi Pythonu, můžete \verb|uv| nainstalovat jednoduchým spuštěním
 \begin{lstlisting}
 pip install uv
 \end{lstlisting}
-Pokud Python nainstalovaný nemáte, můžete si jej stáhnout z \url{https://www.python.org/downloads/} a poté použít výše uvedený příkaz nebo použít samostatné instalátory na \url{https://github.com/astral-sh/uv}.
+Doporučuji postup pomocí \verb|pip|, můžete ale také použít samostatné instalátory na \url{https://github.com/astral-sh/uv}.
 
 Pro otestování instalace spusťte v příkazovém řádku
 \begin{lstlisting}

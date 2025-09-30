@@ -1,13 +1,37 @@
 % Section 1: Setting up the environment
 \newpage
 \section{Setting up the environment}
+
+If you do not have Python installed, you can download it from \url{https://www.python.org/downloads/} (specifically the newest
+version for Windows \href{https://www.python.org/ftp/python/3.13.7/python-3.13.7-amd64.exe}{here}).
+
+After running the installer, enable the "Add python.exe to PATH" option (and I also recommend enabling administrator privileges), see screenshot
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{python_install.png}
+\end{center}
+
+Click through the installation, open Windows PowerShell and verify the functionality with the following two commands.
+
+\begin{verbatim}
+python --version
+\end{verbatim}
+and
+\begin{verbatim}
+pip --version
+\end{verbatim}
+
+Both commands should print the program version and not any error message. If you are using Linux, you probably already have Python installed. If not, use your distribution's package manager, e.g., on Fedora:
+\begin{verbatim}
+sudo dnf install python3
+\end{verbatim}
+
 Typical programming in Python heavily relies on external packages, which can have different versions and dependencies. To avoid conflicts between different projects, it is recommended to use a virtual environment for each project. We will be using such a virtual environment in this course to ensure a consistent development environment for everyone. Virtual environments are the recommended way to manage dependencies in Python projects.
 
 To manage these virtual environments we will be using the open-source tool \verb|uv|, available from \url{https://github.com/astral-sh/uv}. If you have any version of Python already installed, you can install uv by simply running
 \begin{lstlisting}
 pip install uv
 \end{lstlisting}
-If you don't have Python installed, you can download it from \url{https://www.python.org/downloads/} and then use the above command or use the stand-alone installers on \url{https://github.com/astral-sh/uv}.
+Using \verb|pip| is recommended, but you can also use the stand-alone installers on \url{https://github.com/astral-sh/uv}.
 
 To test the installation, run in your command line
 \begin{lstlisting}
