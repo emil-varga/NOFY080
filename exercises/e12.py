@@ -1,56 +1,94 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import e11 #import solution to excercise 11
 
-from glob import glob
+#we will be using e11 as a module in e12, so prepare a reusable solution
+def estimate_parameters(f, X, Y, plot=False):
+    """
+    Estimates central frequency and full width at half max of a peak.
 
-# glob() finds all filenames that match a certain pattern
-# the "wildcard" character * substitutes any number of any characters
-files = glob('lots_of_data/*.txt')
+    Parameters
+    ----------
+    f : array
+        Frequencies.
+    X : array
+        X-component of the signal.
+    Y : array
+        Y-component of the signal.
+    plot : bool, optional
+        Should we plot? The default is False.
 
-# the files are named ..., data_9.txt, data_10.txt, ...
-# sorting on strings (i.e., filenames) works alphabeticaly, which places data_10 before data_9
-# if we want to sort them according to their numerical labels, we have to specify the sorting key
-# which is a function, which takes whatever is inside the list and returns something sortable (usually a number)
-from os.path import basename #strips the directory name from the beginning
-from re import split #splits a string according to given rules (re stands for Regular Expressions)
-files.sort(key=lambda s: int(split('[_.]', basename(s))[1]))
-# whenever you see a complex function call, you should read it inside out, i.e.
-# let's assume that s is 'lots_of_data/data_9.txt', the evaluation goes as follows
-# 1. basename('lots_of_data/data_9.txt') = 'data_9.txt'
-# 2. split('[_.]', 'data_9.txt') = ['data', '9', 'txt']
-# 3. (['data', '9', 'txt'])[1] = '9'
-# 4. int('9') = 9
+    Returns
+    -------
+    f0 : float
+        Central frequency of the resonance.
+    fwhm : float
+        Full width at half maximum of the resonance.
 
-# The function split() splits according to any regular expression, which can be quite complex
-# Here, the simple "[_.]" means that it should split at any of the characters inside []
-
-#check the length and create empty arrays to save the results of the calculation
-N = len(files)
-f0s, fwhms = np.empty((2, N))
-
-plt.close('all') #close all previously opened figures
-fig_all, ax_all = plt.subplots() #we'll also plot all files
-for k, file in enumerate(files): # 
-    #load the file as in e11
-    data = np.loadtxt(file)
-    freq, X, Y = data.T
+    """
     
-    #and now use the solution to e11 as an external module
-    f0, fwhm = e11.estimate_parameters(freq, X, Y, plot=False)
-    #and save the results into prepared arrays
-    #we used indexing because the arrays already have the length we need
-    #we could also use lists (replace line 30 with f0s = [] and similarly for fwhms) and
-    #then .append() the results
-    f0s[k] = f0
-    fwhms[k] = fwhm
-    
-    #plot all R(freq) in a common plot
+    #first calculate the magnitude of the response
     R = np.sqrt(X**2 + Y**2)
-    ax_all.plot(freq, R)
-    ax_all.axvline(f0)
 
-#plot the processed data
-fig, ax = plt.subplots()
-ax.plot(f0s, fwhms, 'o')
+    if plot: #plot only if asked to
+        fig, ax = plt.subplots()
+        ax.plot(f, R)
+
+    #now we find the INDEX of the minium and maximum
+    ix_max = np.argmax(R)
+    ix_min = np.argmin(R)
+
+    if plot:
+        #axvline plots a vertical line
+        ax.axvline(f[ix_max]) #position of the maximum
+        ax.axvline(f[ix_min], ls=':', color='tab:green') #position of the minimum
+        
+        #axhline plots horizontal line
+        ax.axhline(R[ix_max], ls='--', color='tab:orange') #height of the maximum
+        
+    # now we need to estimate FWHM, which measures the width of the peak at half
+    # its maximum value
     
+    # first calculate the value of the half maximum, also taking into account an estimate of
+    # the background by simply taking the minimum()
+    # A more accurate estimation of the background could be achieved with np.percentile()
+    T = R.min() + 0.5*(R.max() - R.min()) # = 0.5*(R.max() + R.min())
+    if plot:
+        ax.axhline(T, color='green')
+    
+    #now we find all data points where R > T
+    fwhm_range_ix = R > T
+    # fwhm_range_ix is an ARRAY OF BOOLS of the same size as R (and X, Y, f)
+    # which is True where the conditoin R > T is true, and zero otherwise
+    # We can use an array like this to create a subset of any other array of the
+    # same shape created from only the True positions
+    fwhm_range = f[fwhm_range_ix] #these are now the frequencies where R > T
+    # now to calculate the full width we just need to know the limits of the interval
+    # fwhm_range
+    f_left = fwhm_range.min()
+    f_right = fwhm_range.max()
+
+    # print(fwhm_range_ix)
+    # print(sum(fwhm_range_ix))
+    # print(f.shape)
+    # print(fwhm_range.shape)
+
+    if plot:
+        #highlight the data within FWHM
+        ax.plot(fwhm_range, R[fwhm_range_ix], color='magenta', lw=5) #lw=line width
+        #and indicate the range
+        ax.axvline(f_left, color='red')
+        ax.axvline(f_right, color='blue')
+        
+    #finally, return what we are supposed to return
+    f0 = f[ix_max]
+    fwhm = f_right - f_left
+
+    return f0, fwhm
+
+if __name__ == '__main__':
+    # since we will be importing e11 as a module in e12, we don't want this code to run
+    # on import -- hide inside if __name__ == '__main__'
+    data = np.loadtxt('data.txt')
+    f, X, Y = data.T
+    estimate_parameters(f, X, Y, plot=True)
+    plt.show()

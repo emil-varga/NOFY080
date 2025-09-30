@@ -1,57 +1,44 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-data = np.loadtxt('data.txt')
-#now data is a 2D array of the same shape as the file -- three columns, about 100 rows
+def plot_different_axscales(N, xi=0.01, xf=5):
+    xs = np.linspace(xi, xf, N)
+    ys1 = xs
+    ys2 = xs**2
+    ys3 = np.sqrt(xs)
+    
+    #create a figure with 4 axes arranged in 1 row
+    fig, axs = plt.subplots(1, 4, figsize=(8, 3)) #figsize is (width, height) in inches
+    
+    #remember that functions can be used as values, so we can simply construct a list of
+    #functions and iterate over them, so that we don't have to re-type everything over 
+    #and over again
+    #function(arg1, arg2, ...) --- calls the function
+    #function                  --- use the function as a value
+    for plot_function in [axs[0].plot, axs[1].semilogx, axs[2].semilogy, axs[3].loglog]:
+        #the third argument is "[line style][marker style]
+        #color= self-explanatory, 
+        #       the numbers are (red, green, blue, alpha) from 0 to 1, alpha is opacity=(1-transparency)
+        #lw = line width
+        #ms = marker size
+        plot_function(xs, ys1, '-o', color='red', lw=0.25, ms=3)
+        plot_function(xs, ys2, ':s', color='green', lw=0.5, ms=3)
+        plot_function(xs, ys3, '--^', color=(0.25, 0.0, 0.1, 0.25), lw=1, ms=3)
+    
+    titles = ['linear', 'semilogx', 'semilogy', 'loglog']
+    #zip zips to iterables, e.g.,
+    #zip([a, b, c], [1, 2, 3]) == [(a, 1), (b, 2), (c, 3)]
+    for ax, title in zip(axs, titles):
+        ax.set_title(title)
+        ax.set_xlabel('x axis')
+        ax.set_ylabel('y axis')
+    
+    return fig, axs
 
-#len(data) gives you the length in the first dimension  -- in this case 100 rows
-#first index specifies the row, as when specifying elements in a matrix
-print(len(data))
-#if we want to know the length in all dimensions, we can use shape
-print(data.shape)
-
-#Now we want to split the loaded data into three variables
-# -- frequency, X and Y
-
-# we could fill an array in a loop
-# frequency = np.empty(data.shape[0])
-# X = np.empty(data.shape[0])
-# Y = np.empty(data.shape[0])
-# for k in range(data.shape[0]):
-#     frequency[k] = data[k, 0]
-#     X[k] = data[k, 1]
-#     Y[k] = data[k, 1]
-
-#we can also take slices, here : means take everything along that dimension
-#insteady of : we could use the same slicing syntax start:stop:step
-# frequency = data[:, 0] #all rows, column index 0
-# X = data[:, 1] #etc..
-# Y = data[:, 2]
-
-#or we can unpack along the first index
-# but first we have to take the transpose (data.T) of the matrix data in order for the
-# original column index to be first, i.e.
-# frequency = data.T[0, :]
-# X = data.T[1, :]
-# Y = data.T[2, :]
-#which can now be shortened to
-frequency, X, Y = data.T
-
-#and now we simply plot, frequency, X, and Y are simply numpy arrays
-#plot everything together
-fig, ax = plt.subplots()
-ax.plot(frequency, X, '-o')
-ax.plot(frequency, Y, '--s')
-
-
-#plot in shared axes
-fig2, axs2 = plt.subplots(2, 1, sharex=True, sharey=True)
-axs2[0].plot(frequency, X)
-axs2[1].plot(frequency, Y)
-
-#plot Y against X
-fig3, ax3 = plt.subplots()
-ax3.plot(X, Y, '-o')
-ax3.set_aspect('equal') #equal scaling on X and Y axis
-
+plt.close('all') #close all previously opened figures
+fig, axs = plot_different_axscales(10)
+fig.supxlabel("Common x-axis name")
+fig.supylabel("Common y-axis name")
+#reduce the whitespace around the edges as much as possible
+fig.tight_layout()
 plt.show()

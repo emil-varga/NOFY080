@@ -95,7 +95,7 @@ def bootstrap(f, x, y, B=100, p0=None, plot=False):
     return popt, perr
     
 
-files = glob('../lots_of_data/*.txt')
+files = glob('data/lots_of_data/*.txt')
 files.sort(key=rmax, reverse=True)
 
 plt.close('all')
@@ -128,3 +128,4 @@ for k, file in enumerate(files):
             ax.plot(freq, lorentz(freq, *popt), color=cmap(norm(r.max())))
     except RuntimeError:
         print(f"Fit failed in {file}. Skipping")
+plt.show()

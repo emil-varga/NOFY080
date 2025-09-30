@@ -1,32 +1,55 @@
-#we want to find all prime numbers less than N using
-#the Sieve of Eratosthenes
-
 import numpy as np
-N = 100
 
-#we want to select prime numbers out of this array
-numbers = np.arange(1, N+1) # = [1, 2, 3, ..., N]
-#is_prime[k] will be True if numbers[k] is prime
-#let's start by simply creating an array of the same sizes filled with True
-is_prime = np.ones_like(numbers, dtype=bool)
-#by default, np.ones_like(arr) will create an array filled with ones
-#specifiying dtype=bool (data type) will map any non-zero number to True
-#and zeros to False
+def gauss(n):
+    """
+    The Gauss' formula for summing 1 + 2 + 3 + ... + n
 
-#1st index represents number 1, which is not prime
-is_prime[0] = False
-for k, p in enumerate(is_prime): #k is the index, p is the value, i.e., p = is_prime[k]
-    if p: # is numbers[k] prime? p is already True/False we can use it in if directly
-        x = k + 1 #x is the number we are checking (one bigger than the index, since indexing starts from 0)
-        for ix in range(k+x, N, x): #now go from the first 2*x up to N by steps of x
-            is_prime[ix] = False # and cross each multiple out
-        #the for loop is equivalent to:
-        # ix = k + x
-        # while ix < N:
-        #     is_prime[ix] = False
-        #     ix += x
+    Parameters
+    ----------
+    n : integer
 
-#We can use the array filled with boolean values to create a
-#new array which only contains elements where is_prime was True
-z = numbers[is_prime]
-print(z)
+    Returns
+    -------
+    integer
+        The sum.
+    """
+    return n*(n+1)/2
+
+def sum_up_to(n):
+    """
+    Sums numbers 1 + 2 + 3 + ... + n
+
+    Parameters
+    ----------
+    n : int
+        Up to where to sum.
+
+    Returns
+    -------
+    total_sum : int
+        The sum.
+
+    """
+    #first we want to create an array containing [1, 2, 3, ... n]
+    #that is handled simply using np.arange(start, stop, step)
+    arr = np.arange(1, n+1) #remember that the stop is NOT included, hence n+1
+    
+    #equivalently, we could do this
+    # np.empty() creates an array of size n, but leaves it uninitialized
+    # i.e., any garbage that was in the memory when we created it is
+    # still there
+    # arr = np.empty(n)
+    # for k in range(1, n+1): # and now we have to initialize it by hand
+    #     arr[k] = k
+    
+    # we'll sum everything together in a loop, make a variable that will
+    # accumulate the total sum, whicih start at zero
+    total_sum = 0
+    for x in arr:
+        total_sum += x #and now just add every element to the total_sum
+    
+    #or we could simply do return arr.sum()
+    return total_sum
+
+#test it out
+print(gauss(54) == sum_up_to(54))

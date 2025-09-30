@@ -312,3 +312,42 @@ If there is only a small number of functions we want to use from a given module 
     Write a program to caluclate the Fibonacci number $F_n$ using both loops and recursion. Measure the time to calculate the first 20 $F_n$ using both methods using \verb|time.time()|.
     \emph{Hint:} $F_k = F_{k-1} + F_{k-2},\;F_1 = F_2 = 1$
 \end{exercise}
+
+\subsection{Object-oriented programming (OOP)}
+OOP is a programming technique for associating data with functions and separating implementation details of partial problems from the rest of the code. If used correctly, it can help with writing easy-to-read, extensible and reusable code.
+
+In OOP language, objects are instances of classes. Everything in Python is an object. For example, the number 5 is the instance of a class \ls{int}. In modern Python (i.e., version 3 and higher) the concepts type and class have the same meaning. The built-in function \ls{type()} returns the object's class (or type), e.g.,
+\begin{lstlisting}
+    >>> type(2)
+    <class 'int'>
+\end{lstlisting}
+
+To create new classes we use the \ls{class} keyword, e.g., to create a class that represents differences
+\begin{lstlisting}
+    class Difference:
+        def __init__(self, x, y):
+            self.x = x
+            self.y = y
+            
+        def __str__(self):
+            return f"{self.x} - {self.y}"
+        
+        def value(self):
+            return self.x - self.y
+\end{lstlisting}
+Functions defined inside classes are called \textbf{methods}. The first argument, conventionally called \ls{self}, refers to the object that is calling the method. \ls{__init__} is a special method that creates the object, \ls{__str__} is a special function that should create a readable textual representation of the object (used with \ls{print}).
+
+    Using classes and objects is straightforward, e.g.
+\begin{lstlisting}
+    d1 = Difference(3, 5) #__self__() is called with x=3, y=5 and self refers to d1
+    d2 = Difference(30, 50) 
+
+    print(d1.value()) # -2
+    print(d2) # "30 - 50"
+\end{lstlisting}
+
+Several other special method names exist (see \href{https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types}{documentation} for more), e.g. \ls{__add__(self, other)} which is called for \ls{x + y} with \ls{x} being \ls{self} and \ls{y} being \ls{other}. Similarly there are \ls{__sub__}, \ls{__mul__} and \ls{__truediv__} for \ls{-, *, /}, respectively.
+
+\begin{exercise}
+    Implement a \ls{Fraction} class that represents a fraction that is initialized by two numbers -- numerator and denominator. The class should support basic arithmetic (\ls{+,-,*,/}) with numbers and other \ls{Fraction}s
+\end{exercise}

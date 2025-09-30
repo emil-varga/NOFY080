@@ -78,7 +78,8 @@ if __name__ == '__main__':
                     # have to do ourselves
                     line.set_xdata(times)
                     line.set_ydata(pressures)
-                    # if we have at least 2 points calculate the min/max
+                    # if we have at least 2 points calculate the
+                    # min/max
                     if len(times) > 2:
                         xmin, xmax = min(times), max(times)
                         ymin, ymax = min(pressures), max(pressures)
@@ -86,8 +87,8 @@ if __name__ == '__main__':
                         ax.set_ylim(ymin, ymax)
                     plt.pause(0.1)
             except KeyboardInterrupt:
-                # keyboard interrupt is not an error, just a way to escape from the
-                # infinite while loop
+                # keyboard interrupt is not an error, just a way to
+                # escape from the infinite while loop
                 print("Quitting...")
             
             # indicate the user interaction thread that it should quit

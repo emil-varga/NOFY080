@@ -3,8 +3,8 @@ import pyvisa as vi
 def find_pico(rm):
     addresses = rm.list_resources()
     for addr in addresses:
+        opened = False
         try:
-            opened = False
             # print(addr)
             dev = rm.open_resource(addr, read_termination='\n', write_termination='\n')
             opened = True

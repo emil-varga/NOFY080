@@ -1,86 +1,66 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import time
+import e11 #import solution to excercise 11
 
-#iterate the series from the definition of the Mandelbrot set
-def zn(c, max_iter=1000):
-    z = 0
-    for k in range(max_iter):
-        z = z**2 + c
-        if abs(z) > 2: # the series will definitely diverge
-            return k #at what point did we become certain that it diverges (i.e., a measure of how far it is from the set)
-    #otherwise we return max_iter which we will understand as "probably in the set"
-    return max_iter
+from glob import glob
 
-def mandelbrot(reals, imags, max_iter=1000):
-    Nx = len(reals)
-    Ny = len(imags)
-    zs = np.empty((Nx, Ny))
-    # we will explicitly calculate the convergence of the series for every point c
-    for kx in range(Nx):
-        for ky in range(Ny):
-            c = reals[kx] + 1j*imags[ky]
-            zs[ky, kx] = zn(c, max_iter=max_iter)
-    return zs
+# glob() finds all filenames that match a certain pattern
+# the "wildcard" character * substitutes any number of any characters
+files = glob('lots_of_data/*.txt')
 
-# If x and y are numpy arrays, expressions like x + y are internally turned into a loop that
-# adds all elements together. However, this loop is written in C in the numpy library and uses
-# a bunch of tricks to run as fast as possible (e.g., so-called SIMD instructions, https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions)
-# and as a result runs much faster than a Python loop.
+# the files are named ..., data_9.txt, data_10.txt, ...
+# sorting on strings (i.e., filenames) works alphabeticaly, which 
+# places data_10 before data_9. If we want to sort them according
+# to their numerical labels, we have to specify the sorting key
+# which is a function, that takes whatever is inside the list and
+# returns something sortable (usually a number)
 
-# A solution which uses only vector-like manipulation of arrays without explicitly looping over them is
-# called vectorized, and can be substantially faster. For example, the above explicit loop can be rewritten as
-def mandelbrot_vectorized(cs, max_iter=1000):
-    #cs is a matrix of complex numbers c which we want to check whether they
-    #belong to the mandelbrot set or not
-    shape = cs.shape # remember the shape of the matrix
-    cs = cs.flatten() # and turn it into single 1D array
-    zs = np.zeros_like(cs, dtype=complex) # the values in the series
-    ks = np.zeros_like(cs, dtype=int) # iteration number, stop incrementing once abs(z) > 2
-    remaining = np.ones_like(zs, dtype=bool) # which points still need to be iterated?
-    for k in range(max_iter):
-        #the series from the definition of the set, but calculate it 
-        zs[remaining] = zs[remaining]**2 + cs[remaining]
-        ks[remaining] += 1
-        remaining = abs(zs) < 2 # stop iterating cs which lead to diverging zn
-        if not any(remaining): #stop if nothing's left
-            break
-    #return the iteration numbers in the shape of the original matrix
-    return ks.reshape(shape)
+# strips the directory name from the beginning
+from os.path import basename
+# splits a string according to given rules
+# (re stands for Regular Expressions)
+from re import split
+files.sort(key=lambda s: int(split('[_.]', basename(s))[1]))
+# whenever you see a complex function call, you should read it
+# inside out, i.e. let's assume that s is 
+# 'lots_of_data/data_9.txt', the evaluation goes as follows
+# 1. basename('lots_of_data/data_9.txt') = 'data_9.txt'
+# 2. split('[_.]', 'data_9.txt') = ['data', '9', 'txt']
+# 3. (['data', '9', 'txt'])[1] = '9'
+# 4. int('9') = 9
 
-Nx = 300
-Ny = 300
+# The function split() splits according to any regular expression,
+# which can be quite complex. Here, the simple "[_.]" means that
+# it should split at any of the characters inside []
 
-#this range fits the entire set
-# reals = np.linspace(-2, 1, Nx)
-# imags = np.linspace(-1, 1, Ny)
+# check the length and create empty arrays to save the results
+# of the calculation
+N = len(files)
+f0s, fwhms = np.empty((2, N))
 
-#this zoomed view is pretty
-reals = np.linspace(0.1, 0.15, Nx)
-imags = np.linspace(0.6, 0.65, Ny)
+plt.close('all') #close all previously opened figures
+fig_all, ax_all = plt.subplots() #we'll also plot all files
+for k, file in enumerate(files): # 
+    #load the file as in e11
+    data = np.loadtxt(file)
+    freq, X, Y = data.T
+    
+    #and now use the solution to e11 as an external module
+    f0, fwhm = e11.estimate_parameters(freq, X, Y, plot=False)
+    #and save the results into prepared arrays
+    # we used indexing because the arrays already have the length
+    # we need we could also use lists (replace line 30 with
+    # f0s = [] and similarly for fwhms) and
+    # then .append() the results
+    f0s[k] = f0
+    fwhms[k] = fwhm
+    
+    #plot all R(freq) in a common plot
+    R = np.sqrt(X**2 + Y**2)
+    ax_all.plot(freq, R)
+    ax_all.axvline(f0)
 
-#let's time the two solutions
-t0_loop = time.time()
-zs1 = mandelbrot(reals, imags)
-t1_loop = time.time()
-
-t0_vec = time.time()
-#create the 2D matrix of the complex numbers c
-CR, CI = np.meshgrid(reals, imags)
-cs = CR + 1j*CI
-zs2 = mandelbrot_vectorized(cs)
-t1_vec = time.time()
-
-print(f"Explicit loop: {t1_loop - t0_loop} s") # ~10 s on my PC
-print(f"Vectorized: {t1_vec - t0_vec} s") # ~0.7 s
-
-extent = [reals.min(), reals.max(), imags.min(), imags.max()]
-
-plt.close('all')
-fig1, ax1 = plt.subplots()
-ax1.imshow(zs1, origin='lower', extent=extent)
-ax1.set_title('explicit loop')
-
-fig2, ax2 = plt.subplots()
-ax2.imshow(zs2, origin='lower', extent=extent)
-ax2.set_title('vectorized')
+#plot the processed data
+fig, ax = plt.subplots()
+ax.plot(f0s, fwhms, 'o')
+    
