@@ -1,63 +1,96 @@
-class Fraction:
-    """ Represents a/b """
-    def __init__(self, a, b):
-        self.a = a
-        self.b = b
+particles = [
+  {'charge': -1,
+   'id': 1,
+   'mass': 0.4113513116324291,
+   'position': [-1.5188809980735316e-06,
+                6.639994580333568e-06,
+                8.468849433621426e-06],
+   'velocity': [-0.016976782951560687,
+                -0.43614541046795063,
+                0.24858497024060777]},
+ {'charge': 1,
+  'id': 2,
+  'mass': 0.427681735155058,
+  'position': [-5.883390997506555e-06,
+               7.4626031632827295e-06,
+               9.874524557127819e-06],
+  'velocity': [0.40780740976418184,
+               -0.26711535655741825,
+               0.003581046948574085]},
+ {'charge': -1,
+  'id': 3,
+  'mass': 0.5893634868863729,
+  'position': [-5.144134149373283e-06,
+               -5.7086165927742295e-06,
+               -7.625187174335569e-06],
+  'velocity': [0.29684172146264,
+               -0.16902182139700073,
+               -0.13215951478516252]},
+ {'charge': -1,
+  'id': 4,
+  'mass': 0.4824383278576509,
+  'position': [-2.0831847582127846e-07,
+               -9.91807924234953e-06,
+               -5.180668241290642e-07],
+  'velocity': [-0.3310595579232155,
+               -0.09542134030546423,
+               0.18649645116932367]},
+ {'charge': -1,
+  'id': 5,
+  'mass': 0.5596740554842876,
+  'position': [7.090417860070442e-06,
+               -5.305021402876285e-06,
+               -9.582435838091677e-06],
+  'velocity': [-0.15348706743474405,
+               0.27717785655665994,
+               0.24890055782514098]},
+ {'charge': 1,
+  'id': 6,
+  'mass': 0.41179024556137883,
+  'position': [-4.156557110680406e-06,
+               -7.179291652433985e-07,
+               -3.857748086570927e-06],
+  'velocity': [0.2998118212759042,
+               -0.19945406523136167,
+               -0.2648099666919519]},
+ {'charge': -1,
+  'id': 7,
+  'mass': 0.41303654710107024,
+  'position': [9.925818029260438e-06,
+               3.035254803381879e-06,
+               -8.20668949191822e-06],
+  'velocity': [-0.06077878124576064,
+               -0.0068929623097332415,
+               0.14135026674979156]},
+ {'charge': -1,
+  'id': 8,
+  'mass': 0.45548753804256054,
+  'position': [-7.1769401466269895e-06,
+               4.370403784467048e-06,
+               7.30238005742672e-06],
+  'velocity': [-0.20689002982112248,
+               0.2979160921662022,
+               0.1514834501679576]},
+ {'charge': 1,
+  'id': 9,
+  'mass': 0.6059287260893629,
+  'position': [2.049184966243238e-06,
+               -3.414526113232577e-06,
+               -5.757681318166193e-06],
+  'velocity': [-0.2407449178774962,
+               -0.3981382782442603,
+               0.20438711284772937]},
+ {'charge': 1,
+  'id': 10,
+  'mass': 0.5949246042482161,
+  'position': [-8.25397606331159e-06,
+               -6.877289150863109e-06,
+               5.021825027752785e-07],
+  'velocity': [-0.1762539488033722,
+               -0.43729674133406193,
+               -0.45540659754695934]}]
 
-    # the __something__ methods are called magic or dunder (Double UNDERscore)
-    # they indicate some built-in syntax, for example, if f1 and f2 are Fractions
-    #f1 + f2 is translated to f1.__add__(f2)
-    def __add__(self, other):
-        return Fraction(self.a*other.b + self.b*other.a,
-                        self.b*other.b)
-    
-    #f1 - f2 -> f1.__sub__(f2)
-    def __sub__(self, other):
-        return Fraction(self.a*other.b - self.b*other.a,
-                        self.b*other.b)
-    
-    #f1 * f2 -> f1.__mul__(f2)
-    def __mul__(self, other):
-        return Fraction(self.a*other.a, self.b*other.b)
-    
-    #f1 / f2 -> f1.__truediv__(f2)
-    def __truediv__(self, other):
-        return Fraction(self.a*other.b, self.b*other.a)
-    
-    def value(self):
-        return self.a/self.b
-    
-    # str(f1) -> f1.__str__(); used in print()
-    #textual representation of the object
-    def __str__(self):
-        return f"{self.a}/{self.b}"
-    #__repr__ is similar to __str__, except it
-    #gets called when we simply evaluate the object
-    #in REPL
-    def __repr__(self):
-        return str(self)
-    
-    #f1(args) -> f1.__call__(args)
-    def __call__(self):
-        return self.value()
-    
-    #f1[idx] -> f1.__getitem__(idx)
-    def __getitem__(self, idx):
-        if idx == 0:
-            return self.a
-        elif idx == 1:
-            return self.b
-        else:
-            raise ValueError
 
-if __name__ == '__main__':
-    f1 = Fraction(1,2)
-    f2 = Fraction(3,4)
-    
-    print(f1 + f2) # === f1.__add__(f2)
-    print(f1.value())
-    print(f1.__str__())
-    print((f1 + f2).value())
-    print(f1.value() + f2.value())
-    print(f1())
-    print(f1[0])
+###
+### YOUR CODE HERE
+###
