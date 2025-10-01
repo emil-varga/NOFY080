@@ -318,6 +318,36 @@ Pokud chceme z daného modulu použít jen malý počet funkcí, můžeme je imp
     \emph{Nápověda:} $F_k = F_{k-1} + F_{k-2},\;F_1 = F_2 = 1$
 \end{exercise}
 
+\begin{exercise}
+    Soubor \href{https://raw.githubusercontent.com/emil-varga/NOFY080/refs/heads/main/exercises/e2.6.py}{exercises/e2.6.py} obsahuje data o částicích v elektrickém poli $E = 1$~kV/m, které je orientováno podél osy $z$.
+
+    Data mají formu seznamu slovníků s následující strukturou:
+\begin{lstlisting}
+[
+    {'charge': -1,
+    'id': 1,
+    'mass': 0.4113513116324291,
+    'position': [-1.5188809980735316e-06,
+                 6.639994580333568e-06,
+                 8.468849433621426e-06],
+    'velocity': [-0.016976782951560687,
+                 -0.43614541046795063,
+                 0.24858497024060777]},
+    {...}
+]
+\end{lstlisting}
+    Pozice a rychlosti jsou uvedeny v jednotkách metrů a metrů za sekundu jako vektory v prostoru $[x, y, z]$, hmotnost $m$ je v MeV a náboj $Q$ je v jednotkách elementárního náboje. Pole id slouží pouze k identifikaci.
+
+    Najděte id částice s nejvyšší energií danou vztahem
+    \[ E = -\frac{1}{2}EQz + \frac{1}{2}m v^2, \]
+    kde $z$ je pozice a $v$ je celková rychlost.
+
+    Nápověda: $m\mathrm{[kg]} = m[\mathrm{eV}] \frac{e}{c^2}$, kde $e$ a $c$ jsou elementární náboj a rychlost světla v jednotkách SI. Tyto jsou již definovány v \verb|scipy.constants|
+\begin{lstlisting}
+from scipy.constants import elementary_charge, c
+\end{lstlisting}
+\end{exercise}
+
 \subsection{Objektově orientované programování}
     (OOP) je programovací technika pro spojování dat s funkcemi a oddělování implementačních detailů dílčích problémů od zbytku kódu. Při správném použití může pomoci psát snadno čitelný, rozšiřitelný a znovupoužitelný kód.
 

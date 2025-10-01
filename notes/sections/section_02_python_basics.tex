@@ -318,6 +318,36 @@ If there is only a small number of functions we want to use from a given module 
     \emph{Hint:} $F_k = F_{k-1} + F_{k-2},\;F_1 = F_2 = 1$
 \end{exercise}
 
+\begin{exercise}
+    File \href{https://raw.githubusercontent.com/emil-varga/NOFY080/refs/heads/main/exercises/e2.6.py}{exercisese/2.6.py} contains data about particles in an electric field $E = 1$~kV/m which is oriented along the $z$-axis.
+
+    The data have the form of a list of dictionaries with the following structure:
+\begin{lstlisting}
+[
+    {'charge': -1,
+    'id': 1,
+    'mass': 0.4113513116324291,
+    'position': [-1.5188809980735316e-06,
+                6.639994580333568e-06,
+                8.468849433621426e-06],
+    'velocity': [-0.016976782951560687,
+                -0.43614541046795063,
+                0.24858497024060777]},
+    {...}
+]
+\end{lstlisting}
+    Positions and velocities are given in units of meters and meters per second as vectors in $[x, y, z]$ space, mass $m$ is in MeV and charge $Q$ is in the units of elementary charge. The id field serves only for identification.
+
+    Find the id of the particle with the highest energy given by
+    \[ E = -\frac{1}{2}EQz + \frac{1}{2}m v^2, \]
+    where $z$ is the position and $v$ is the total velocity.
+
+    Hint: $m\mathrm{[kg]} = m[\mathrm{eV}] \frac{e}{c^2}$, where $e$ and $c$ are elementary charge and speed of light in SI units. These are already defined in \verb|scipy.constants|
+\begin{lstlisting}
+from scipy.constants import elementary_charge, c
+\end{lstlisting}
+\end{exercise}
+
 \subsection{Object-oriented programming (OOP)}
 OOP is a programming technique for associating data with functions and separating implementation details of partial problems from the rest of the code. If used correctly, it can help with writing easy-to-read, extensible and reusable code.
 
