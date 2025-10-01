@@ -1,9 +1,9 @@
 import re
 import os
 
-preamble = r"""\documentclass{article}
+preamble = r"""\documentclass[12pt]{article}
 \usepackage{graphicx} % Required for inserting images
-\usepackage[left=3cm, right=3cm, top=3cm, bottom=3cm]{geometry}
+\usepackage[left=2cm, right=2cm, top=3cm, bottom=3cm]{geometry}
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage[titles]{tocloft}
