@@ -2,6 +2,7 @@ import threading as th
 
 class MyThread(th.Thread):
     def __init__(self, thread_name):
+        # It is necessary to initialize the parent class as well
         super().__init__()
         self.thread_name = thread_name
     def run(self):

@@ -2,12 +2,14 @@ from multiprocessing.connection import Listener, Client
 from threading import Thread
 import time
 
-#we will accept the connections in a separate thread
-def run(listener):
+# we will accept the connections in a separate thread
+def handle_connections(listener):
     while True:
         # listener.accept() blocks until someone
         # tries to connect
         try:
+            # accept the connection, echo back what we receive
+            # and then close the connection (automatically, using 'with')
             with listener.accept() as conn:
                 msg = conn.recv()
                 print(f"Received {msg}")
@@ -27,7 +29,7 @@ password = b'password'
 with Listener(address, authkey=password) as listener:
     print('Address :', listener.address)
 
-    t = Thread(target=run, args=(listener,))
+    t = Thread(target=handle_connections, args=(listener,))
     t.start()
     # now the main thread will just idly sleep, waiting for
     # keyboard interrupt

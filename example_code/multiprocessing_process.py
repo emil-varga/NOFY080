@@ -2,6 +2,9 @@ from multiprocessing import Process, Event, Queue
 from queue import Empty
 import time
 
+# The same as for threads:
+# Inherit from Process, initialize the parent class in __init__
+# and write your own run() method
 class MyProcess(Process):
     def __init__(self, procname, end, data):
         super().__init__()
@@ -20,6 +23,11 @@ class MyProcess(Process):
             if self.end.is_set() and self.data.empty():
                 break
 
+# Using processes is very similar to using threads
+# However, we must use multiprocessing.Event and multiprocessing.Queue
+# instead of the threading versions
+# Also, note that, generally "if __name__ == '__main__':" guard is required
+# to avoid recursive spawning of subprocesses
 if __name__ == '__main__':
     data_queue = Queue()
     end_event = Event()

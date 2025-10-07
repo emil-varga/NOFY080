@@ -4,16 +4,24 @@ from threading import Thread, Event
 from queue import Queue
 import time
 
+# A thread that plots data received through a queue
 class Plotter(Thread):
     def __init__(self, queue):
+        # Initialize the parent class
         super().__init__()
+
+        # Create a figure and axis for plotting and
+        # data storage 
         self.fig, self.ax = plt.subplots()
         self.xdata = []
         self.ydata = []
         self.line, = self.ax.plot(self.xdata, self.ydata, '-o')
+
+        # queue for receiving data and an event to signal the end
         self.queue = queue
         self.end = Event()
     
+    # replot the data and update axes limits
     def update_plot(self):
         if len(self.xdata) > 0:
             self.line.set_xdata(self.xdata)
@@ -54,7 +62,8 @@ class Plotter(Thread):
 
 
 rm = vi.ResourceManager()
-pico = rm.open_resource(rm.list_resources()[-1],
+# change the address to match your system
+pico = rm.open_resource('ASRL/dev/ttyACM1::INSTR',
                         read_termination='\n',
                         write_termination='\n')
 

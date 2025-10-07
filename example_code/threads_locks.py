@@ -2,6 +2,7 @@ import pyvisa as vi
 from threading import Thread, Lock
 
 rm = vi.ResourceManager()
+# Assuming that our pico is on the last address (usually the case)
 pico = rm.open_resource(rm.list_resources()[-1],
                         read_termination='\n',
                         write_termination='\n')
