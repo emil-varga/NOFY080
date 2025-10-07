@@ -108,17 +108,20 @@ def main():
 
     all_exercises = []
     for file_path in tex_files:
+        all_exercises.append([])
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
             exercises = extract_exercises(content)
             if exercises:
-                all_exercises.extend(exercises)
+                all_exercises[-1].extend(exercises)
 
     output_content = ""
-    for i, exercise in enumerate(all_exercises):
-        output_content += fr"\begin{{exercise}} % Exercise {i+1}" + "\n"
-        output_content += exercise.strip() + "\n"
-        output_content += r"\end{exercise}" + "\n\n"
+    for i, exercises in enumerate(all_exercises):
+        output_content += fr"\section{{Cvičení z kapitoly {i+1}}}" + "\n\n"
+        for exercise in exercises:
+            output_content += fr"\begin{{exercise}} % Exercise {i+1}" + "\n"
+            output_content += exercise.strip() + "\n"
+            output_content += r"\end{exercise}" + "\n\n"
 
     with open("/home/emil/programming/NOFY080/exercises_cz.tex", 'w', encoding='utf-8') as f:
         f.write(preamble + output_content + r"\end{document}")

@@ -196,6 +196,18 @@ Všimněte si, že můžeme ovládat, které objekty se kreslí nad kterými, po
     Napište program, který pomocí NumPy a Matplotlib vykreslí výrazy $y=x$, $y=x^2$ a $y=\sqrt{x}$ od $x=0$ do $x=5$ s různými styly čar (např. plná, čárkovaná, tečkovaná) a uživatelem zadaným počtem bodů. Vyzkoušejte lineární, semilogaritmické a logaritmické osy. Dejte osám popisky a křivkám legendu.
 \end{exercise}
 
+\begin{exercise}
+    \begin{itemize}
+    \item Napište funkci, která zintegruje libovolnou závislost danou body $x_n, y_n$, t.j., diskrétní verzi $\int y(x)dx$, a použije ji na spočtení integrálu $y = x^2$ od 0 do 5. (\emph{Nápověda: přibližná hodnota integrálu je dána $\sum_{n=0}^{N-2} 0.5 dx_n(y_{n+1} + y_n); dx_n = x_{n+1} - x_n$}, $n = 0 \dots N-1$)
+
+    \item Použitím funkce z předchozího bodu napište funkci, která zintegruje libovolnou Python funkci jedné proměnné, která vrací číslo, mezi body $a$ a $b$. Počet bodů $N$ by měl být volitelný, s výchozí hodnotou 100.
+
+    \item Graficky ukažte konvergenci integrálu z předchozího bodu ke skutečné hodnotě se zvyšujícím se počtem diskretizačních bodů $N$ a porovnejte ji s funkcí \verb|scipy.integrate.quad|. Zobrazte absolutní chybu v logaritmickém měřítku jako funkci $N$. Pro test konvergence můžete použít integrál
+    \[ \int_0^1 e^{-1} \dd x \]
+    Funkce z předchozích bodů dejte do samostatného .py souboru a použijte ho jako modul.
+    \end{itemize}
+\end{exercise}
+
 Jeden obrázek může obsahovat více os vytvořených předáním volitelných argumentů rows a columns funkci \ls{plt.subplots()}. Více os je vytvořeno v pravidelné mřížce se zadaným počtem řádků a sloupců. Pro osy nerovných velikostí můžeme specifikovat poměry jejich šířek a výšek pomocí \ls{width_ratios} a \ls{height_ratios} (viz \ls{gridspec} \footnote{\url{https://matplotlib.org/3.5.0/tutorials/intermediate/gridspec.html}} pro složitější rozvržení obrázků). Osy mohou sdílet rozsahy x a y specifikováním booleovských klíčových argumentů \ls{sharex} a \ls{sharey}, například
 \lstinputlisting[caption=Více os v jednom obrázku.]{../example_code/multiple_axes.py}
 \begin{center}

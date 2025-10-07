@@ -191,6 +191,18 @@ Notice that we can control which objects are drawn on top of which using the \ls
     Write a program, which will, using NumPy and Matplotlib, graph the expressions $y=x$, $y=x^2$ and $y=\sqrt{x}$ from $x=0$ to $x=5$ with different line styles (e.g., full line, dashed, dotted) and user-supplied number of points. Try linear, semilogarithmic and logarithmic axes. Label the axes and the curves.
 \end{exercise}
 
+\begin{exercise}
+    \begin{itemize}
+    \item Write a function that will integrate an arbitrary dependency given by points $x_n, y_n$, i.e., a discrete version of $\int y(x)dx$, and use it to calculate the integral of $y = x^2$ from 0 to 5. (\emph{Hint: the approximate value of the integral is given by the trapezoidal rule: $\sum_{n=0}^{N-2} 0.5 dx_n(y_{n+1} + y_n); dx_n = x_{n+1} - x_n$}, $n = 0 \dots N-1$)
+
+    \item Using the function from the previous point, write a function that will integrate an arbitrary single-argument Python function that returns a number, between points $a$ and $b$. The number of points $N$ should be optional, with a default value of 100.
+
+    \item Graphically show the convergence of the integral from the previous point to the true value with an increasing number of discretization points $N$ and compare it with the function \verb|scipy.integrate.quad|. Display the absolute error on a logarithmic scale as a function of $N$. For the convergence test, you can use the integral
+    \[ \int_0^1 e^{-1} \dd x \]
+    Put the functions from the previous points into a separate .py file and use it as a module.
+    \end{itemize}
+\end{exercise}
+
 One figure can contain multiple axes created by passing the optional rows and columns arguments to \ls{plt.subplots()}. The multiple axes are created in a regular grid with a specified number of rows and columns. For axes of unequal sizes, we can specify ratios of their widths and heights using \ls{width_ratios} and \ls{height_ratios} (see \ls{gridspec} \footnote{\url{https://matplotlib.org/3.5.0/tutorials/intermediate/gridspec.html}} for more complicated figure layouts). The axes can share the x and y ranges by specifying the boolean keyword arguments \ls{sharex} and \ls{sharey}, respectively, for example
 \lstinputlisting[caption=Multiple axes in single figure.]{../example_code/multiple_axes.py}
 \begin{center}
