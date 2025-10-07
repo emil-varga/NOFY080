@@ -8,7 +8,7 @@ Lineární harmonický oscilátor s třením je popsán dynamickou rovnicí
     \label{eq:lho}
     \ddot x + \omega_0^2 x + \gamma\dot x = F(t)/m,
 \end{equation}
-kde $m$ je hmotnost oscilátoru, $\omega_0$ je rezonanční frekvence, $\gamma$ koeficient tření a $F(t)$ vnější síla. Za předpokladu, že síla má tvar $F(t) = \Re(\tilde F e^{i\omega t})$ a že řešení má tvar $x(t) = \Re(\tilde x e^{i\omega t})$ (nebo aplikací Fourierovy transformace na obě strany rovnice), dostaneme jednoduchým přeuspořádáním
+kde $m$ je hmotnost oscilátoru, $\omega_0$ je (úhlová) rezonanční frekvence, $\gamma$ koeficient tření a $F(t)$ vnější síla. Za předpokladu, že síla má tvar $F(t) = \Re(\tilde F e^{i\omega t})$ a že řešení má tvar $x(t) = \Re(\tilde x e^{i\omega t})$ (nebo aplikací Fourierovy transformace na obě strany rovnice), dostaneme jednoduchým přeuspořádáním
 \begin{equation}
     \tilde x = \frac{1}{m}\frac{\tilde F}{\omega_0^2 - \omega^2 + i\gamma\omega} = \chi(\omega)\tilde F,
 \end{equation}
@@ -18,12 +18,14 @@ Protože rovnice~\ref{eq:lho} je lineární rovnice, odezva na součet sil bude 
 
 \section{Nastavení komunikace s přístroji}
 \label{sec:pico}
-K komunikaci s přístroji budeme používat knihovnu VISA. Pro komunikaci s Raspberry Pi Pico použijeme pythonovou implementaci této knihovny, pro kterou potřebujeme nainstalovat alespoň \verb|pyvisa, pyvisa-py| a \verb|pyusb| pomocí
+Ke komunikaci s přístroji budeme používat knihovnu VISA. Doporučený postpu pro Windows je nainstalovat \href{https://www.ni.com/en/support/downloads/drivers/download/packaged.ni-visa.570633.html}{NI-VISA} a \verb|pyvisa| pomocí \verb|pip|.
+
+Je ale také možno použít čistě pythonovou open-source implementaci této knihovny, pro kterou potřebujeme nainstalovat alespoň \verb|pyvisa, pyvisa-py| a \verb|pyusb| pomocí
 \begin{verbatim}
     pip install pyvisa pyvisa-py pyusb
 \end{verbatim}
-který byste měli spustit v příkazovém řádku, který zná vaši instalaci pythonu (např. Anaconda Prompt, pokud jste na Windows s distribucí Anaconda Python). Na Linuxu byste se také měli přidat do skupiny \verb|dialout| (nezapomeňte na přepínač \verb|-a|),
-\begin{verbatim}[language=bash]
+který byste měli spustit v příkazovém řádku, který zná vaši instalaci pythonu (např. ve virtuálním prostředí nebo v Anaconda Prompt, pokud jste na Windows s distribucí Anaconda Python). Na Linuxu byste se také měli přidat do skupiny \verb|dialout| (nezapomeňte na přepínač \verb|-a|),
+\begin{verbatim}
     sudo usermod -a <your username> -G dialout 
 \end{verbatim}
 a odhlásit se a znovu přihlásit.
@@ -32,6 +34,11 @@ Pro otestování instalace spusťte z příkazového řádku \verb|pyvisa-info|.
 \begin{verbatim}
     USB INSTR: Available via PyUSB (1.2.1). Backend: libusb1
 \end{verbatim}
+Na Windows býva nutno nainstalovat knihovnu \verb|libusb1| separátně, např. pomocí
+\begin{verbatim}
+    pip install libusb-package
+\end{verbatim}
+
 
 Dále vytvořte Python skript \verb|list_resources.py| s následujícím kódem
 \lstinputlisting{../example_code/list_resources.py}
@@ -72,7 +79,7 @@ Zdrojový kód programu běžícího na Pico je dostupný \href{https://bitbucke
 
 Alternativně můžete použít MicroPython pro spouštění Python kódu přímo na Pico, postupujte podle pokynů pro nastavení \href{https://www.raspberrypi.com/documentation/microcontrollers/micropython.html#what-is-micropython}{zde}.
 
-LED diody jsou připojeny k pinům GP0 -- GP4 a senzory jsou připojeny k řadiči I2C0 na pinech 16 a 17.
+LED diody jsou připojeny k pinům \verb|GP0| -- \verb|GP4| a senzory jsou připojeny k řadiči \verb|I2C0| na pinech 16 a 17.
 
 % \section{Základy systému pro správu verzí git}
 % \label{sec:git}

@@ -200,7 +200,7 @@ Všimněte si, že můžeme ovládat, které objekty se kreslí nad kterými, po
     \begin{itemize}
     \item Napište funkci, která zintegruje libovolnou závislost danou body $x_n, y_n$, t.j., diskrétní verzi $\int y(x)dx$, a použije ji na spočtení integrálu $y = x^2$ od 0 do 5. (\emph{Nápověda: přibližná hodnota integrálu je dána $\sum_{n=0}^{N-2} 0.5 dx_n(y_{n+1} + y_n); dx_n = x_{n+1} - x_n$}, $n = 0 \dots N-1$)
 
-    \item Použitím funkce z předchozího bodu napište funkci, která zintegruje libovolnou Python funkci jedné proměnné, která vrací číslo, mezi body $a$ a $b$. Počet bodů $N$ by měl být volitelný, s výchozí hodnotou 100.
+    \item Použitím funkce z předchozího bodu napište funkci, která zintegruje libovolnou Python funkci jedné proměnné, která vrací číslo, mezi body $a$ a $b$. Počet bodů $N$ by měl být volitelný, s výchozí hodnotou 100. Nápověda: funkce jsou objekty.
 
     \item Graficky ukažte konvergenci integrálu z předchozího bodu ke skutečné hodnotě se zvyšujícím se počtem diskretizačních bodů $N$ a porovnejte ji s funkcí \verb|scipy.integrate.quad|. Zobrazte absolutní chybu v logaritmickém měřítku jako funkci $N$. Pro test konvergence můžete použít integrál
     \[ \int_0^1 e^{-x} \dd x \]

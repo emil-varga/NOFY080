@@ -11,7 +11,7 @@ Na prvním řádku importujeme modul \lstinline|pyvisa|. Vytváření nových se
 
 Správce zdrojů poskytuje metodu \lstinline|list_resources()|, která vrací seznam všech dostupných zdrojů. Pro USB a GPIB to jsou obvykle přístroje skutečně připojené k počítači. Pro sériové rozhraní mohou být uvedeny všechny dostupné porty bez ohledu na to, zda je k nim něco připojeno.
 
-Pro spuštění VISA sezení použijeme metodu \lstinline|open_resource()| správce zdrojů. Zde navíc specifikujeme ukončovací znaky pro čtení a zápis, což jsou znaky, které indikují, že přenos je ukončen (představte si vojenské filmy, kde říkají ,,přepínám'' do vysílačky). Běžné jsou nový řádek \ls{'\\n'}, návrat vozíku \ls{'\\r'} a jejich kombinace \ls{'\\r\\n'}. Naše Pico očekává, že příkazy budou ukončeny novým řádkem \ls{'\\n'} a své odpovědi také ukončuje novým řádkem. U jiných přístrojů je to něco, co musíte najít v manuálu, ale \ls{'\\n'} je nejběžnější.
+Pro spuštění VISA sezení použijeme metodu správce zdrojů \lstinline|open_resource()|. Zde navíc specifikujeme ukončovací znaky pro čtení a zápis, což jsou znaky, které indikují, že přenos je ukončen (představte si vojenské filmy, kde říkají ,,přepínám'' do vysílačky). Běžné jsou nový řádek \ls{'\\n'}, návrat vozíku \ls{'\\r'} a jejich kombinace \ls{'\\r\\n'}. Naše Pico očekává, že příkazy budou ukončeny novým řádkem \ls{'\\n'} a své odpovědi také ukončuje novým řádkem. U jiných přístrojů je to něco, co musíte najít v manuálu, ale \ls{'\\n'} je nejběžnější.
 
 Otevřené VISA sezení je reprezentováno objektem \ls{pico} vráceným metodou \ls{open_resource()}, jehož nejdůležitější metody jsou \ls{write()}, \ls{read()} a \ls{query()}, což je jednoduše zápis okamžitě následovaný čtením.
 
@@ -25,7 +25,7 @@ kde velkými písmeny psané podřetězce lze použít jako zkratku. Například
 \end{lstlisting}
 změří stejnosměrné napětí. Otazník na konci značí, že příkaz vrací hodnotu. Přístroje, které podporují SCPI, navíc podporují několik základních příkazů, jako je \ls{*IDN?}, který vrací identifikační řetězec, \ls{*STB?}, který vrací jeden bajt s různými stavovými bity přístroje, nebo \ls{*RST}, který přístroj resetuje. Na konci by mělo být jak VISA sezení, tak správce zdrojů řádně uzavřeno pomocí metody \ls{close()}.
 
-Ve většině případů není pro úspěšné otevření sezení metodou \ls{rm.open_resource()} potřeba nic jiného než adresa zdroje. Nicméně, zejména u některých starších přístrojů připojených přes RS-232, jsou často vyžadovány další informace. Za předpokladu, že zařízení bylo otevřeno jako \ls{dev = rm.open_resource(address)}, můžeme před zahájením komunikace potřebovat nastavit následující:
+Ve většině případů není pro úspěšné otevření sezení metodou \ls{rm.open_resource()} potřeba nic jiného než adresa zdroje. Nicméně, zejména u některých starších přístrojů připojených přes RS-232, jsou často vyžadovány další informace. Za předpokladu, že zařízení bylo otevřeno jako \ls{dev = rm.open_resource(address)}, je možné, že před zahájením komunikace musíme nastavit následující:
 \begin{description}
     \item[přenosová rychlost (baud rate)] Počet změn komunikačního signálu za sekundu (tj. změny z nízkého na vysoké napětí). Lze nastavit pomocí \ls{dev.baud_rate} na celé číslo.
     \item[datové bity (data bits)] Počet skutečných datových bitů v jednom ,,paketu'' dat vyměňovaných mezi přístrojem a počítačem (obvykle 8). Lze nastavit pomocí \ls{dev.data_bits} na celé číslo.
@@ -48,7 +48,7 @@ Například, pokud bychom měli přístroj na adrese \ls{COM16} a jeho manuál �
 \end{lstlisting}
 
 \begin{exercise}
-    Vytvořte program, který automaticky najde Pico, pokud je připojeno k počítači. Pošlete dotaz \ls{*IDN?} každému dostupnému VISA zdroji a najděte ten, který odpoví \ls{'PICO'}. Zdroje (sériové porty), které nejsou připojeny k žádnému přístroji, vyvolají výjimku časového limitu (timeout), která musí být ošetřena bez pádu programu.
+    Vytvořte program, který automaticky najde Pico, pokud je připojeno k počítači. Pošlete dotaz \ls{*IDN?} každému dostupnému VISA zdroji a najděte ten, který odpoví \ls{'PICO'}. Zdroje (sériové porty), které nejsou připojeny k žádnému přístroji, vyvolají timeout výjimku (timeout), která musí být ošetřena bez pádu programu.
 \end{exercise}
 
 \begin{exercise}
@@ -60,7 +60,7 @@ Například, pokud bychom měli přístroj na adrese \ls{COM16} a jeho manuál �
 \end{exercise}
 
 \begin{exercise}
-    Napište ,,digitální vodováhu'', tj. indikujte aktuální náklon podél osy y (podélně s PICO) pomocí LED diod (můžete se rozhodnout, jaký způsob použití LED považujete za nejlepší). Všimněte si, že akcelerometr není na desce plošných spojů připájen dokonale vodorovně. Předpokládejte, že při spuštění programu je Pico ve vodorovné poloze a použijte vektor zrychlení změřený na začátku jako referenční hodnotu.
+    Napište ,,digitální vodováhu'', tj. indikujte aktuální náklon podél osy y (podélně s PICO) pomocí LED diod (můžete se rozhodnout, jaký způsob použití LED považujete za nejlepší). Všimněte si, že akcelerometr není na desce připájen dokonale vodorovně. Předpokládejte, že při spuštění programu je Pico ve vodorovné poloze a použijte vektor zrychlení změřený na začátku jako referenční hodnotu.
 \end{exercise}
 
 \begin{exercise}
@@ -102,7 +102,7 @@ Python na to má řešení, které jsme již viděli, nazývané \emph{protokol 
 \end{lstlisting}
 kde příkaz \ls{with} zajišťuje, že po dokončení práce se souborem je řádně \ls{close()}d (uzavřen).
 
-Abychom mohli správu kontextu používat s našimi objekty, stačí definovat dvě speciální metody, \ls{__enter__()} a \ls{__exit__()}, které se spouštějí na začátku a na konci příkazu \ls{with}. Metoda enter by měla vrátit objekt, který chceme použít (tj. \ls{file} v příkladu výše), často jednoduše vrací \ls{self}. Metoda exit by měla provést veškerý potřebný úklid. Kromě \ls{self} přijímá tři další argumenty, které obsahují informace o tom, zda došlo k výjimce a jakého typu. Většinou můžeme výjimky ignorovat a jednoduše je nechat propagovat dál. Pokud z metody exit vrátíme \ls{False}, výjimka je potlačena.
+Abychom mohli správu kontextu používat s našimi objekty, stačí definovat dvě speciální metody, \ls{__enter__()} a \ls{__exit__()}, které se spouštějí na začátku a na konci příkazu \ls{with}. Metoda enter by měla vrátit objekt, který chceme použít (tj. \ls{file} v příkladu výše), často jednoduše vrací \ls{self}. Metoda exit by měla provést veškerý potřebný úklid. Kromě \ls{self} přijímá tři další argumenty, které obsahují informace o tom, zda došlo k výjimce a jakého typu. Většinou můžeme výjimky ignorovat a jednoduše je nechat propagovat dál. Pokud z metody \verb|__exit__| vrátíme \ls{False}, výjimka je potlačena.
 
 Vezměme si jednoduchý příklad. Řekněme, že chceme mít objekt podobný souboru, který lze použít s \ls{with} jako běžný soubor, ale metoda \ls{write()} také podporuje pole NumPy. Mohli bychom to udělat následovně:
 \lstinputlisting{../example_code/context_management_file.py}
@@ -134,14 +134,14 @@ Pro úplnost, příklad s \ls{open()} je v podstatě ekvivalentní následujíc�
         manager.__exit__(None, None, None)
 \end{lstlisting}
 
-\subsection{Troubleshooting common issues}
+\subsection{Často se vyskytující problémy}
 Komunikace s externím hardwarem může selhat z několika důvodů. Za předpokladu, že samotný hardware a propojovací kabely fungují, jsou některé běžné příčiny problémů:
 \begin{description}
-    \item[výjimka při otevírání VISA sezení] V závislosti na operačním systému a použitém VISA backendu může \ls{rm.open_resource()} vyvolat výjimku s tvrzením, že přístup ke zdroji byl odepřen nebo že zařízení je zaneprázdněno. To je nejčastěji způsobeno dříve otevřeným VISA sezením, které nebylo uzavřeno. V jednom okamžiku je povoleno pouze jedno VISA sezení s daným přístrojem.
+    \item[výjimka při otevírání VISA sezení] V závislosti na operačním systému a použitém VISA backendu může \ls{rm.open_resource()} vyvolat výjimku s tvrzením, že přístup ke zdroji byl odepřen (\emph{access denied}) nebo že zařízení je zaneprázdněno (\emph{resource busy}). To je nejčastěji způsobeno dříve otevřeným VISA sezením, které nebylo uzavřeno. V jednom okamžiku je povoleno pouze jedno VISA sezení s daným přístrojem.
     
     Toto je běžný problém v IDE, jako je Spyder, které spouštějí soubory v interaktivní konzoli, kde proměnné zůstávají dostupné i po neočekávaném ukončení programu. Buď zajistěte, aby se sezení správně uzavírala i v případě pádu programu (tj. pomocí \ls{finally} nebo správy kontextu), nebo zavřete konzoli, ve které byl program spuštěn.
 
-    \item[zdroj se otevře, ale komunikace vyprší (timeout)] Pokus o čtení vyprší, pokud zařízení neodpoví očekávaným způsobem, nejčastěji kvůli chybě v příkazu. Pokud je odeslaný příkaz určitě správný, je výjimka časového limitu obvykle příznakem nesprávně nastavené konfigurace VISA sezení, např. ukončovacích znaků pro čtení/zápis nebo některých z výše uvedených možností konfigurace sériového portu.
+    \item[zdroj se otevře, ale komunikace vyprší (timeout)] Pokus o čtení vyprší, pokud zařízení neodpoví očekávaným způsobem, nejčastěji kvůli chybě v příkazu. Pokud je odeslaný příkaz určitě správný, je timeout výjimka obvykle příznakem nesprávně nastavené konfigurace VISA sezení, např. ukončovacích znaků pro čtení/zápis nebo některých z výše uvedených možností konfigurace sériového portu.
     
     \item[zdroj se otevře, nedojde k timeoutu, ale odpověď je špatná] Zvažte následující kód:
 \begin{lstlisting}
@@ -150,8 +150,8 @@ Komunikace s externím hardwarem může selhat z několika důvodů. Za předpok
     pico = rm.open_resource(rm.list_resources()[-1])    
     pico.read_termination = '\n'
     pico.write_termination = '\n'
-    pico.write(':READ:T?') # v češtině :CTI:T?
+    pico.write(':READ:T?')
     print(pico.query('*IDN?'))
 \end{lstlisting}
-    který vypíše naměřenou teplotu místo očekávaného identifikačního řetězce. Je to proto, že odpověď na \verb|:READ:T?| nebyla nikdy přečtena, takže zůstala ve vstupní vyrovnávací paměti (buffer) až do prvního volání \ls{read}, které přišlo v rámci \ls{query()}. Pokud to backend a typ zdroje podporují, můžete zavolat \ls{pico.clear()} pro vyprázdnění bufferů, nebo můžete zavolat \ls{pico.read(timeout=0)} a zahodit výjimku časového limitu, pokud je buffer náhodou prázdný.
+    který vypíše naměřenou teplotu místo očekávaného identifikačního řetězce. Je to proto, že odpověď na \verb|:READ:T?| nebyla nikdy přečtena, takže zůstala ve vstupní vyrovnávací paměti (buffer) až do prvního volání \ls{read}, které přišlo v rámci \ls{query()}. Pokud to backend a typ zdroje podporují, můžete zavolat \ls{pico.clear()} pro vyprázdnění bufferů, nebo můžete zavolat \ls{pico.read(timeout=0)} a zahodit timeout výjimku, pokud je buffer náhodou prázdný.
 \end{description}

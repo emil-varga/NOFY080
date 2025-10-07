@@ -16,6 +16,8 @@ pico.write('*IDN?')
 resp = pico.read()
 print(resp)
 
+# performs the same in one step
+# query = write + read
 print("IDN via query:")
 print(pico.query("*IDN?"))
 
