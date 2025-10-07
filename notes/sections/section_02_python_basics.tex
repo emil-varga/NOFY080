@@ -386,3 +386,30 @@ Several other special method names exist (see \href{https://docs.python.org/3/re
 \begin{exercise}
     Implement a \ls{Fraction} class that represents a fraction that is initialized by two numbers -- numerator and denominator. The class should support basic arithmetic (\ls{+,-,*,/}) with numbers and other \ls{Fraction}s
 \end{exercise}
+
+\begin{syntax}[Writing modules.]
+    Any python file can be imported by any other python file as a module using the \ls{import} keyword, the name of the module is the name of the file (without the .py ending). When \ls{import}ed, the file is first executed, i.e., any code that sits outside of function definitions will run, for example, take two files in the same directory
+
+    \verb|module.py|:
+\begin{lstlisting}
+def my_module_function(x):
+    return 1 + x
+
+print("Hello modules!")
+\end{lstlisting}
+
+    \verb|module_user.py|:
+\begin{lstlisting}
+import module as m
+print(m.my_module_function(1))
+\end{lstlisting}
+
+    Upon running \verb|module_user.py|, "Hello modules!" will be printed. This is usually not desirable. To prevent any code from running when imported and only allow it to run when the file is run directly we can do
+\begin{lstlisting}
+if __name__ == '__main__':
+    print("Hello modules.")
+\end{lstlisting}
+    Here, \ls{__name__} is a special variable defined by Python itself that contains the name of the module associated with the current file. Its value is \ls{'__main__'} if and only if it was directly.
+
+    To import a file as a module Python must be able to find it. By default, Python looks in the current working directory \ls{os.getcwd()} and in the directories listed in the list \ls{sys.path} in the package \ls{sys}. If we want to load a package from somewhere else we can simply \ls{sys.path.append()} its directory to the path variable.
+\end{syntax}

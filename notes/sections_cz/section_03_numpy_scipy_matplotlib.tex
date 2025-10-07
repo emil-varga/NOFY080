@@ -203,7 +203,7 @@ Všimněte si, že můžeme ovládat, které objekty se kreslí nad kterými, po
     \item Použitím funkce z předchozího bodu napište funkci, která zintegruje libovolnou Python funkci jedné proměnné, která vrací číslo, mezi body $a$ a $b$. Počet bodů $N$ by měl být volitelný, s výchozí hodnotou 100.
 
     \item Graficky ukažte konvergenci integrálu z předchozího bodu ke skutečné hodnotě se zvyšujícím se počtem diskretizačních bodů $N$ a porovnejte ji s funkcí \verb|scipy.integrate.quad|. Zobrazte absolutní chybu v logaritmickém měřítku jako funkci $N$. Pro test konvergence můžete použít integrál
-    \[ \int_0^1 e^{-1} \dd x \]
+    \[ \int_0^1 e^{-x} \dd x \]
     Funkce z předchozích bodů dejte do samostatného .py souboru a použijte ho jako modul.
     \end{itemize}
 \end{exercise}
@@ -222,32 +222,7 @@ Jeden obrázek může obsahovat více os vytvořených předáním volitelných 
     \end{enumerate}
     Vykreslete také $X$ vs. $Y$ v samostatném grafu. Osám dejte vhodné popisky.
 \end{exercise}
-\begin{syntax}[Vytváření vlastních modulů.]
-    Jakýkoli Python soubor může být importován jiným Python souborem jako modul pomocí klíčového slova \ls{import}; název modulu je název souboru (bez koncovky .py). Při \ls{import}u se soubor nejprve spustí, tj. jakýkoli kód, který se nachází mimo definice funkcí, se vykoná. Například vezměme dva soubory ve stejném adresáři
 
-    \verb|module.py|:
-\begin{lstlisting}
-def my_module_function(x):
-    return 1 + x
-
-print("Ahoj moduly!")
-\end{lstlisting}
-
-    \verb|module_user.py|:
-\begin{lstlisting}
-import module as m
-print(m.my_module_function(1))
-\end{lstlisting}
-
-    Po spuštění \verb|module_user.py| se vytiskne "Ahoj moduly!". To obvykle není žádoucí. Abychom zabránili spuštění jakéhokoli kódu při importu a povolili jeho spuštění pouze tehdy, když je soubor spuštěn přímo, můžeme udělat
-\begin{lstlisting}
-if __name__ == '__main__':
-    print("Hello modules.")
-\end{lstlisting}
-    Zde je \ls{__name__} speciální proměnná definovaná v Pythonu, která obsahuje název modulu přiřazený současnému souboru. Má speciální hodnotu \ls{'__main__'} pouze tehdy, když byl soubor spuštěn přímo.
-
-    Aby bylo možné soubor importovat jako modul, Python ho musí být schopen najít. Standardně Python hledá v aktuálním pracovním adresáři (\ls{os.getcwd()}) a v adresářích uvedených v seznamu \ls{sys.path} v modulu \ls{sys}. Pokud chceme načíst balíček z jiného umístění, můžeme přidat jeho adresář do proměnné \ls{sys.path} pomocí \ls{sys.path.append(cesta)}.
-\end{syntax}
 \begin{exercise}
     \label{ex:peaks}
     Najděte maximum a minimum absolutní hodnoty $R = \sqrt{X^2 + Y^2}$ a vyznačte jejich pozice svislými čarami v grafu frekvenční závislosti $X$ a $Y$ z předchozího cvičení. Odhadněte plnou šířku v polovině maxima (full width at half maximum, FWHM) píku a činitel jakosti $f_0$/FWHM, kde $f_0$ je frekvence maximální odezvy. 

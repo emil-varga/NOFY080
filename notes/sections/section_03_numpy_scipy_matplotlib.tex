@@ -198,7 +198,7 @@ Notice that we can control which objects are drawn on top of which using the \ls
     \item Using the function from the previous point, write a function that will integrate an arbitrary single-argument Python function that returns a number, between points $a$ and $b$. The number of points $N$ should be optional, with a default value of 100.
 
     \item Graphically show the convergence of the integral from the previous point to the true value with an increasing number of discretization points $N$ and compare it with the function \verb|scipy.integrate.quad|. Display the absolute error on a logarithmic scale as a function of $N$. For the convergence test, you can use the integral
-    \[ \int_0^1 e^{-1} \dd x \]
+    \[ \int_0^1 e^{-x} \dd x \]
     Put the functions from the previous points into a separate .py file and use it as a module.
     \end{itemize}
 \end{exercise}
@@ -217,32 +217,7 @@ One figure can contain multiple axes created by passing the optional rows and co
     \end{enumerate}
     Plot also $X$ vs. $Y$ in a seprate plot. Label the axes appropriately.
 \end{exercise}
-\begin{syntax}[Writing modules.]
-    Any python file can be imported by any other python file as a module using the \ls{import} keyword, the name of the module is the name of the file (without the .py ending). When \ls{import}ed, the file is first executed, i.e., any code that sits outside of function definitions will run, for example, take two files in the same directory
 
-    \verb|module.py|:
-\begin{lstlisting}
-def my_module_function(x):
-    return 1 + x
-
-print("Hello modules!")
-\end{lstlisting}
-
-    \verb|module_user.py|:
-\begin{lstlisting}
-import module as m
-print(m.my_module_function(1))
-\end{lstlisting}
-
-    Upon running \verb|module_user.py|, "Hello modules!" will be printed. This is usually not desirable. To prevent any code from running when imported and only allow it to run when the file is run directly we can do
-\begin{lstlisting}
-if __name__ == '__main__':
-    print("Hello modules.")
-\end{lstlisting}
-    Here, \ls{__name__} is a special variable defined by Python itself that contains the name of the module associated with the current file. Its value is \ls{'__main__'} if and only if it was directly.
-
-    To import a file as a module Python must be able to find it. By default, Python looks in the current working directory \ls{os.getcwd()} and in the directories listed in the list \ls{sys.path} in the package \ls{sys}. If we want to load a package from somewhere else we can simply \ls{sys.path.append()} its directory to the path variable.
-\end{syntax}
 \begin{exercise}
     \label{ex:peaks}
     Find the maximum and the minimum of the absolute value $R = \sqrt{X^2 + Y^2}$, and indicate their positions using vertical lines in the graph of frequency dependence of $X$ and $Y$ from the previous exercise. Estimate the full-width-at-half-maximum (FWHM) of the peak and the quality factor $f_0$/FWHM, where $f_0$ is the frequency of the maximum response. 
