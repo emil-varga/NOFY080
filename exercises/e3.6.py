@@ -1,94 +1,57 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-#we will be using e11 as a module in e12, so prepare a reusable solution
-def estimate_parameters(f, X, Y, plot=False):
-    """
-    Estimates central frequency and full width at half max of a peak.
+data = np.loadtxt('data.txt')
+#now data is a 2D array of the same shape as the file -- three columns, about 100 rows
 
-    Parameters
-    ----------
-    f : array
-        Frequencies.
-    X : array
-        X-component of the signal.
-    Y : array
-        Y-component of the signal.
-    plot : bool, optional
-        Should we plot? The default is False.
+#len(data) gives you the length in the first dimension  -- in this case 100 rows
+#first index specifies the row, as when specifying elements in a matrix
+print(len(data))
+#if we want to know the length in all dimensions, we can use shape
+print(data.shape)
 
-    Returns
-    -------
-    f0 : float
-        Central frequency of the resonance.
-    fwhm : float
-        Full width at half maximum of the resonance.
+#Now we want to split the loaded data into three variables
+# -- frequency, X and Y
 
-    """
-    
-    #first calculate the magnitude of the response
-    R = np.sqrt(X**2 + Y**2)
+# we could fill an array in a loop
+# frequency = np.empty(data.shape[0])
+# X = np.empty(data.shape[0])
+# Y = np.empty(data.shape[0])
+# for k in range(data.shape[0]):
+#     frequency[k] = data[k, 0]
+#     X[k] = data[k, 1]
+#     Y[k] = data[k, 1]
 
-    if plot: #plot only if asked to
-        fig, ax = plt.subplots()
-        ax.plot(f, R)
+#we can also take slices, here : means take everything along that dimension
+#insteady of : we could use the same slicing syntax start:stop:step
+# frequency = data[:, 0] #all rows, column index 0
+# X = data[:, 1] #etc..
+# Y = data[:, 2]
 
-    #now we find the INDEX of the minium and maximum
-    ix_max = np.argmax(R)
-    ix_min = np.argmin(R)
+#or we can unpack along the first index
+# but first we have to take the transpose (data.T) of the matrix data in order for the
+# original column index to be first, i.e.
+# frequency = data.T[0, :]
+# X = data.T[1, :]
+# Y = data.T[2, :]
+#which can now be shortened to
+frequency, X, Y = data.T
 
-    if plot:
-        #axvline plots a vertical line
-        ax.axvline(f[ix_max]) #position of the maximum
-        ax.axvline(f[ix_min], ls=':', color='tab:green') #position of the minimum
-        
-        #axhline plots horizontal line
-        ax.axhline(R[ix_max], ls='--', color='tab:orange') #height of the maximum
-        
-    # now we need to estimate FWHM, which measures the width of the peak at half
-    # its maximum value
-    
-    # first calculate the value of the half maximum, also taking into account an estimate of
-    # the background by simply taking the minimum()
-    # A more accurate estimation of the background could be achieved with np.percentile()
-    T = R.min() + 0.5*(R.max() - R.min()) # = 0.5*(R.max() + R.min())
-    if plot:
-        ax.axhline(T, color='green')
-    
-    #now we find all data points where R > T
-    fwhm_range_ix = R > T
-    # fwhm_range_ix is an ARRAY OF BOOLS of the same size as R (and X, Y, f)
-    # which is True where the conditoin R > T is true, and zero otherwise
-    # We can use an array like this to create a subset of any other array of the
-    # same shape created from only the True positions
-    fwhm_range = f[fwhm_range_ix] #these are now the frequencies where R > T
-    # now to calculate the full width we just need to know the limits of the interval
-    # fwhm_range
-    f_left = fwhm_range.min()
-    f_right = fwhm_range.max()
+#and now we simply plot, frequency, X, and Y are simply numpy arrays
+#plot everything together
+fig, ax = plt.subplots()
+ax.plot(frequency, X, '-o')
+ax.plot(frequency, Y, '--s')
 
-    # print(fwhm_range_ix)
-    # print(sum(fwhm_range_ix))
-    # print(f.shape)
-    # print(fwhm_range.shape)
 
-    if plot:
-        #highlight the data within FWHM
-        ax.plot(fwhm_range, R[fwhm_range_ix], color='magenta', lw=5) #lw=line width
-        #and indicate the range
-        ax.axvline(f_left, color='red')
-        ax.axvline(f_right, color='blue')
-        
-    #finally, return what we are supposed to return
-    f0 = f[ix_max]
-    fwhm = f_right - f_left
+#plot in shared axes
+fig2, axs2 = plt.subplots(2, 1, sharex=True, sharey=True)
+axs2[0].plot(frequency, X)
+axs2[1].plot(frequency, Y)
 
-    return f0, fwhm
+#plot Y against X
+fig3, ax3 = plt.subplots()
+ax3.plot(X, Y, '-o')
+ax3.set_aspect('equal') #equal scaling on X and Y axis
 
-if __name__ == '__main__':
-    # since we will be importing e11 as a module in e12, we don't want this code to run
-    # on import -- hide inside if __name__ == '__main__'
-    data = np.loadtxt('data.txt')
-    f, X, Y = data.T
-    estimate_parameters(f, X, Y, plot=True)
-    plt.show()
+plt.show()

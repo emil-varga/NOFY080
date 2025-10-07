@@ -15,7 +15,7 @@ Pro spuštění VISA sezení použijeme metodu \lstinline|open_resource()| sprá
 
 Otevřené VISA sezení je reprezentováno objektem \ls{pico} vráceným metodou \ls{open_resource()}, jehož nejdůležitější metody jsou \ls{write()}, \ls{read()} a \ls{query()}, což je jednoduše zápis okamžitě následovaný čtením.
 
-Většina vědeckých přístrojů komunikuje pomocí textových řetězců, které obvykle dodržují syntaxi specifikovanou Standardními příkazy pro programovatelné přístroje (SCPI), která se snaží definovat společnou syntaxi pro přístroje podobného typu. Příkazy SCPI mají typicky formát
+Většina laboratorních přístrojů komunikuje pomocí textových řetězců, které obvykle dodržují syntaxi specifikovanou Standardními příkazy pro programovatelné přístroje (SCPI), která se snaží definovat společnou syntaxi pro přístroje podobného typu. Příkazy SCPI mají typicky formát
 \begin{lstlisting}
     :COMMand:SUBCommand:SUBCommand ARG1 ARG2 ...
 \end{lstlisting}
