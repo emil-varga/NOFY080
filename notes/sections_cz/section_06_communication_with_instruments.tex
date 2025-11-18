@@ -121,6 +121,75 @@ Všimněte si, že metoda \ls{__enter__()} jednoduše vrací \ls{self}. Je to pr
     Rozšiřte třídu Pico tak, aby podporovala protokol pro správu kontextu.
 \end{exercise}
 
+\begin{syntax}[Animované grafy]
+    interaktivní grafy je monžé animovat. Najjednoduchší spůsob je volat \ls{.set_data()} objektú, které vrací \ls{ax.plot()}. Minimální příklad je následující:
+\begin{lstlisting}
+import matplotlib.pyplot as plt
+import numpy as np
+fig, ax = plt.subplots()
+
+xs = [0]
+ys = [0]
+line = ax.plot(xs, ys, '-o')
+for k in range(1, 1000):
+    x = k/1000*2*np.pi
+    y = np.sin(x)
+    # rozšíříme seznam dat
+    xs.append(x)
+    ys.append(y)
+    # a nastavíme nové hodnoty
+    line[0].set_data(xs, ys)
+    ax.relim() # přepočítá limity os
+    ax.autoscale_view() # a automaticky změní měřítko os
+    plt.pause(0.01) # interaktivní graf sa updatuje tu
+\end{lstlisting}
+
+Druhá, trocha více flexibilní možnost je použít třídu \ls{FuncAnimation} z modulu \ls{matplotlib.animation}, která dělá v podstate to samé, jen je možné např. nastavovat interval animace nebo animaci uložit do souboru. Minimální příklad je následující:
+\begin{lstlisting}
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+fig, ax = plt.subplots()
+
+xs = [0]
+ys = [0]
+line = ax.plot(xs, ys, '-o')
+
+def update(k):
+    x = k/1000*2*np.pi
+    y = np.sin(x)
+    xs.append(x)
+    ys.append(y)
+    line[0].set_data(xs, ys)
+    ax.relim()
+    ax.autoscale_view()
+
+# FuncAnimation periodicky volá funkci update a aktualizuje graf fig
+# update() by mala příjmat jeden parameter který představuje číslo framu
+# frames může byť příjmo číslo a update bude volaná s 1 ... frames-1 nebo
+# např. seznam, pole, obecně libovolný iterovatelný objekt. interval udává
+# interval mezi framami v ms
+ani = animation.FuncAnimation(fig, update, frames=1000, interval=1, repeat=False)
+# ani.save('animation.webm', writer='ffmpeg') # ak máte nainstalovaný ffmpeg
+# ani.save('animation.gif', writer='pillow')
+plt.show()
+\end{lstlisting}
+
+Jesli by sme chceli nekonečně běžící animaci můžeme použít iterátor \ls{count()} z modulu \ls{itertools} následujícím spůsobem
+
+\begin{lstlisting}
+...
+from itertools import count
+ani = animation.FuncAnimation(fig, update, frames=count(), interval=1, repeat=False)
+plt.show()
+\end{lstlisting}
+\end{syntax}
+
+\begin{exercise}
+    Napište program, který bude kontinuálně měřit tlak a ukládat ho do textového souboru spolu s časem měření. Na grafu zobrazujte data vyhlazená s 1 s časovou konstantou.
+\end{exercise}
+
 Pro úplnost, příklad s \ls{open()} je v podstatě ekvivalentní následujícímu kódu:
 \begin{lstlisting}
     manager = open("hello.txt", 'w')

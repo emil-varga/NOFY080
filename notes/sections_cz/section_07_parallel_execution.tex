@@ -103,6 +103,14 @@ Pro posílání dat mezi vlákny jsou užitečné \ls{Queue}s z modulu \ls{queue
     Napište program, který bude zobrazovat aktualizovaný graf tlaku. Během běhu programu by měl být schopen přijímat textové příkazy a měl by podporovat: clear, který vymaže aktuální graf, a quit, který program čistě ukončí.
 \end{exercise}
 
+\begin{exercise}
+    Přepište program, který indikuje teplotu LEDkami tak, aby měření tlaku a aktualizace LEDek běželo v samostatných vláknech. Pro komunikaci mezi vlákny použijte frontu.
+\end{exercise}
+
+\begin{exercise}
+    V separátních vláknech měřte teplotu a tlak, ukládejte do dvou separátních souborů. Zajistěte, že při ukončení programu pomocí Ctrl-C se oba soubory řádně zavřou.
+\end{exercise}
+
 \subsection{víceprocesový paralelismus (Multiprocessing)}
 Víceprocesový paralelismus může využívat více jader CPU, avšak existují omezení na to, jaké druhy proměnných lze sdílet mezi procesy. Nové procesy můžeme vytvářet pomocí třídy \ls{Process} z modulu \ls{multiprocessing} velmi podobným způsobem jako vlákna. Modul \ls{multiprocessing} také poskytuje synchronizační a komunikační prostředky podobné \ls{threading}, tj. \ls{Event}, \ls{Queue} atd. Musíte však používat třídy z modulu multiprocessing pro komunikaci mezi procesy. Minimální příklad, kde hlavní proces vytváří sadu procesů a posílá jim všem zprávy prostřednictvím sdílené \ls{Queue}:
 \lstinputlisting{../example_code/multiprocessing_process.py}
