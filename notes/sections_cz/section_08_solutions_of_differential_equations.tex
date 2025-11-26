@@ -1,0 +1,222 @@
+\newpage
+\section{Řešení diferenciálních rovnic}
+\subsection{Počáteční úlohy}
+Počáteční úlohy jsou diferenciální rovnice tvaru
+\begin{equation}
+    \label{eq:ivp}
+    \diff{\bv y}{t} = \bv f(\bv y, t),
+\end{equation}
+kde $\bv y$ je vektor, $t$ je čas a $\bf f$ je libovolná funkce spolu s počáteční podmínkou $\bv y(t=0) = \bv y_0$. Všimněte si, že rovnice je vždy zapsána ve tvaru obyčejné diferenciální rovnice prvního řádu. Diferenciální rovnici libovolného řádu však lze přepsat na rovnici prvního řádu nastavením vektoru $\bv y = (y(t), y'(t), y''(t), \dots)$. Například Newtonův pohybový zákon, $\ddot x = F/m$ by odpovídal $\bv y = (x, \dot x)$ a $\bv f = (\dot x, F/m)$.
+
+Tyto typy rovnic se obvykle řeší \emph{časovým krokováním}: víme-li, že $\bv y(t=0) = \bv y_0$, vypočítáme $\bv y(\dd t) \approx \bv y(0) + \bv f(\bv y(0), 0)\dd t$; $\bv y(2\dd t) \approx \bv y(\dd t) + \bv f(\bv y(\dd t), \dd t)\dd t$ $\dots$. Toto časové krokování se nazývá \emph{Eulerova} metoda a obecně vyžaduje malý časový krok, aby byla přesná a numericky stabilní.\footnote{Numerická \emph{nestabilita} je tendence chyby (tj. rozdílu mezi skutečným řešením a jeho numerickou aproximací) divoce oscilovat nebo růst do nekonečna.} Existuje mnoho schémat časového krokování, která jsou přesnější a stabilnější než základní Eulerova metoda. Přesnost metody se často kvantifikuje pomocí notace velké O, tj. Eulerova metoda je $O(\dd t)$, neboli metoda prvního řádu, což znamená, že pokud zmenšíme časový krok $\dd t$ na polovinu, zmenšíme na polovinu i chybu v každém kroku. Velmi běžné jsou explicitní metody Runge-Kutta, z nichž 4. řád (s přesností $O(\dd t^4)$) je pravděpodobně nejběžnější, tj. pokud zmenšíme časový krok na polovinu, chyba se sníží 16krát.
+
+Runge-Kuttova metoda čtvrtého řádu (RK4) počítá $y(t + \dd t)$ z $y(t)$ jako
+\begin{equation}
+    \label{eq:RK4} %
+    y(t + \dd t) = y(t) + \frac{\dd t}{6}\left(k_1 + 2k_2 + 2k_3 + k_4\right),
+\end{equation}
+where
+\begin{equation}
+    \begin{aligned}
+        k_1 &= f(y_t, t)\\
+        k_2 &= f\left(y_t + \frac{1}{2}\dd t k_1, t + \frac{1}{2}\dd t\right)\\
+        k_3 &= f\left(y_t + \frac{1}{2}\dd t k_2, t + \frac{1}{2}\dd t\right)\\
+        k_4 &= f(y_t + k_3 \dd t, t + \dd t).
+    \end{aligned}
+\end{equation}
+Všimněte si, že pro každý časový krok musí být funkce $f$ vyhodnocena 4krát a výpočet je asi 4krát pomalejší než Eulerova metoda. Existují také metody časového krokování, které místo toho, aby trvaly 4krát déle, zabírají 4krát více místa (např. rodina metod Adams-Bashforth), které k odhadu dalšího kroku používají poslední čtyři kroky v historii $y(t)$.
+
+Metoda RK4 pro problém typu \eqref{eq:ivp} je implementována v \verb|SciPy| v \ls{scipy.integrate.solve_ivp()}. \ls{solve_ivp()} očekává funkci $f(t, y)$, která přebírá čas a stavový vektor a vrací časovou derivaci stavového vektoru, počáteční podmínku a časový rozsah, ve kterém se má vývoj počítat.
+
+Výpočet může také sledovat \emph{události} -- typicky signál, že by měl výpočet skončit. Jedná se o funkce času a stavového vektoru, které při výskytu události \emph{změní znaménko}. Událost lze učinit terminální (tj. když k události dojde, výpočet by se měl zastavit) jednoduchým nastavením atributu \ls{terminal} funkce na \ls{True}. Pamatujte, že funkce jsou objekty a jejich atributy můžeme nastavovat, jak se nám zlíbí (podobně jako \ls{self.attribute = value} při práci s třídami).
+
+\textbf{Příklad}: Vypočítejte balistickou trajektorii míče kopnutého pod úhlem 45$^\circ$ s počáteční rychlostí 3 m/s ve směru $x$ i $y$. Balistická trajektorie je trajektorie projektilu vrženého v prostředí (např. ve vzduchu), které na pohyb působí nelineární odporovou silou tvaru
+\begin{equation}
+    \bv F_d = -\frac{1}{2}A|\bv v|\bv v \rho \mathrm{CD},
+\end{equation}
+kde $\bv v$ je rychlost projektilu, $A$ je plocha průmětu projektilu ve směru pohybu, $\rho$ je hustota prostředí a CD je koeficient odporu, $\mathrm{CD}\approx0.47$ pro míč.
+
+\textbf{Řešení:}
+Úplný kód je k dispozici v \ls{ivp_ballistic.py}. Nejprve naimportujeme potřebné moduly a definujeme potřebné konstanty
+\lstinputlisting[linerange={1-10}]{../example_code/ivp_ballistic.py}
+
+Dále definujeme funkci $f$. Vezmeme stavový vektor $\bv x = (x, y, v_x, v_y)$, který reprezentuje vektory polohy i rychlosti. Funkce musí vracet časovou derivaci tohoto 4-složkového stavového vektoru
+\lstinputlisting[linerange={12-25}]{../example_code/ivp_ballistic.py}
+
+Dále definujeme událost, která bude indikovat, že míč dopadl na zem, a učiníme ji terminální, protože nechceme, aby výpočet pokračoval za tento bod
+\lstinputlisting[linerange={30-34}]{../example_code/ivp_ballistic.py}
+
+Nyní máme vše, co potřebujeme k výpočtu balistické trajektorie. Nastavíme časový rozsah výpočtu na $(0, 10)$, kde 10 je jen libovolně velký čas, výpočet bude zastaven událostí dopadu. Předáme také další argumenty, koeficient odporu, prostřednictvím obvyklého klíčového argumentu \ls{args=}. Nakonec také požádáme o \ls{dense_output}, který vrátí interpolační objekt (\ls{solution.sol} níže) pro reprezentaci řešení. To je užitečné, protože \ls{solve_ivp} používá adaptivní velikost časového kroku $\dd t$ (tj. když jsou derivace malé a pomalu se mění, časový krok je větší), takže pokud chceme rovnoměrně vzorkované řešení, musíme ho interpolovat. S vráceným řešením použijeme čas události k vytvoření rovnoměrně vzorkovaného časového pole a vrátíme interpolovanou trajektorii.
+
+Nakonec vypočítáme trajektorii s odporem vzduchu a bez něj a vykreslíme ji. Použijeme mírně nenulovou počáteční podmínku v poloze $y$, abychom se vyhnuli spuštění události na začátku.
+\lstinputlisting[linerange={36-}]{../example_code/ivp_ballistic.py}
+
+% \lstinputlisting{../example_code/ivp_ballistic.py}
+\begin{center}
+    \includegraphics[width=0.6\linewidth]{ballistic.png}
+\end{center}
+
+\begin{exercise}
+    Simulujte populační dynamiku predátorů a kořisti (lišky $F$ a králíci $R$) pomocí Lotka-Volterra modelu:
+    \begin{equation*}
+        \begin{aligned}
+            \frac{\dd R}{\dd t} &= aR - bFR\\
+            \frac{\dd F}{\dd t} &= dFR - cF
+        \end{aligned}
+    \end{equation*}
+    s $a = 2/3$, $b = 4/3$ a $c = d = 1$. Vykreslete $R(t)$ a $F(t)$ a trajektorii ve fázovém prostoru $R-F$.
+\end{exercise}
+
+\begin{exercise}
+    Simulujte Lorenzův systém (první řádně prostudovaný příklad deterministického chaosu) daný rovnicemi
+    \begin{equation*}
+        \begin{aligned}
+            \frac{\dd x}{\dd t} &= \sigma (y - x)\\
+            \frac{\dd y}{\dd t} &= x(\rho - z) - y\\
+            \frac{\dd z}{\dd y} &= xy - \beta z,
+        \end{aligned}
+    \end{equation*}
+    s $\sigma = 10$, $\rho = 28$ a $\beta = 8/3$. Vykreslete trajektorii $x$, $y$, $z$ ve 3D prostoru.
+\end{exercise}
+
+\begin{syntax}[3D plotting]
+Matplotlib podporuje 3D vykreslování. V posledních verzích matplotlibu je jednoduchý 3D graf čáry dané poli \ls{x}, \ls{y} a \ls{z} velmi jednoduchý:
+\begin{lstlisting}
+fig3d = plt.figure()
+ax3d = fig3d.add_subplot(projection='3d')
+ax3d.plot(x, y, z, lw=0.5)
+\end{lstlisting}
+\end{syntax}
+
+\subsection{Okrajové úlohy}
+Okrajové úlohy jsou diferenciální rovnice tvaru
+\begin{equation}
+    \label{eq:bvp}
+    F(\bv y, x) = 0
+\end{equation}
+kde $F$ je nějaká funkce, která definuje náš problém a závisí na neznámé funkci samotné a jejích derivacích, $\bv y$ je neznámá funkce $x \in [a,b]$ podléhající okrajovým podmínkám $B(y_a, y_b) = 0$. Zde je neznámá funkce funkcí prostoru, nikoli času, a potřebujeme znát řešení "všude" najednou. Numerické algoritmy obvykle začínají nějakým počátečním odhadem a poté iterativně optimalizují řešení $\bv y$ tak, aby splňovalo rovnici \eqref{eq:bvp} při zachování okrajových podmínek.
+
+Řešení 1D (dimenze $x$) okrajových úloh je implementováno v \verb|SciPy| v \ls{scipy.integrate.solve_bvp}, což také umožňuje nalézt neznámé parametry, pro které může řešení existovat (viz příklad níže). Pro vícerozměrné problémy obvykle musíte použít specializovaný balíček nebo si napsat vlastní.
+
+Vyřešíme jednoduchý příklad 1D Schrödingerovy rovnice:\\
+\textbf{Příklad} Vypočítejte vlnové funkce a energetické hladiny částice v nekonečné potenciálové jámě s dodatečným potenciálem $V(x)$ uvnitř jámy.
+
+Stavy kvantové částice jsou popsány stacionární Schrödingerovou rovnicí
+\begin{equation}
+    \label{eq:sch}
+    E\psi = -\frac{\hbar^2}{2m}\frac{\dd^2\psi}{\dd x^2} + V(x)\psi,
+\end{equation}
+kde $m$ je hmotnost částice, $\psi$ je vlnová funkce částice a $E$ je energie. Počítejte v "atomových jednotkách", $\hbar = 1$, $m=1$ a potenciál tvaru znázorněného na obr.~\ref{fig:potential}, tj. $V(|x| > 1) = \infty$ a $V(|x| < 0.1) = 10)$ a jinde $V=0$.
+\begin{figure}[h!]
+    \centering
+    \label{fig:potential}
+    \includegraphics[width=0.5\linewidth]{sch_potential.pdf}
+    \caption{Potenciál pro Schrödingerovu rovnici \eqref{eq:sch}.}
+\end{figure}
+
+\textbf{Řešení:} Úplný kód je k dispozici v \ls{bvp_schrodinger.py}.
+
+Začněte importováním všeho, co potřebujeme, definujte konstanty \ls{w}, šířku bariéry a \ls{dh} výšku bariéry a samotnou funkci potenciálu. O nekonečné stěny v $x=\pm 1$ se postarají okrajové podmínky.
+\lstinputlisting[linerange={6-21}]{../example_code/bvp_schrodinger.py}
+
+Dále definujte funkci $F$ z \eqref{eq:bvp}. Přepíšeme Schrödingerovu rovnici \eqref{eq:sch} na
+\begin{equation}
+    \frac{\dd^2\psi}{\dd x^2} = 2m(V(x) - E)\psi,
+\end{equation}
+a neznámá funkce $\bv y$ je pak $(\psi, \dd \psi/\dd x)$. Nakonec musíme také najít neznámý parametr $E$. Funkce $F$ může záviset na vektoru neznámých parametrů, které \ls{solve_bvp()} najde spolu s neznámou funkcí. V tomto případě je to jen energie.
+\lstinputlisting[linerange={23-29}]{../example_code/bvp_schrodinger.py}
+
+Dále je funkce reprezentující okrajové podmínky. Jedná se o libovolnou funkci hodnoty neznámé funkce na hranicích a neznámých parametrů, kterou \ls{solve_bvp} udržuje na nule. Musíme vrátit vektor velikosti 2 (tj. počet hranic) + počet neznámých parametrů. V našem případě jednoduše chceme, aby vlnová funkce byla na nekonečné stěně nulová. Třetí okrajová podmínka je libovolná a jejím účelem je jednoduše zajistit, aby nalezené řešení nebylo identicky 0.
+\lstinputlisting[linerange={35-36}]{../example_code/bvp_schrodinger.py}
+Číslo ve třetí podmínce je libovolné, protože řešení poskytnuté \ls{solve_bvp} není normalizováno.
+
+Dále musíme vytvořit počáteční podmínku, jak pro vlnovou funkci, tak pro energii, aby ji řešitel mohl optimalizovat. Všimněte si, že původní Schrödingerova rovnice \eqref{eq:sch} má nekonečně mnoho řešení. K jakému řešení \ls{solve_bvp()} skutečně konverguje, je dáno touto počáteční podmínkou. Nejprve vytvoříme mřížku, tj. body v prostoru $x$, které jsou argumentem vlnové funkce, a vytvoříme jednoduchý odhad vlnové funkce, která je všude nulová a nenulová v jednom bodě mimo střed, abychom konvergovali k řešení lokalizovanému v jedné polovině potenciálové jámy. Pamatujte, že úplná počáteční podmínka je vlnová funkce a její gradient, takže \ls{y_0} je 2D pole velikosti 2 $\times$ délka \ls{x}.
+\lstinputlisting[linerange={38-50}]{../example_code/bvp_schrodinger.py}
+
+Pro energii jednoduše použijeme energii základního stavu částice v jednoduché nekonečné potenciálové jámě.
+\lstinputlisting[linerange={53}]{../example_code/bvp_schrodinger.py}
+
+Nakonec máme vše, co potřebujeme k zavolání \ls{solve_bvp()}. Fyzikálně nejzajímavější částí je pravděpodobnost nalezení částice v poloze $x$, která je dána $|\psi(x)|^2$, takže tu vykreslíme. Abychom byli přesní, měli bychom také normalizovat vlnovou funkci tak, aby $\int |\psi(x)|^2 \dd x = 1$, nicméně, protože nepočítáme žádné kvantově mechanické střední hodnoty a zajímá nás pouze tvar rozdělení, vykreslíme ji tak, jak je, spolu s potenciálem a nalezenou energií.
+\lstinputlisting[linerange={56, 65-74}]{../example_code/bvp_schrodinger.py}
+
+\subsection{GPU akcelerace}
+Některé typy fyzikálních problémů lze efektivně počítat na grafických kartách (GPU). Jedná se o problémy, které zahrnují mnoho nezávislých výpočtů, které lze spouštět paralelně. Prototypickým příkladem je gravitační problém $N$ těles: vypočítejte pohyb $N$ planet se stejnou hmotností $m$, které na sebe vzájemně působí pouze gravitací.
+
+Pro zjednodušení vykreslování budeme uvažovat 2D případ. Celková síla působící na planetu $j = 1\dots N$ je
+\begin{equation}
+    \bv F_j = Gm^2\sum_{k\neq j}\frac{\bv r_k - \bv r_j}{|\bv r_k - \bv r_j|^3}, %
+\end{equation}
+kde $G$ je gravitační konstanta a $\bv r_k$ jsou polohy planet. Pohyb planety je pak dán jednoduše $m\ddot{\bv r_j} = \bv F_j$ a mohli bychom použít \ls{solve_ivp()} jako předtím. Tento problém se však stává vědecky zajímavějším pro velký počet planet, kde by se \ls{solve_ivp()} rychle zastavilo. Proto chceme využít rychlé GPU.
+
+Výpočet bude opět probíhat v krocích: budeme mít uloženy všechny polohy a rychlosti planet. V každém kroku vypočítáme celkovou sílu působící na všechny planety a poté pro zjednodušení aktualizujeme polohy a rychlosti pomocí Eulerova krokování. Výpočet zahrnuje $N^2$ výpočtů sil mezi planetami, které jsou na sobě nezávislé. Naším cílem je použít GPU k jejich paralelnímu spuštění.
+
+The full code is \verb|example_code/taichi/gravity.py|
+
+\subsubsection{Nastavení prostředí}
+K akceleraci výpočtů z Pythonu budeme používat knihovnu \ls{taichi}, která má tu výhodu, že je poměrně jednoduchá, vypadá velmi podobně jako standardní kód v Pythonu a umožňuje používat buď GPU, nebo CPU se stejným kódem, takže si níže uvedený kód můžete vyzkoušet, i když v počítači nemáte dedikovanou GPU. Taichi bohužel vyžaduje Python verze 3.10, což s největší pravděpodobností není verze, kterou máte nainstalovanou. Nechceme systém zahlcovat více verzemi Pythonu, proto použijeme \emph{virtuální prostředí}, abychom měli izolovanou instalaci Pythonu s vlastní verzí a balíčky.
+
+Nejjednodušší způsob, jak spravovat virtuální prostředí, je pomocí nástroje \ls{uv} \url{https://docs.astral.sh/uv/getting-started/installation/}. V systému Windows spusťte instalační příkazy v prostředí Windows Powershell.
+
+Jakmile je \ls{uv} nainstalováno, vytvořte prázdný adresář, nazvěme ho "gravity", přejděte do něj v příkazovém řádku a spusťte
+\begin{lstlisting}[language=bash]
+uv venv -p 3.10
+\end{lstlisting}
+což vytvoří virtuální prostředí s Pythonem verze 3.10. Měli byste vidět výstup, který vypadá podobně jako
+\begin{verbatim}
+Using CPython 3.10.16 interpreter at: /usr/bin/python3.10
+Creating virtual environment at: .venv
+Activate with: source .venv/bin/activate
+\end{verbatim}
+Aktivujte virtuální prostředí příkazem z posledního řádku. Váš příkazový řádek by nyní měl zobrazovat virtuální prostředí, např. na mém linuxovém počítači
+\begin{verbatim}
+(gravity) emil@nt202 ~/gravity $
+\end{verbatim}
+Toto je čistý stůl, kam musíme nainstalovat všechny potřebné knihovny Pythonu. Budeme potřebovat pouze \ls{taichi} a \ls{matplotlib} (a jejich závislosti), které můžeme nainstalovat jednoduše pomocí
+\begin{lstlisting}
+uv pip install taichi matplotlib
+\end{lstlisting}
+a nyní máme vše, co potřebujeme k psaní a spouštění kódu taichi. Musíme však mít aktivované prostředí, jinak používáme systémový python, který o knihovně taichi neví.
+
+\subsubsection{Testování instalace}
+TODO
+
+\subsubsection{GPU Kernely}
+Taichi nám umožňuje přesunout specifické funkce ke spuštění na GPU. S těmito funkcemi se zachází odlišně od zbytku kódu v Pythonu a nazývají se \emph{kernely}. Napíšeme dva kernely, jeden pro výpočet sil a druhý pro Eulerovo krokování. Data budeme ukládat do polí numpy -- není to nejrychlejší způsob (taichi umí paměť využívat efektivněji, viz dokumentace taichi pro optimalizovanější verzi), ale je to nejjednodušší.
+
+Importujeme taichi a požádáme ho o použití GPU, pokud je to možné, pomocí
+\begin{lstlisting}
+import taichi as ti
+ti.init(ti.gpu)
+\end{lstlisting}
+Tím se použije v pořadí podle priority NVIDIA CUDA, Vulkan na GPU od AMD nebo CPU.
+
+The Euler stepping kernel looks like this
+\lstinputlisting[linerange={49-59}]{../example_code/taichi/gravity.py}
+Označíme, že funkce je kernel, pomocí dekorátoru \ls{ti.kernel}. Funkce přebírá čtyři argumenty -- polohy planet \ls{rs}, rychlosti \ls{vel} a zrychlení \ls{acc}, což jsou pole numpy 64bitových floatů tvaru \ls{(N,2)} ($N$ planet a dvě souřadnice) a časový krok \ls{dt}, což je jednoduchý float.
+
+Uvnitř funkce vypadá poměrně obyčejně, nicméně běží uvnitř GPU a vnější cyklus for ve skutečnosti není cyklus, ale iterace se provádějí co nejvíce paralelně. Existují určitá omezení -- například nesmíte \ls{break} z vnějšího cyklu. Vnitřní cyklus (\ls{for k in range(2)}) běží jako běžný sekvenční cyklus for. Nic nevracíme, ale spíše upravujeme vstupní pole.
+
+Zajímavějším kernelem je výpočet zrychlení (nebo sil), který vypadá takto
+\lstinputlisting[linerange={14-46}]{../example_code/taichi/gravity.py}
+
+Náš problém je relativně jednoduchý, tzv. \emph{trapně paralelní}\footnote{Toto je skutečný termín používaný v informatice.}, protože výpočty jsou na sobě zcela nezávislé. GPU jsou schopny rychle spouštět mnoho úloh paralelně, protože neumožňují synchronizaci (nebo jen ve velmi omezené formě). To znamená, že i přes paralelní spouštění mnoha věcí nemáme žádný mechanismus podobný \ls{Lock()} z multithreadingu. Pokud tedy iterace cyklu na sobě závisí, stává se vyhýbání se souběhovým stavům poněkud složitější. Představte si například, že některé planety jsou z hmoty a některé z antihmoty a pokud se k sobě příliš přiblíží, anihilují. Mohli bychom to implementovat například jako
+\begin{lstlisting}
+for j in range(N):
+    for k in range(N):
+        if planet_is_alive(j) and planet_is_alive(k):
+            if distance(j,k) < annihilation_distance:
+                annihilate(j,k)
+\end{lstlisting}
+To by bylo v pořádku, kdyby cykly byly sekvenční. Když však vnější cyklus běží paralelně, mohli bychom se dostat do situace, kdy máme planety $j=1$ (hmota) a $k=2, 3$ (antihmota), které jsou všechny blízko sebe. Protože kontrola na řádku 3 může používat stará data, mohli bychom skončit spuštěním jak \ls{annihilate(1,2)}, tak \ls{annihilate(1,3)} a tím zvýšit poměr hmoty k antihmotě ve vesmíru.
+
+\subsubsection{Použití kernelů}
+K reprezentaci stavu simulace -- poloh a rychlostí planet a času -- použijeme jednoduchou třídu. Jako počáteční podmínku použijeme náhodné polohy ve 2D s normálním rozdělením kolem počátku a rotaci tuhého tělesa pro rychlosti s nějakou počáteční úhlovou rychlostí. Třída bude mít pouze dvě metody, které volají dva kernely, které jsme napsali výše,
+\lstinputlisting[linerange={61-88}]{../example_code/taichi/gravity.py}
+
+Nakonec vytvoříme simulaci s 5000 planetami, vykreslíme animaci v reálném čase pomocí matplotlib a periodicky ukládáme obrázek
+\lstinputlisting[linerange={91-130}]{../example_code/taichi/gravity.py}
+
+Asi po minutě běhu na CPU Intel Core i7-7700 (poměrně staré CPU) se počáteční gaussovské rozdělení planet vyvine do zajímavé struktury
+\begin{center}
+    \includegraphics[width=0.5\linewidth]{gravity.png}
+\end{center}
