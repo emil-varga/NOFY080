@@ -44,7 +44,7 @@ Dále definujeme funkci $f$. Vezmeme stavový vektor $\bv x = (x, y, v_x, v_y)$,
 \lstinputlisting[linerange={12-25}]{../example_code/ivp_ballistic.py}
 
 Dále definujeme událost, která bude indikovat, že míč dopadl na zem, a učiníme ji terminální, protože nechceme, aby výpočet pokračoval za tento bod
-\lstinputlisting[linerange={30-34}]{../example_code/ivp_ballistic.py}
+\lstinputlisting[linerange={30,31,32,33,34}]{../example_code/ivp_ballistic.py}
 
 Nyní máme vše, co potřebujeme k výpočtu balistické trajektorie. Nastavíme časový rozsah výpočtu na $(0, 10)$, kde 10 je jen libovolně velký čas, výpočet bude zastaven událostí dopadu. Předáme také další argumenty, koeficient odporu, prostřednictvím obvyklého klíčového argumentu \ls{args=}. Nakonec také požádáme o \ls{dense_output}, který vrátí interpolační objekt (\ls{solution.sol} níže) pro reprezentaci řešení. To je užitečné, protože \ls{solve_ivp} používá adaptivní velikost časového kroku $\dd t$ (tj. když jsou derivace malé a pomalu se mění, časový krok je větší), takže pokud chceme rovnoměrně vzorkované řešení, musíme ho interpolovat. S vráceným řešením použijeme čas události k vytvoření rovnoměrně vzorkovaného časového pole a vrátíme interpolovanou trajektorii.
 
@@ -55,6 +55,10 @@ Nakonec vypočítáme trajektorii s odporem vzduchu a bez něj a vykreslíme ji.
 \begin{center}
     \includegraphics[width=0.6\linewidth]{ballistic.png}
 \end{center}
+
+\begin{exercise}
+    Vypočítejte pohyb harmonického oscilátoru s hmotností $m=1$ kg a tuhostí pružiny $k=1$ N/m s počáteční polohou $x_0 = 1$ m a počáteční rychlostí $v_0 = 0$ m/s. Vykreslete polohu a rychlost jako funkci času pro $t \in [0, 10]$ s časovým krokem $\dd t = 0.1$ s.
+\end{exercise}
 
 \begin{exercise}
     Simulujte populační dynamiku predátorů a kořisti (lišky $F$ a králíci $R$) pomocí Lotka-Volterra modelu:
@@ -117,7 +121,7 @@ kde $m$ je hmotnost částice, $\psi$ je vlnová funkce částice a $E$ je energ
 \textbf{Řešení:} Úplný kód je k dispozici v \ls{bvp_schrodinger.py}.
 
 Začněte importováním všeho, co potřebujeme, definujte konstanty \ls{w}, šířku bariéry a \ls{dh} výšku bariéry a samotnou funkci potenciálu. O nekonečné stěny v $x=\pm 1$ se postarají okrajové podmínky.
-\lstinputlisting[linerange={6-21}]{../example_code/bvp_schrodinger.py}
+\lstinputlisting[linerange={6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21}]{../example_code/bvp_schrodinger.py}
 
 Dále definujte funkci $F$ z \eqref{eq:bvp}. Přepíšeme Schrödingerovu rovnici \eqref{eq:sch} na
 \begin{equation}

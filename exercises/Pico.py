@@ -10,12 +10,12 @@ class Pico:
             # obtain a list of all addresses and try them all
             addrs = rm.list_resources()
             for _addr in addrs:
+                opened=False
                 try:
                     # the attempt can fail at two points: opening the port or attempt at acommunication
                     # we need to disinguish the two, because if exception occured in open_resource()
                     # we shouldn't close the session, but if the problem is in communication we should
                     # close the session
-                    opened=False
                     self.dev = rm.open_resource(_addr, write_termination='\n', read_termination='\n')
                     opened=True
                     resp = self.dev.query('*IDN?')
@@ -70,6 +70,9 @@ class Pico:
     def shut_down(self):
         for k in range(5):
             self.led(k, 0)
+    
+    def close(self):
+        self.dev.close()
 
     # context management special functions
     # so that the Pico class can be used in with

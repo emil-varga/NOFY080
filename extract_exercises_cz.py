@@ -101,7 +101,7 @@ def main():
         "/home/emil/programming/NOFY080/notes/sections_cz/section_05_digital_signal_processing.tex",
         "/home/emil/programming/NOFY080/notes/sections_cz/section_06_communication_with_instruments.tex",
         "/home/emil/programming/NOFY080/notes/sections_cz/section_07_parallel_execution.tex",
-       # "/home/emil/programming/NOFY080/notes/sections_cz/section_08_solutions_of_differential_equations.tex",
+        "/home/emil/programming/NOFY080/notes/sections_cz/section_08_solutions_of_differential_equations.tex",
        # "/home/emil/programming/NOFY080/notes/sections_cz/section_09_what_didnt_fit.tex",
         "/home/emil/programming/NOFY080/notes/sections_cz/appendix.tex",
     ]

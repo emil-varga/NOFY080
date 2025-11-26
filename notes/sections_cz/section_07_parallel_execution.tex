@@ -123,6 +123,10 @@ který aplikuje funkci \ls{function(x)} na každý prvek sekvence (např. seznam
 \lstinputlisting{../example_code/process_pools.py}
 všimněte si, že pro přílišné zvětšení počtu procesů může výpočet ve skutečnosti začít \emph{spomalovat}.
 
+\begin{exercise}
+    Zrýchlite výpočet Mandelbrotovej množiny za pomoci paralelných procesov.
+\end{exercise}
+
 \subsection{Meziprocesová komunikace}
 Doposud jsme vytvářeli nové procesy z python skriptu, který jsme spustili. Avšak jakékoli dva procesy Pythonu, tj. samostatné běhy jakýchkoli programů v Pythonu, mohou spolu komunikovat. Existuje několik způsobů, jak toho dosáhnout, například přímé sdílení paměti (pomocí modulu \ls{multiprocessing.shared_memory}, viz \href{https://docs.python.org/3/library/multiprocessing.shared_memory.html}{dokumentaci} pro příklad použití s poli numpy) nebo \emph{sokety}. Mechanismus soketů je nějakým způsobem poskytován všemi operačními systémy jako obecný způsob komunikace mezi procesy, lokálně nebo přes síť, viz Obr.~\ref{fig:listener-client}. Obecně navážeme spojení s adresou (může být \emph{localhost}, pokud nekomunikujeme přes síť) a číslem portu. Jeden proces funguje jako \emph{posluchač} (tj. server), který \emph{přijímá} spojení od \emph{klientů} a oba si pak mohou navzájem posílat a přijímat zprávy.
 
