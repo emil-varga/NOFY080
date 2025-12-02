@@ -1,14 +1,14 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,latex
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,latex
 
-notes/main.pdf
-notes/main_cz.pdf
+notes/main*.pdf
+notes/main_cz/.pdf
 
 exercises.tex
 exercises_cz.tex
 
-exercises.pdf
-exercises_cz.pdf
+exercises*.pdf
+exercises_cz*.pdf
 
 example_code/taichi/pictures
 example_code/taichi/*.avi

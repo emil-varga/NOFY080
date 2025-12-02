@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import e11 #import solution to excercise 11
+import e3_7 #import solution to excercise 3_7
 
 from glob import glob
 
@@ -46,7 +46,7 @@ for k, file in enumerate(files): #
     freq, X, Y = data.T
     
     #and now use the solution to e11 as an external module
-    f0, fwhm = e11.estimate_parameters(freq, X, Y, plot=False)
+    f0, fwhm = e3_7.estimate_parameters(freq, X, Y, plot=False)
     #and save the results into prepared arrays
     # we used indexing because the arrays already have the length
     # we need we could also use lists (replace line 30 with

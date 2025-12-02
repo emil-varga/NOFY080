@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import e11 # make sure e11.py is in the same directory
+import e3_7 # make sure e11.py is in the same directory
 
 # if e11 is somewhere else, say D:/Python/modules, we'd have to do
 #import sys
@@ -34,7 +34,7 @@ for file in files: # go through files one by one
     axs[0].plot(f, r) # and plot it
     
     # use the solution to e11 to guesstimate the central frequency and fwhm
-    f0, fwhm = e11.estimate_parameters(f, x, y, plot=False)
+    f0, fwhm = e3_7.estimate_parameters(f, x, y, plot=False)
     
     # to fit the background, we only want points where are sufficiently far from
     # the resonance

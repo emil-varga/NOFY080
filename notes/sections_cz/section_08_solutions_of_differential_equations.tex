@@ -83,7 +83,7 @@ Nakonec vypočítáme trajektorii s odporem vzduchu a bez něj a vykreslíme ji.
     s $\sigma = 10$, $\rho = 28$ a $\beta = 8/3$. Vykreslete trajektorii $x$, $y$, $z$ ve 3D prostoru.
 \end{exercise}
 
-\begin{syntax}[3D plotting]
+\begin{syntax}[3D grafy]
 Matplotlib podporuje 3D vykreslování. V posledních verzích matplotlibu je jednoduchý 3D graf čáry dané poli \ls{x}, \ls{y} a \ls{z} velmi jednoduchý:
 \begin{lstlisting}
 fig3d = plt.figure()
@@ -182,7 +182,15 @@ uv pip install taichi matplotlib
 a nyní máme vše, co potřebujeme k psaní a spouštění kódu taichi. Musíme však mít aktivované prostředí, jinak používáme systémový python, který o knihovně taichi neví.
 
 \subsubsection{Testování instalace}
-TODO
+Spustěte Python v příkazovém řádku zadáním \ls{python} a zadejte následující kód pro otestování instalace taichi:
+\begin{lstlisting}
+>>> import taichi as ti
+[Taichi] version 1.7.4, llvm 15.0.4, commit b4b956fd, linux, python 3.10.19
+>>> ti.init(ti.gpu)  # alebo ti.cpu
+[W 12/02/25 13:29:07.195 37705] [cuda_driver.cpp:load_lib@36] libcuda.so lib not found.
+[Taichi] Starting on arch=vulkan
+\end{lstlisting}
+Pokud vidíte podobný výstup, je vše v pořádku. Varování o chybějící knihovně \ls{libcuda.so} je v pořádku, pokud nemáte NVIDIA GPU. Taichi se pokusí použít Vulkan na GPU AMD nebo Intel, nebo pokud není k dispozici žádná GPU, použije CPU.
 
 \subsubsection{GPU Kernely}
 Taichi nám umožňuje přesunout specifické funkce ke spuštění na GPU. S těmito funkcemi se zachází odlišně od zbytku kódu v Pythonu a nazývají se \emph{kernely}. Napíšeme dva kernely, jeden pro výpočet sil a druhý pro Eulerovo krokování. Data budeme ukládat do polí numpy -- není to nejrychlejší způsob (taichi umí paměť využívat efektivněji, viz dokumentace taichi pro optimalizovanější verzi), ale je to nejjednodušší.
@@ -224,3 +232,7 @@ Asi po minutě běhu na CPU Intel Core i7-7700 (poměrně staré CPU) se počát
 \begin{center}
     \includegraphics[width=0.5\linewidth]{gravity.png}
 \end{center}
+
+\begin{exercise}
+    Implementujte výpočet Mandelbrotovy množiny pomocí taichi.
+\end{exercise}

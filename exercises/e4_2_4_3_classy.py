@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 from scipy.optimize import curve_fit
 
-import e11
+import e3_7
 import os
 from glob import glob
 
@@ -124,7 +124,7 @@ class Peak:
             self.ax.scatter(self.f, self.r)
         
         #initial guess of the fit parameter values
-        f0, fwhm = e11.estimate_parameters(self.f, self.x, self.y)
+        f0, fwhm = e3_7.estimate_parameters(self.f, self.x, self.y)
         if self.p0 is None:
             #if we don't supply one, do the standard estimation
             A0_guess = np.max(self.r) - np.min(self.r)

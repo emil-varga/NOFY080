@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from scipy.optimize import curve_fit
 
-import e11
+import e3_7
 import os
 from glob import glob
 
@@ -36,7 +36,7 @@ def fit(f, x, y, p0=None, plot=False):
     
     if p0 is None:
         #initial guess of the fit parameter values
-        f0, fwhm = e11.estimate_parameters(f, x, y)
+        f0, fwhm = e3_7.estimate_parameters(f, x, y)
         #if we don't supply one, do the standard estimation
         A0_guess = np.max(r) - np.min(r)
         b1_guess = np.min(r)       

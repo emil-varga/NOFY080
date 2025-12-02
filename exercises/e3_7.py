@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-#we will be using e11 as a module in e12, so prepare a reusable solution
+#we will be using this as a module, so prepare a reusable solution
 def estimate_parameters(f, X, Y, plot=False):
     """
     Estimates central frequency and full width at half max of a peak.
