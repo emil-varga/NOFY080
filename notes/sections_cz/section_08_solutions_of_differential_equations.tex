@@ -38,13 +38,13 @@ kde $\bv v$ je rychlost projektilu, $A$ je plocha průmětu projektilu ve směru
 
 \textbf{Řešení:}
 Úplný kód je k dispozici v \ls{ivp_ballistic.py}. Nejprve naimportujeme potřebné moduly a definujeme potřebné konstanty
-\lstinputlisting[linerange={1-10}]{../example_code/ivp_ballistic.py}
+\lstinputlisting[linerange={1,2,3,4,5,6,7,8,9,10}]{../example_code/ivp_ballistic.py}
 
 Dále definujeme funkci $f$. Vezmeme stavový vektor $\bv x = (x, y, v_x, v_y)$, který reprezentuje vektory polohy i rychlosti. Funkce musí vracet časovou derivaci tohoto 4-složkového stavového vektoru
 \lstinputlisting[linerange={12-25}]{../example_code/ivp_ballistic.py}
 
 Dále definujeme událost, která bude indikovat, že míč dopadl na zem, a učiníme ji terminální, protože nechceme, aby výpočet pokračoval za tento bod
-\lstinputlisting[linerange={30,31,32,33,34}]{../example_code/ivp_ballistic.py}
+\lstinputlisting[linerange={30-34}]{../example_code/ivp_ballistic.py}
 
 Nyní máme vše, co potřebujeme k výpočtu balistické trajektorie. Nastavíme časový rozsah výpočtu na $(0, 10)$, kde 10 je jen libovolně velký čas, výpočet bude zastaven událostí dopadu. Předáme také další argumenty, koeficient odporu, prostřednictvím obvyklého klíčového argumentu \ls{args=}. Nakonec také požádáme o \ls{dense_output}, který vrátí interpolační objekt (\ls{solution.sol} níže) pro reprezentaci řešení. To je užitečné, protože \ls{solve_ivp} používá adaptivní velikost časového kroku $\dd t$ (tj. když jsou derivace malé a pomalu se mění, časový krok je větší), takže pokud chceme rovnoměrně vzorkované řešení, musíme ho interpolovat. S vráceným řešením použijeme čas události k vytvoření rovnoměrně vzorkovaného časového pole a vrátíme interpolovanou trajektorii.
 

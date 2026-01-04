@@ -50,7 +50,7 @@ a vlákno, které žádalo o tlak, dostane teplotu a naopak. Tato třída chyb s
 \begin{lstlisting}[linewidth=0.6\linewidth]
     # vlákno 2
     # běží vlákno 1
-    lock.acquire() # blokuje, dokud není zámek uvolněn
+    lock.acquire() # blokuje do uvolnění zámku
     # běží vlákno 1
     # běží vlákno 1
     # běží vlákno 1, lock.acquire() se vrátí
@@ -89,7 +89,7 @@ což se nazývá \emph{zablokování} (deadlock). Buďte zvláště opatrní, kd
 Nejjednodušší metodou komunikace mezi vlákny jsou globální proměnné. To se však může rychle stát nepřehledným a matoucím, proto je obvykle lepší používat typy určené pro komunikaci mezi vlákny. Nejjednodušší je \ls{threading.Event}, což je booleovský příznak, který může být nastaven jedním vláknem a na který může reagovat jiné, např.:
 \lstinputlisting{../example_code/threads_events.py}
 
-Pro posílání dat mezi vlákny jsou užitečné \ls{Queue}s z modulu \ls{queue}. Hodnotu můžeme vložit do fronty v jednom vlákně pomocí metody \ls{put()} a vyjmout ji jinde pomocí metody \ls{get()}, která blokuje, pokud je fronta prázdná. Můžeme také zkontrolovat, zda je fronta prázdná, pomocí metody \ls{empty()}. Minimální příklad:
+Pro posílání dat mezi vlákny jsou užitečné \emph{fronty} (\ls{Queue}s) z modulu \ls{queue}. Hodnotu můžeme vložit do fronty v jednom vlákně pomocí metody \ls{put()} a vyjmout ji jinde pomocí metody \ls{get()}, která blokuje, pokud je fronta prázdná. Můžeme také zkontrolovat, zda je fronta prázdná, pomocí metody \ls{empty()}. Minimální příklad:
 \lstinputlisting{../example_code/threads_queues_minimal.py}
 
 Úplnější příklad, který čte data z Pico v jednom vlákně a vykresluje je v jiném:
