@@ -202,16 +202,16 @@ ti.init(ti.gpu)
 \end{lstlisting}
 Tím se použije v pořadí podle priority NVIDIA CUDA, Vulkan na GPU od AMD nebo CPU.
 
-The Euler stepping kernel looks like this
-\lstinputlisting[linerange={49-59}]{../example_code/taichi/gravity.py}
-Označíme, že funkce je kernel, pomocí dekorátoru \ls{ti.kernel}. Funkce přebírá čtyři argumenty -- polohy planet \ls{rs}, rychlosti \ls{vel} a zrychlení \ls{acc}, což jsou pole numpy 64bitových floatů tvaru \ls{(N,2)} ($N$ planet a dvě souřadnice) a časový krok \ls{dt}, což je jednoduchý float.
+Kernel pro Eulerovské krokování je jednoduchý:
+\lstinputlisting[linerange={48-59}]{../example_code/taichi/gravity.py}
+To, že funkce je kernel, označíme pomocí dekorátoru \ls{ti.kernel}. Funkce přebírá čtyři argumenty -- polohy planet \ls{rs}, rychlosti \ls{vel} a zrychlení \ls{acc}, což jsou numpy pole 64bitových floatů tvaru \ls{(N,2)} ($N$ planet a dvě souřadnice) a časový krok \ls{dt}, což je jednoduchý float.
 
-Uvnitř funkce vypadá poměrně obyčejně, nicméně běží uvnitř GPU a vnější cyklus for ve skutečnosti není cyklus, ale iterace se provádějí co nejvíce paralelně. Existují určitá omezení -- například nesmíte \ls{break} z vnějšího cyklu. Vnitřní cyklus (\ls{for k in range(2)}) běží jako běžný sekvenční cyklus for. Nic nevracíme, ale spíše upravujeme vstupní pole.
+Uvnitř funkce vypadá poměrně obyčejně, nicméně běží uvnitř GPU a vnější cyklus for ve skutečnosti není cyklus, ale iterace se provádějí co nejvíce paralelně. Existují určitá omezení -- například se nedá použít \ls{break} ve vnějším cyklu. Vnitřní cyklus (\ls{for k in range(2)}) běží jako běžný sekvenční cyklus for. Nic nevracíme, ale spíše upravujeme vstupní pole.
 
 Zajímavějším kernelem je výpočet zrychlení (nebo sil), který vypadá takto
 \lstinputlisting[linerange={14-46}]{../example_code/taichi/gravity.py}
 
-Náš problém je relativně jednoduchý, tzv. \emph{trapně paralelní}\footnote{Toto je skutečný termín používaný v informatice.}, protože výpočty jsou na sobě zcela nezávislé. GPU jsou schopny rychle spouštět mnoho úloh paralelně, protože neumožňují synchronizaci (nebo jen ve velmi omezené formě). To znamená, že i přes paralelní spouštění mnoha věcí nemáme žádný mechanismus podobný \ls{Lock()} z multithreadingu. Pokud tedy iterace cyklu na sobě závisí, stává se vyhýbání se souběhovým stavům poněkud složitější. Představte si například, že některé planety jsou z hmoty a některé z antihmoty a pokud se k sobě příliš přiblíží, anihilují. Mohli bychom to implementovat například jako
+Náš problém je relativně jednoduchý, tzv. \emph{trapně paralelní}\footnote{Toto je skutečný termín používaný v informatice, \emph{embarassingly parallel}.}, protože výpočty jsou na sobě zcela nezávislé. GPU jsou schopny rychle spouštět mnoho úloh paralelně, protože neumožňují synchronizaci (nebo jen ve velmi omezené formě). To znamená, že i přes paralelní spouštění mnoha věcí nemáme žádný mechanismus podobný \ls{Lock()} z multithreadingu. Pokud tedy iterace cyklu na sobě závisí, stává se vyhýbání se souběhovým stavům poněkud složitější. Představte si například, že některé planety jsou z hmoty a některé z antihmoty a pokud se k sobě příliš přiblíží, anihilují. Mohli bychom to implementovat například jako
 \begin{lstlisting}
 for j in range(N):
     for k in range(N):

@@ -227,6 +227,46 @@ kde $\omega_c$ je mezní (úhlová) frekvence. Tyto filtry můžeme zkonstruovat
     Vypočítejte obálku signálu z Cvič.~\ref{ex:envelope-direct} pomocí Hilbertovy transformace.
 \end{exercise}
 
-\subsection{Interpolation and smoothing.}
+\subsection{Interpolace a shlazování}
 
-TODO: \ls{scipy.ndimage.gaussian_filter()}, \ls{scipy.signal.savgol_filter()}, \ls{scipy.interpolate.interp1d()}, \ls{scipy.interpolate.UnivariateSpline()}
+Čast bývá nutno odhadnout hodnotu závislosti $y(x)$ v libovolném $x$ když sou známi jenom diskrétní dvojice $(x_i, y_i)$. Tento proces se nazýva interpolace. Nejjednodušší je lineární interpolace, která jednoducho pospájí sousední $(x_i, y_i)$ a $(x_{i+1}, y_{i+1})$ rovnými čarami. Takáto interpolovaná fuknce je síce spojitá, no není hladká. Místo rovných čar mezi sousdními body můžeme ale použít polynomy tak, aby spojité neboli jenom interpolované hodnoty ale i derivace do určitého řádu, čím dostávame tzv. spliny [splajny].
+
+Pro interpolaci máme modul \ls{scipy.interpolate} který obsahuje funkci \ls{interp1d} pro interpolaci lineární i pomocí kubických splajnů. Funkce příjmá data a vrací volatelný objekt, příklad (celý kód v \ls{interpolation.py}):
+Importujeme balíky a definujeme data šumem
+\lstinputlisting[linerange={1-6}]{../example_code/interpolation.py}
+Vytvoríme lineární a kubickou interpolaci
+\lstinputlisting[linerange={8-9}]{../example_code/interpolation.py}
+A všecho nakreslíme spolu nezašumenou hodnotou pro porovnání
+\lstinputlisting[linerange={11-18}]{../example_code/interpolation.py}
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{interpolation.pdf}
+\end{center}
+
+Pomocí splajn je možno data i \emph{shlazovat}. To nám umožňuje parameter $s$ funkce \ls{make_splrep} který specifikje, jak daleko může být splajna od dat a $s=0$ značí interpolaci, příklad (parameter $k$ specifikuje řád polynomu)
+\lstinputlisting[linerange={21-27}]{../example_code/interpolation.py}
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{interpolation_s.pdf}
+\end{center}
+
+Shlazující splajny jsou jeden zo spůsobů jak derivovat zašumená experimentální data. Objekty vráceni \ls{make_splrep} mají metodu \ls{derivative()}, která, jak název napovedá, vrátí derivaci. Příklad
+\lstinputlisting[linerange={30-34}]{../example_code/interpolation.py}
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{interpolation_diff.pdf}
+\end{center}
+
+Pro shlazování kdy nepotřebujeme interpolaci je užitočná \ls{scipy.signal.savgol_filter}, která implementuje Savitzkyho-Golajův filtr. Jedná sa v podstate o zobecnění průměrování sousdních bodů, kde ale namísto "fitování" konstanty na pohyblivé okno fitujeme polynom. Příklad,
+\lstinputlisting[linerange={37-42}]{../example_code/interpolation.py}
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{savgol.pdf}
+\end{center}
+
+Pro shlazování ve více dimenzích (ale i v 1D) je užitočné \ls{scipy.ndimage.gaussian_filter} která konvoluje zadané data s gaussovským kernelem s šírkou která je dána parametrem \ls{sigma}, který může být buď skalár, nebo n-tice, příklad (celý kód v \ls{gaussian_filter.py})
+Nejprve importujeme potrebné knihovny a vytovríme jednoduchá 2D data -- 100$\times$100 matice s 0 všude kroomě kolečka o průměru 0.5 ve středu os
+\lstinputlisting[linerange={1-9}]{../example_code/gaussian_filter.py}
+Původní i filtrovaná data nakreslíme. Všimněte si, že \ls{gaussian_filter()} nepoužívá hodnoty $x$ a $y$, předpokládá, že data jsou rovnoměrně rozložena.
+\lstinputlisting[linerange={11-18}]{../example_code/gaussian_filter.py}
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{gaussian_filter.pdf}
+\end{center}
+
+TODO: \ls{scipy.ndimage.gaussian_filter()}, \ls{scipy.signal.savgol_filter()}, \ls{scipy.interpolate.interp1d()},
